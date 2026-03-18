@@ -14,8 +14,8 @@ export function PreviewCard({
   title
 }: PreviewCardProps) {
   return (
-    <Card>
-      <CardHeader>
+    <Card className="flex h-full flex-col overflow-hidden">
+      <CardHeader className="gap-2">
         <CardTitle>{title}</CardTitle>
         {description ? (
           <p className="text-sm leading-7 text-[color:var(--muted-foreground)]">{description}</p>
@@ -23,7 +23,7 @@ export function PreviewCard({
       </CardHeader>
       <CardContent
         className={cn(
-          "rounded-b-[inherit] border-t border-[color:var(--border)] bg-[color:color-mix(in_oklab,var(--paper)_78%,white)] pt-6"
+          "flex-1 rounded-b-[inherit] border-t border-[color:var(--border)] bg-[color:color-mix(in_oklab,var(--paper)_78%,white)] pt-6"
         )}
       >
         {children}
@@ -31,4 +31,3 @@ export function PreviewCard({
     </Card>
   );
 }
-

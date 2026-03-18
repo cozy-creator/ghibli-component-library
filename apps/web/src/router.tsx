@@ -1,31 +1,37 @@
-import { createBrowserRouter } from "react-router-dom";
+import { Navigate, createBrowserRouter } from "react-router-dom";
 
 import { SiteShell } from "./layouts/site-shell";
+import { ComponentsIndexPage } from "./routes/components";
 import { BlockDetailPage } from "./routes/docs/block-detail";
 import { ComponentDetailPage } from "./routes/docs/component-detail";
-import { GettingStartedPage } from "./routes/docs/getting-started";
-import { ThemesPage } from "./routes/docs/themes";
+import { ExamplesPage } from "./routes/examples";
+import { GuideDetailPage } from "./routes/guides/guide-detail";
 import { HomePage } from "./routes/home";
-import { CreatorGalleryMockupPage } from "./routes/mockups/creator-gallery";
-import { KitchenSinkMockupPage } from "./routes/mockups/kitchen-sink";
-import { PaperSaasMockupPage } from "./routes/mockups/paper-saas";
-import { TravelDashboardMockupPage } from "./routes/mockups/travel-dashboard";
+import { LegacyComponentRedirect, LegacyPatternRedirect } from "./routes/legacy-redirects";
+import { NotFoundPage } from "./routes/not-found";
+import { PatternsIndexPage } from "./routes/patterns";
 
-export const router = createBrowserRouter([
-  {
-    path: "/",
-    element: <SiteShell />,
-    children: [
-      { index: true, element: <HomePage /> },
-      { path: "docs/getting-started", element: <GettingStartedPage /> },
-      { path: "docs/themes", element: <ThemesPage /> },
-      { path: "docs/components/:name", element: <ComponentDetailPage /> },
-      { path: "docs/blocks/:name", element: <BlockDetailPage /> },
-      { path: "mockups/creator-gallery", element: <CreatorGalleryMockupPage /> },
-      { path: "mockups/travel-dashboard", element: <TravelDashboardMockupPage /> },
-      { path: "mockups/paper-saas", element: <PaperSaasMockupPage /> },
-      { path: "mockups/kitchen-sink", element: <KitchenSinkMockupPage /> }
-    ]
-  }
-]);
-
+export function createAppRouter() {
+  return createBrowserRouter([
+    {
+      element: <SiteShell />,
+      path: "/",
+      children: [
+        { element: <HomePage />, index: true },
+        { element: <Navigate replace to="/guides/getting-started" />, path: "docs/getting-started" },
+        { element: <Navigate replace to="/components" />, path: "docs/components" },
+        { element: <Navigate replace to="/patterns" />, path: "docs/blocks" },
+        { element: <Navigate replace to="/guides/getting-started" />, path: "guides" },
+        { element: <GuideDetailPage />, path: "guides/:slug" },
+        { element: <ComponentsIndexPage />, path: "components" },
+        { element: <ComponentDetailPage />, path: "components/:name" },
+        { element: <PatternsIndexPage />, path: "patterns" },
+        { element: <BlockDetailPage />, path: "patterns/:name" },
+        { element: <ExamplesPage />, path: "examples" },
+        { element: <LegacyComponentRedirect />, path: "docs/components/:name" },
+        { element: <LegacyPatternRedirect />, path: "docs/blocks/:name" },
+        { element: <NotFoundPage />, path: "*" }
+      ]
+    }
+  ]);
+}
