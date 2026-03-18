@@ -7,21 +7,21 @@
       "name": "utils",
       "title": "Utils",
       "type": "registry:lib",
-      "description": "Shared Ghibli utility helpers.",
+      "description": "Shared helpers, controllable-state utilities, and scenic tone classes.",
       "dependencies": ["clsx", "tailwind-merge"],
       "files": [
         {
           "path": "registry/ghibli/lib/utils.ts",
           "type": "registry:lib",
-          "target": "components/lib/utils.ts"
+          "target": "lib/utils.ts"
         }
       ]
     },
     {
       "name": "style",
-      "title": "Ghibli Style",
+      "title": "Ghibli Paper Theme",
       "type": "registry:style",
-      "description": "Paper-like tokens, utilities, and global base styles for Ghibli UI.",
+      "description": "A single paper-and-ink theme with warm watercolor accents and grain.",
       "extends": "none",
       "dependencies": ["class-variance-authority", "clsx", "lucide-react", "tailwind-merge", "tw-animate-css"],
       "registryDependencies": ["@ghibli/utils"],
@@ -32,6 +32,8 @@
           "color-foreground": "var(--foreground)",
           "color-card": "var(--card)",
           "color-card-foreground": "var(--card-foreground)",
+          "color-popover": "var(--popover)",
+          "color-popover-foreground": "var(--popover-foreground)",
           "color-primary": "var(--primary)",
           "color-primary-foreground": "var(--primary-foreground)",
           "color-secondary": "var(--secondary)",
@@ -42,48 +44,58 @@
           "color-accent-foreground": "var(--accent-foreground)",
           "color-border": "var(--border)",
           "color-ring": "var(--ring)",
+          "color-destructive": "var(--danger)",
+          "color-destructive-foreground": "var(--danger-foreground)",
           "font-sans": "var(--font-body)"
         },
         "light": {
-          "background": "#f6eed8",
-          "foreground": "#4b3826",
-          "card": "#fbf5e6",
-          "card-foreground": "#4e3c2d",
-          "paper": "#f4e7c8",
-          "secondary": "#efe2be",
-          "secondary-foreground": "#55402d",
-          "muted": "#e8dcc1",
-          "muted-foreground": "#6a5a47",
-          "primary": "#6e8a56",
-          "primary-foreground": "#f9f3e4",
-          "primary-edge": "#567043",
-          "accent": "#84b0c3",
-          "accent-foreground": "#2d4152",
-          "border": "#ccbc9b",
-          "border-strong": "#9f8360",
-          "ring": "#8fb38a",
-          "sun": "#eab768",
-          "sun-soft": "#f4d8a7",
-          "sun-edge": "#c98b3d",
-          "clay": "#d48361",
-          "clay-edge": "#b25d3e",
-          "ink-strong": "#342313",
-          "moss": "#7f9468",
-          "sky": "#97c6d7",
-          "meadow-surface": "#e5efdc",
-          "meadow-ink": "#425239",
-          "meadow-border": "#94a37c",
-          "twilight-surface": "#536579",
-          "twilight-ink": "#f9f1dd",
-          "twilight-border": "#8ca0ba",
+          "background": "#f7f1e5",
+          "foreground": "#4d3b2e",
+          "card": "#fcf7ed",
+          "card-foreground": "#4d3b2e",
+          "popover": "#fffaf2",
+          "popover-foreground": "#4d3b2e",
+          "paper": "#f4ead7",
+          "paper-soft": "#faf4e8",
+          "muted": "#eadfcb",
+          "muted-foreground": "#7a6857",
+          "primary": "#6c8b69",
+          "primary-foreground": "#faf5ea",
+          "primary-edge": "#527054",
+          "secondary": "#e8dbc0",
+          "secondary-foreground": "#554433",
+          "accent": "#7fa8bb",
+          "accent-foreground": "#28404e",
+          "border": "#cfbea7",
+          "border-soft": "#e5d9c8",
+          "border-strong": "#a88e70",
+          "ring": "#8fb39a",
+          "danger": "#ca755d",
+          "danger-foreground": "#fff7f1",
+          "danger-edge": "#aa5b43",
+          "ink-strong": "#33241a",
+          "ink-soft": "#7d6552",
+          "cloud-surface": "#eef1e7",
+          "cloud-ink": "#536152",
+          "cloud-border": "#b9c2ae",
+          "lantern": "#efbb75",
+          "lantern-edge": "#c8883f",
+          "meadow-surface": "#dfead6",
+          "meadow-ink": "#45563d",
+          "meadow-border": "#8ea07d",
+          "river-surface": "#d7e7ea",
+          "river-ink": "#3d5560",
+          "river-border": "#8aa9b6",
+          "rose-surface": "#edd8d3",
+          "rose-ink": "#6c4942",
+          "rose-border": "#b68a83",
           "font-heading": "\"Averia Serif Libre\", Georgia, serif",
           "font-body": "\"M PLUS Rounded 1c\", \"Trebuchet MS\", system-ui, sans-serif",
           "radius": "1rem",
-          "shadow-paper": "0 18px 40px rgba(115, 86, 53, 0.16), 0 4px 10px rgba(115, 86, 53, 0.12)",
-          "shadow-button": "0 6px 14px rgba(89, 67, 42, 0.14)",
-          "shadow-inset": "inset 0 1px 0 rgba(255, 255, 255, 0.6)",
-          "shadow-lantern": "0 10px 18px rgba(201, 139, 61, 0.28), 0 0 0 1px rgba(201, 139, 61, 0.26)",
-          "texture-paper": "radial-gradient(circle at 1px 1px, rgba(80, 61, 40, 0.05) 1px, transparent 0)"
+          "shadow-paper": "0 20px 46px rgba(92, 66, 39, 0.14), 0 6px 18px rgba(92, 66, 39, 0.12)",
+          "shadow-soft": "0 6px 14px rgba(92, 66, 39, 0.08)",
+          "shadow-raised": "0 12px 22px rgba(92, 66, 39, 0.16)",
+          "texture-paper": "radial-gradient(circle at 1px 1px, rgba(87, 65, 46, 0.06) 1px, transparent 0)"
         }
       },
       "css": {
@@ -92,12 +104,15 @@
           "*": {
             "box-sizing": "border-box"
           },
+          "html": {
+            "scroll-behavior": "smooth"
+          },
           "body": {
             "margin": "0",
             "min-height": "100vh",
             "font-family": "var(--font-body)",
             "color": "var(--foreground)",
-            "background": "radial-gradient(circle at top, rgba(255, 255, 255, 0.45), transparent 38%), linear-gradient(180deg, rgba(151, 198, 215, 0.26), transparent 16rem), linear-gradient(180deg, rgba(255, 246, 226, 0.8), rgba(246, 238, 216, 0.94)), var(--background)"
+            "background": "radial-gradient(circle at top, rgba(255,255,255,0.48), transparent 34%), linear-gradient(180deg, rgba(127,168,187,0.2), transparent 15rem), linear-gradient(180deg, rgba(255,249,240,0.86), rgba(247,241,229,0.96)), var(--background)"
           },
           "body::before": {
             "position": "fixed",
@@ -106,89 +121,19 @@
             "content": "\"\"",
             "opacity": "0.45",
             "background-image": "var(--texture-paper)",
-            "background-size": "14px 14px"
+            "background-size": "16px 16px"
+          },
+          "a": {
+            "color": "inherit",
+            "text-decoration": "none"
+          },
+          "button,input,textarea,select": {
+            "font": "inherit"
           },
           "::selection": {
             "color": "var(--ink-strong)",
-            "background": "rgba(234, 183, 104, 0.48)"
+            "background": "rgba(239, 187, 117, 0.45)"
           }
-        }
-      }
-    },
-    {
-      "name": "theme-paper",
-      "title": "Paper Theme",
-      "type": "registry:theme",
-      "description": "Default Ghibli paper palette.",
-      "registryDependencies": ["@ghibli/style"],
-      "cssVars": {
-        "light": {
-          "background": "#f6eed8",
-          "card": "#fbf5e6",
-          "primary": "#6e8a56",
-          "border-strong": "#9f8360"
-        }
-      }
-    },
-    {
-      "name": "theme-meadow",
-      "title": "Meadow Theme",
-      "type": "registry:theme",
-      "description": "Greener scenic overrides for Ghibli UI.",
-      "registryDependencies": ["@ghibli/style"],
-      "cssVars": {
-        "light": {
-          "background": "#edf2e2",
-          "card": "#f7faef",
-          "secondary": "#dbe5cb",
-          "primary": "#607a48",
-          "border-strong": "#7e9568",
-          "meadow-surface": "#edf6e5",
-          "meadow-ink": "#384c2d",
-          "meadow-border": "#89a072"
-        }
-      }
-    },
-    {
-      "name": "theme-twilight",
-      "title": "Twilight Theme",
-      "type": "registry:theme",
-      "description": "Cooler evening overrides for Ghibli UI.",
-      "registryDependencies": ["@ghibli/style"],
-      "cssVars": {
-        "light": {
-          "background": "#dfe7ef",
-          "card": "#edf2f8",
-          "secondary": "#d1dce7",
-          "foreground": "#2d3541",
-          "muted-foreground": "#556172",
-          "primary": "#5e7595",
-          "border-strong": "#7a8ea8",
-          "twilight-surface": "#5a6a7e",
-          "twilight-ink": "#f9f2e4",
-          "twilight-border": "#92a4be"
-        }
-      }
-    },
-    {
-      "name": "fonts-storybook",
-      "title": "Storybook Fonts",
-      "type": "registry:font",
-      "description": "Optional rounded body font metadata for Ghibli demos.",
-      "font": {
-        "family": "M PLUS Rounded 1c",
-        "provider": "google",
-        "import": "M_PLUS_Rounded_1c",
-        "variable": "--font-body",
-        "weight": ["400", "500", "700"],
-        "subsets": ["latin"],
-        "selector": "body",
-        "dependency": "@fontsource/m-plus-rounded-1c"
-      },
-      "cssVars": {
-        "light": {
-          "font-heading": "\"Averia Serif Libre\", Georgia, serif",
-          "font-body": "\"M PLUS Rounded 1c\", \"Trebuchet MS\", system-ui, sans-serif"
         }
       }
     },
@@ -196,7 +141,7 @@
       "name": "button",
       "title": "Button",
       "type": "registry:ui",
-      "description": "Soft paper buttons with lantern warmth.",
+      "description": "Soft paper action buttons with raised ink edges.",
       "dependencies": ["@radix-ui/react-slot", "class-variance-authority"],
       "registryDependencies": ["@ghibli/style"],
       "files": [
@@ -211,8 +156,8 @@
       "name": "badge",
       "title": "Badge",
       "type": "registry:ui",
-      "description": "Stamps and tags for metadata.",
-      "dependencies": ["class-variance-authority"],
+      "description": "Small scenic badges for states and metadata.",
+      "dependencies": ["@radix-ui/react-slot", "class-variance-authority"],
       "registryDependencies": ["@ghibli/style"],
       "files": [
         {
@@ -223,10 +168,24 @@
       ]
     },
     {
+      "name": "card",
+      "title": "Card",
+      "type": "registry:ui",
+      "description": "Layered paper card surface pieces.",
+      "registryDependencies": ["@ghibli/style"],
+      "files": [
+        {
+          "path": "registry/ghibli/ui/card.tsx",
+          "type": "registry:ui",
+          "target": "components/ui/card.tsx"
+        }
+      ]
+    },
+    {
       "name": "input",
       "title": "Input",
       "type": "registry:ui",
-      "description": "Rounded text input.",
+      "description": "Single-line paper field.",
       "registryDependencies": ["@ghibli/style"],
       "files": [
         {
@@ -240,7 +199,7 @@
       "name": "textarea",
       "title": "Textarea",
       "type": "registry:ui",
-      "description": "Long-form text field with paper inset styling.",
+      "description": "Long-form paper field.",
       "registryDependencies": ["@ghibli/style"],
       "files": [
         {
@@ -251,136 +210,16 @@
       ]
     },
     {
-      "name": "card",
-      "title": "Card",
+      "name": "label",
+      "title": "Label",
       "type": "registry:ui",
-      "description": "Paper surface card pieces.",
+      "description": "Form label text with ink contrast.",
       "registryDependencies": ["@ghibli/style"],
       "files": [
         {
-          "path": "registry/ghibli/ui/card.tsx",
+          "path": "registry/ghibli/ui/label.tsx",
           "type": "registry:ui",
-          "target": "components/ui/card.tsx"
-        }
-      ]
-    },
-    {
-      "name": "select",
-      "title": "Select",
-      "type": "registry:ui",
-      "description": "Paper themed Radix select.",
-      "dependencies": ["@radix-ui/react-select", "lucide-react"],
-      "registryDependencies": ["@ghibli/style"],
-      "files": [
-        {
-          "path": "registry/ghibli/ui/select.tsx",
-          "type": "registry:ui",
-          "target": "components/ui/select.tsx"
-        }
-      ]
-    },
-    {
-      "name": "tabs",
-      "title": "Tabs",
-      "type": "registry:ui",
-      "description": "Rounded scenic tabs.",
-      "dependencies": ["@radix-ui/react-tabs"],
-      "registryDependencies": ["@ghibli/style"],
-      "files": [
-        {
-          "path": "registry/ghibli/ui/tabs.tsx",
-          "type": "registry:ui",
-          "target": "components/ui/tabs.tsx"
-        }
-      ]
-    },
-    {
-      "name": "checkbox",
-      "title": "Checkbox",
-      "type": "registry:ui",
-      "description": "Paper Radix checkbox.",
-      "dependencies": ["@radix-ui/react-checkbox", "lucide-react"],
-      "registryDependencies": ["@ghibli/style"],
-      "files": [
-        {
-          "path": "registry/ghibli/ui/checkbox.tsx",
-          "type": "registry:ui",
-          "target": "components/ui/checkbox.tsx"
-        }
-      ]
-    },
-    {
-      "name": "radio-group",
-      "title": "Radio Group",
-      "type": "registry:ui",
-      "description": "Soft Radix radio controls.",
-      "dependencies": ["@radix-ui/react-radio-group"],
-      "registryDependencies": ["@ghibli/style"],
-      "files": [
-        {
-          "path": "registry/ghibli/ui/radio-group.tsx",
-          "type": "registry:ui",
-          "target": "components/ui/radio-group.tsx"
-        }
-      ]
-    },
-    {
-      "name": "switch",
-      "title": "Switch",
-      "type": "registry:ui",
-      "description": "Compact Radix switch.",
-      "dependencies": ["@radix-ui/react-switch"],
-      "registryDependencies": ["@ghibli/style"],
-      "files": [
-        {
-          "path": "registry/ghibli/ui/switch.tsx",
-          "type": "registry:ui",
-          "target": "components/ui/switch.tsx"
-        }
-      ]
-    },
-    {
-      "name": "dialog",
-      "title": "Dialog",
-      "type": "registry:ui",
-      "description": "Paper framed Radix dialog.",
-      "dependencies": ["@radix-ui/react-dialog", "lucide-react"],
-      "registryDependencies": ["@ghibli/style"],
-      "files": [
-        {
-          "path": "registry/ghibli/ui/dialog.tsx",
-          "type": "registry:ui",
-          "target": "components/ui/dialog.tsx"
-        }
-      ]
-    },
-    {
-      "name": "popover",
-      "title": "Popover",
-      "type": "registry:ui",
-      "description": "Textured Radix popover.",
-      "dependencies": ["@radix-ui/react-popover"],
-      "registryDependencies": ["@ghibli/style"],
-      "files": [
-        {
-          "path": "registry/ghibli/ui/popover.tsx",
-          "type": "registry:ui",
-          "target": "components/ui/popover.tsx"
-        }
-      ]
-    },
-    {
-      "name": "sheet",
-      "title": "Sheet",
-      "type": "registry:ui",
-      "description": "Slide-in paper sheet.",
-      "dependencies": ["@radix-ui/react-dialog", "class-variance-authority", "lucide-react"],
-      "registryDependencies": ["@ghibli/style"],
-      "files": [
-        {
-          "path": "registry/ghibli/ui/sheet.tsx",
-          "type": "registry:ui",
-          "target": "components/ui/sheet.tsx"
+          "target": "components/ui/label.tsx"
         }
       ]
     },
@@ -388,7 +227,7 @@
       "name": "separator",
       "title": "Separator",
       "type": "registry:ui",
-      "description": "Subtle divider line.",
+      "description": "Subtle divider for paper sections.",
       "dependencies": ["@radix-ui/react-separator"],
       "registryDependencies": ["@ghibli/style"],
       "files": [
@@ -400,155 +239,41 @@
       ]
     },
     {
-      "name": "scroll-area",
-      "title": "Scroll Area",
+      "name": "skeleton",
+      "title": "Skeleton",
       "type": "registry:ui",
-      "description": "Paper themed Radix scroll area.",
-      "dependencies": ["@radix-ui/react-scroll-area"],
+      "description": "Paper shimmer placeholder.",
       "registryDependencies": ["@ghibli/style"],
       "files": [
         {
-          "path": "registry/ghibli/ui/scroll-area.tsx",
+          "path": "registry/ghibli/ui/skeleton.tsx",
           "type": "registry:ui",
-          "target": "components/ui/scroll-area.tsx"
+          "target": "components/ui/skeleton.tsx"
         }
       ]
     },
     {
-      "name": "paper-panel",
-      "title": "Paper Panel",
+      "name": "avatar",
+      "title": "Avatar",
       "type": "registry:ui",
-      "description": "Signature Ghibli surface wrapper.",
-      "dependencies": ["class-variance-authority"],
+      "description": "Soft-framed avatars and avatar groups.",
       "registryDependencies": ["@ghibli/style"],
       "files": [
         {
-          "path": "registry/ghibli/ui/paper-panel.tsx",
+          "path": "registry/ghibli/ui/avatar.tsx",
           "type": "registry:ui",
-          "target": "components/ui/paper-panel.tsx"
+          "target": "components/ui/avatar.tsx"
         }
       ]
     },
     {
-      "name": "poster-frame",
-      "title": "Poster Frame",
+      "name": "tabs",
+      "title": "Tabs",
       "type": "registry:ui",
-      "description": "Framed media wrapper.",
-      "dependencies": ["class-variance-authority"],
+      "description": "Segmented scenic tabs.",
+      "dependencies": ["@radix-ui/react-tabs", "class-variance-authority"],
       "registryDependencies": ["@ghibli/style"],
       "files": [
-        {
-          "path": "registry/ghibli/ui/poster-frame.tsx",
-          "type": "registry:ui",
-          "target": "components/ui/poster-frame.tsx"
-        }
-      ]
-    },
-    {
-      "name": "stamp-badge",
-      "title": "Stamp Badge",
-      "type": "registry:ui",
-      "description": "Circular stamp label.",
-      "dependencies": ["class-variance-authority"],
-      "registryDependencies": ["@ghibli/style"],
-      "files": [
-        {
-          "path": "registry/ghibli/ui/stamp-badge.tsx",
-          "type": "registry:ui",
-          "target": "components/ui/stamp-badge.tsx"
-        }
-      ]
-    },
-    {
-      "name": "ink-input",
-      "title": "Ink Input",
-      "type": "registry:ui",
-      "description": "Labeled input composition.",
-      "registryDependencies": ["@ghibli/style"],
-      "files": [
-        {
-          "path": "registry/ghibli/ui/ink-input.tsx",
-          "type": "registry:ui",
-          "target": "components/ui/ink-input.tsx"
-        },
-        {
-          "path": "registry/ghibli/ui/input.tsx",
-          "type": "registry:ui",
-          "target": "components/ui/input.tsx"
-        }
-      ]
-    },
-    {
-      "name": "lantern-button",
-      "title": "Lantern Button",
-      "type": "registry:ui",
-      "description": "Highlighted CTA button.",
-      "dependencies": ["@radix-ui/react-slot"],
-      "registryDependencies": ["@ghibli/style"],
-      "files": [
-        {
-          "path": "registry/ghibli/ui/lantern-button.tsx",
-          "type": "registry:ui",
-          "target": "components/ui/lantern-button.tsx"
-        },
-        {
-          "path": "registry/ghibli/ui/button.tsx",
-          "type": "registry:ui",
-          "target": "components/ui/button.tsx"
-        }
-      ]
-    },
-    {
-      "name": "progress-pill",
-      "title": "Progress Pill",
-      "type": "registry:ui",
-      "description": "Soft progress bar.",
-      "registryDependencies": ["@ghibli/style"],
-      "files": [
-        {
-          "path": "registry/ghibli/ui/progress-pill.tsx",
-          "type": "registry:ui",
-          "target": "components/ui/progress-pill.tsx"
-        }
-      ]
-    },
-    {
-      "name": "hero-paper",
-      "title": "Hero Paper",
-      "type": "registry:block",
-      "description": "Scenic hero composition.",
-      "registryDependencies": ["@ghibli/style", "@ghibli/badge", "@ghibli/paper-panel"],
-      "files": [
-        {
-          "path": "registry/ghibli/blocks/hero-paper/index.tsx",
-          "type": "registry:block",
-          "target": "components/blocks/hero-paper/index.tsx"
-        }
-      ]
-    },
-    {
-      "name": "creator-gallery",
-      "title": "Creator Gallery",
-      "type": "registry:block",
-      "description": "Tabbed poster gallery layout.",
-      "dependencies": ["@radix-ui/react-tabs"],
-      "registryDependencies": ["@ghibli/style"],
-      "files": [
-        {
-          "path": "registry/ghibli/blocks/creator-gallery/index.tsx",
-          "type": "registry:block",
-          "target": "components/blocks/creator-gallery/index.tsx"
-        },
-        {
-          "path": "registry/ghibli/ui/badge.tsx",
-          "type": "registry:ui",
-          "target": "components/ui/badge.tsx"
-        },
-        {
-          "path": "registry/ghibli/ui/poster-frame.tsx",
-          "type": "registry:ui",
-          "target": "components/ui/poster-frame.tsx"
-        },
         {
           "path": "registry/ghibli/ui/tabs.tsx",
           "type": "registry:ui",
@@ -557,142 +282,259 @@
       ]
     },
     {
-      "name": "travel-overview",
-      "title": "Travel Overview",
-      "type": "registry:block",
-      "description": "Scenic dashboard layout.",
-      "dependencies": ["@radix-ui/react-slot", "@radix-ui/react-separator"],
+      "name": "accordion",
+      "title": "Accordion",
+      "type": "registry:ui",
+      "description": "FAQ-style accordion with simple controllable state.",
+      "dependencies": ["lucide-react"],
       "registryDependencies": ["@ghibli/style"],
       "files": [
         {
-          "path": "registry/ghibli/blocks/travel-overview/index.tsx",
-          "type": "registry:block",
-          "target": "components/blocks/travel-overview/index.tsx"
-        },
-        {
-          "path": "registry/ghibli/ui/button.tsx",
+          "path": "registry/ghibli/ui/accordion.tsx",
           "type": "registry:ui",
-          "target": "components/ui/button.tsx"
-        },
-        {
-          "path": "registry/ghibli/ui/card.tsx",
-          "type": "registry:ui",
-          "target": "components/ui/card.tsx"
-        },
-        {
-          "path": "registry/ghibli/ui/poster-frame.tsx",
-          "type": "registry:ui",
-          "target": "components/ui/poster-frame.tsx"
-        },
-        {
-          "path": "registry/ghibli/ui/separator.tsx",
-          "type": "registry:ui",
-          "target": "components/ui/separator.tsx"
+          "target": "components/ui/accordion.tsx"
         }
       ]
     },
     {
-      "name": "project-card",
-      "title": "Project Card",
-      "type": "registry:block",
-      "description": "Softer repo-like project card.",
-      "dependencies": ["@radix-ui/react-slot"],
-      "registryDependencies": ["@ghibli/style"],
+      "name": "dialog",
+      "title": "Dialog",
+      "type": "registry:ui",
+      "description": "Paper-framed modal dialog.",
+      "dependencies": ["@radix-ui/react-dialog", "lucide-react", "@radix-ui/react-slot", "class-variance-authority"],
+      "registryDependencies": ["@ghibli/style", "@ghibli/button"],
       "files": [
         {
-          "path": "registry/ghibli/blocks/project-card/index.tsx",
-          "type": "registry:block",
-          "target": "components/blocks/project-card/index.tsx"
-        },
-        {
-          "path": "registry/ghibli/ui/badge.tsx",
+          "path": "registry/ghibli/ui/dialog.tsx",
           "type": "registry:ui",
-          "target": "components/ui/badge.tsx"
-        },
-        {
-          "path": "registry/ghibli/ui/button.tsx",
-          "type": "registry:ui",
-          "target": "components/ui/button.tsx"
-        },
-        {
-          "path": "registry/ghibli/ui/card.tsx",
-          "type": "registry:ui",
-          "target": "components/ui/card.tsx"
-        },
-        {
-          "path": "registry/ghibli/ui/stamp-badge.tsx",
-          "type": "registry:ui",
-          "target": "components/ui/stamp-badge.tsx"
+          "target": "components/ui/dialog.tsx"
         }
       ]
     },
     {
-      "name": "kitchen-sink-poster",
-      "title": "Kitchen Sink Poster",
-      "type": "registry:block",
-      "description": "Poster layout showing the primitive set.",
-      "dependencies": ["@radix-ui/react-checkbox", "@radix-ui/react-radio-group", "@radix-ui/react-select", "@radix-ui/react-slot", "@radix-ui/react-switch", "@radix-ui/react-tabs", "lucide-react"],
+      "name": "sheet",
+      "title": "Sheet",
+      "type": "registry:ui",
+      "description": "Side sheet built on the dialog primitive.",
+      "dependencies": ["@radix-ui/react-dialog", "lucide-react", "@radix-ui/react-slot", "class-variance-authority"],
+      "registryDependencies": ["@ghibli/style", "@ghibli/button"],
+      "files": [
+        {
+          "path": "registry/ghibli/ui/sheet.tsx",
+          "type": "registry:ui",
+          "target": "components/ui/sheet.tsx"
+        }
+      ]
+    },
+    {
+      "name": "dropdown-menu",
+      "title": "Dropdown Menu",
+      "type": "registry:ui",
+      "description": "Popover-backed paper menu for app controls.",
+      "dependencies": ["@radix-ui/react-popover", "lucide-react"],
       "registryDependencies": ["@ghibli/style"],
       "files": [
         {
-          "path": "registry/ghibli/blocks/kitchen-sink-poster/index.tsx",
+          "path": "registry/ghibli/ui/dropdown-menu.tsx",
+          "type": "registry:ui",
+          "target": "components/ui/dropdown-menu.tsx"
+        }
+      ]
+    },
+    {
+      "name": "tooltip",
+      "title": "Tooltip",
+      "type": "registry:ui",
+      "description": "Simple hover/focus tooltip backed by popover positioning.",
+      "dependencies": ["@radix-ui/react-popover"],
+      "registryDependencies": ["@ghibli/style"],
+      "files": [
+        {
+          "path": "registry/ghibli/ui/tooltip.tsx",
+          "type": "registry:ui",
+          "target": "components/ui/tooltip.tsx"
+        }
+      ]
+    },
+    {
+      "name": "auth-forms",
+      "title": "Auth Forms",
+      "type": "registry:block",
+      "description": "Presentational login, register, and password recovery forms.",
+      "registryDependencies": ["@ghibli/style", "@ghibli/button", "@ghibli/card", "@ghibli/input", "@ghibli/label"],
+      "files": [
+        {
+          "path": "registry/ghibli/blocks/auth/forms.tsx",
           "type": "registry:block",
-          "target": "components/blocks/kitchen-sink-poster/index.tsx"
-        },
+          "target": "components/blocks/auth/forms.tsx"
+        }
+      ]
+    },
+    {
+      "name": "auth-dialog",
+      "title": "Auth Dialog",
+      "type": "registry:block",
+      "description": "Tabbed auth dialog shell with provider action slots.",
+      "registryDependencies": ["@ghibli/style", "@ghibli/dialog", "@ghibli/tabs", "@ghibli/separator"],
+      "files": [
         {
-          "path": "registry/ghibli/ui/badge.tsx",
-          "type": "registry:ui",
-          "target": "components/ui/badge.tsx"
-        },
+          "path": "registry/ghibli/blocks/auth/dialog.tsx",
+          "type": "registry:block",
+          "target": "components/blocks/auth/dialog.tsx"
+        }
+      ]
+    },
+    {
+      "name": "community-cards",
+      "title": "Community Cards",
+      "type": "registry:block",
+      "description": "Image, video, and social post cards for creative feeds.",
+      "registryDependencies": ["@ghibli/style", "@ghibli/avatar", "@ghibli/badge", "@ghibli/card"],
+      "files": [
         {
-          "path": "registry/ghibli/ui/button.tsx",
-          "type": "registry:ui",
-          "target": "components/ui/button.tsx"
-        },
+          "path": "registry/ghibli/blocks/community/cards.tsx",
+          "type": "registry:block",
+          "target": "components/blocks/community/cards.tsx"
+        }
+      ]
+    },
+    {
+      "name": "community-modals",
+      "title": "Community Modals",
+      "type": "registry:block",
+      "description": "Large image and video detail overlays for feed browsing.",
+      "registryDependencies": ["@ghibli/style", "@ghibli/badge", "@ghibli/button", "@ghibli/dialog"],
+      "files": [
         {
-          "path": "registry/ghibli/ui/checkbox.tsx",
-          "type": "registry:ui",
-          "target": "components/ui/checkbox.tsx"
-        },
+          "path": "registry/ghibli/blocks/community/modals.tsx",
+          "type": "registry:block",
+          "target": "components/blocks/community/modals.tsx"
+        }
+      ]
+    },
+    {
+      "name": "generate-controls",
+      "title": "Generate Controls",
+      "type": "registry:block",
+      "description": "Mode toggles, menu selects, negative prompt, uploads, and CTA controls.",
+      "registryDependencies": ["@ghibli/style", "@ghibli/button", "@ghibli/dialog", "@ghibli/dropdown-menu", "@ghibli/textarea"],
+      "files": [
         {
-          "path": "registry/ghibli/ui/input.tsx",
-          "type": "registry:ui",
-          "target": "components/ui/input.tsx"
-        },
+          "path": "registry/ghibli/blocks/generate/controls.tsx",
+          "type": "registry:block",
+          "target": "components/blocks/generate/controls.tsx"
+        }
+      ]
+    },
+    {
+      "name": "generate-editor-bar",
+      "title": "Generate Editor Bar",
+      "type": "registry:block",
+      "description": "Prompt editor bar composed from the generation controls.",
+      "registryDependencies": ["@ghibli/style", "@ghibli/textarea", "@ghibli/generate-controls"],
+      "files": [
         {
-          "path": "registry/ghibli/ui/paper-panel.tsx",
-          "type": "registry:ui",
-          "target": "components/ui/paper-panel.tsx"
-        },
+          "path": "registry/ghibli/blocks/generate/editor-bar.tsx",
+          "type": "registry:block",
+          "target": "components/blocks/generate/editor-bar.tsx"
+        }
+      ]
+    },
+    {
+      "name": "generate-job-card",
+      "title": "Generate Job Card",
+      "type": "registry:block",
+      "description": "Generation history card with progress and outputs.",
+      "registryDependencies": ["@ghibli/style", "@ghibli/badge", "@ghibli/button", "@ghibli/card"],
+      "files": [
         {
-          "path": "registry/ghibli/ui/progress-pill.tsx",
-          "type": "registry:ui",
-          "target": "components/ui/progress-pill.tsx"
-        },
+          "path": "registry/ghibli/blocks/generate/job-card.tsx",
+          "type": "registry:block",
+          "target": "components/blocks/generate/job-card.tsx"
+        }
+      ]
+    },
+    {
+      "name": "layout-shell",
+      "title": "Layout Shell",
+      "type": "registry:block",
+      "description": "Header and footer blocks for navigation-heavy pages.",
+      "registryDependencies": ["@ghibli/style", "@ghibli/avatar", "@ghibli/button", "@ghibli/dropdown-menu", "@ghibli/sheet"],
+      "files": [
         {
-          "path": "registry/ghibli/ui/radio-group.tsx",
-          "type": "registry:ui",
-          "target": "components/ui/radio-group.tsx"
-        },
+          "path": "registry/ghibli/blocks/layout/shell.tsx",
+          "type": "registry:block",
+          "target": "components/blocks/layout/shell.tsx"
+        }
+      ]
+    },
+    {
+      "name": "empty-state",
+      "title": "Empty State",
+      "type": "registry:block",
+      "description": "Calm empty state with optional action.",
+      "registryDependencies": ["@ghibli/style", "@ghibli/button", "@ghibli/card"],
+      "files": [
         {
-          "path": "registry/ghibli/ui/select.tsx",
-          "type": "registry:ui",
-          "target": "components/ui/select.tsx"
-        },
+          "path": "registry/ghibli/blocks/shared/empty-state.tsx",
+          "type": "registry:block",
+          "target": "components/blocks/shared/empty-state.tsx"
+        }
+      ]
+    },
+    {
+      "name": "account-sections",
+      "title": "Account Sections",
+      "type": "registry:block",
+      "description": "Profile, linked account, subscription, and API credit sections.",
+      "registryDependencies": ["@ghibli/style", "@ghibli/avatar", "@ghibli/badge", "@ghibli/button", "@ghibli/card"],
+      "files": [
         {
-          "path": "registry/ghibli/ui/switch.tsx",
-          "type": "registry:ui",
-          "target": "components/ui/switch.tsx"
-        },
+          "path": "registry/ghibli/blocks/account/sections.tsx",
+          "type": "registry:block",
+          "target": "components/blocks/account/sections.tsx"
+        }
+      ]
+    },
+    {
+      "name": "account-dialogs",
+      "title": "Account Dialogs",
+      "type": "registry:block",
+      "description": "Email and password change dialog forms.",
+      "registryDependencies": ["@ghibli/style", "@ghibli/button", "@ghibli/dialog", "@ghibli/input", "@ghibli/label"],
+      "files": [
         {
-          "path": "registry/ghibli/ui/tabs.tsx",
-          "type": "registry:ui",
-          "target": "components/ui/tabs.tsx"
-        },
+          "path": "registry/ghibli/blocks/account/dialogs.tsx",
+          "type": "registry:block",
+          "target": "components/blocks/account/dialogs.tsx"
+        }
+      ]
+    },
+    {
+      "name": "marketing-sections",
+      "title": "Marketing Sections",
+      "type": "registry:block",
+      "description": "Hero, features, and CTA sections for landing pages.",
+      "registryDependencies": ["@ghibli/style", "@ghibli/badge", "@ghibli/button", "@ghibli/card"],
+      "files": [
         {
-          "path": "registry/ghibli/ui/textarea.tsx",
-          "type": "registry:ui",
-          "target": "components/ui/textarea.tsx"
+          "path": "registry/ghibli/blocks/marketing/sections.tsx",
+          "type": "registry:block",
+          "target": "components/blocks/marketing/sections.tsx"
+        }
+      ]
+    },
+    {
+      "name": "docs-faq-accordion",
+      "title": "Docs FAQ Accordion",
+      "type": "registry:block",
+      "description": "FAQ presentation block for docs and info pages.",
+      "registryDependencies": ["@ghibli/style", "@ghibli/accordion"],
+      "files": [
+        {
+          "path": "registry/ghibli/blocks/docs/faq-accordion.tsx",
+          "type": "registry:block",
+          "target": "components/blocks/docs/faq-accordion.tsx"
         }
       ]
     }

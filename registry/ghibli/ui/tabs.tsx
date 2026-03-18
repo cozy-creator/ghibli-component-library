@@ -1,56 +1,67 @@
 import * as React from "react";
 import * as TabsPrimitive from "@radix-ui/react-tabs";
+import { cva, type VariantProps } from "class-variance-authority";
 
-import { cn, panelBaseClass } from "../lib/utils";
+import { cn, focusRingClass, paperInsetClass } from "@/lib/utils";
 
-function Tabs({ className, ...props }: React.ComponentProps<typeof TabsPrimitive.Root>) {
-  return <TabsPrimitive.Root className={cn("grid gap-4", className)} {...props} />;
+export function Tabs({ className, ...props }: React.ComponentProps<typeof TabsPrimitive.Root>) {
+  return <TabsPrimitive.Root className={cn("grid gap-4", className)} data-slot="tabs" {...props} />;
 }
 
-function TabsList({ className, ...props }: React.ComponentProps<typeof TabsPrimitive.List>) {
+const tabsListVariants = cva(cn(paperInsetClass, "inline-flex w-fit items-center gap-2 p-1"), {
+  variants: {
+    variant: {
+      line: "rounded-none border-x-0 border-t-0 bg-transparent px-0 py-0 shadow-none",
+      soft: ""
+    }
+  },
+  defaultVariants: {
+    variant: "soft"
+  }
+});
+
+export function TabsList({
+  className,
+  variant,
+  ...props
+}: React.ComponentProps<typeof TabsPrimitive.List> & VariantProps<typeof tabsListVariants>) {
   return (
     <TabsPrimitive.List
-      className={cn(
-        panelBaseClass,
-        "inline-flex h-auto w-fit items-center gap-2 rounded-full border-[color:var(--border-strong)] bg-[color:var(--paper)] p-1.5",
-        className
-      )}
+      className={cn(tabsListVariants({ className, variant }))}
+      data-slot="tabs-list"
       {...props}
     />
   );
 }
 
-function TabsTrigger({
+export function TabsTrigger({
   className,
   ...props
 }: React.ComponentProps<typeof TabsPrimitive.Trigger>) {
   return (
     <TabsPrimitive.Trigger
       className={cn(
-        "inline-flex h-10 items-center justify-center rounded-full border border-transparent px-4 text-sm font-medium transition-all",
-        "text-[color:var(--muted-foreground)]",
-        "data-[state=active]:border-[color:var(--primary-edge)] data-[state=active]:bg-[color:var(--primary)] data-[state=active]:text-[color:var(--primary-foreground)] data-[state=active]:shadow-[var(--shadow-button)]",
+        "inline-flex min-w-28 items-center justify-center rounded-[calc(var(--radius)-0.45rem)] px-3 py-2 text-sm text-[color:var(--muted-foreground)] transition-all",
+        "data-[state=active]:bg-[color:var(--card)] data-[state=active]:text-[color:var(--ink-strong)] data-[state=active]:shadow-[var(--shadow-soft)]",
+        "hover:text-[color:var(--foreground)]",
+        focusRingClass,
         className
       )}
+      data-slot="tabs-trigger"
       {...props}
     />
   );
 }
 
-function TabsContent({
+export function TabsContent({
   className,
   ...props
 }: React.ComponentProps<typeof TabsPrimitive.Content>) {
   return (
     <TabsPrimitive.Content
-      className={cn(
-        panelBaseClass,
-        "rounded-[calc(var(--radius)+0.625rem)] border-[color:var(--border-strong)] bg-[color:var(--card)] p-5",
-        className
-      )}
+      className={cn("outline-none data-[state=inactive]:hidden", className)}
+      data-slot="tabs-content"
       {...props}
     />
   );
 }
-
-export { Tabs, TabsContent, TabsList, TabsTrigger };

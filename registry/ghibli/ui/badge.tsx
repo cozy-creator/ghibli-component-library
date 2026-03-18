@@ -1,33 +1,51 @@
 import * as React from "react";
+import { Slot } from "@radix-ui/react-slot";
 import { cva, type VariantProps } from "class-variance-authority";
 
-import { cn } from "../lib/utils";
+import { cn, scenicToneClasses } from "@/lib/utils";
 
 const badgeVariants = cva(
-  "inline-flex items-center rounded-full border px-3 py-1 text-xs font-medium tracking-[0.16em] uppercase shadow-[var(--shadow-button)]",
+  "inline-flex items-center gap-1 rounded-full border px-2.5 py-1 text-xs font-medium tracking-[0.04em]",
   {
     variants: {
+      tone: scenicToneClasses,
       variant: {
-        default:
-          "border-[color:var(--primary-edge)] bg-[color:var(--primary)] text-[color:var(--primary-foreground)]",
-        soft:
-          "border-[color:var(--border-strong)] bg-[color:var(--paper)] text-[color:var(--foreground)]",
-        outline:
-          "border-[color:var(--border-strong)] bg-transparent text-[color:var(--foreground)]",
+        outline: "border-[color:var(--border-strong)] bg-transparent text-[color:var(--foreground)]",
+        soft: "border-[color:var(--border)] bg-[color:var(--paper-soft)] text-[color:var(--foreground)]",
+        solid: "border-[color:var(--primary-edge)] bg-[color:var(--primary)] text-[color:var(--primary-foreground)]",
         stamp:
-          "border-[color:var(--sun-edge)] bg-[color:var(--sun-soft)] text-[color:var(--ink-strong)]"
+          "border-[color:var(--ink-soft)] bg-[color:var(--paper)] text-[color:var(--ink-strong)] shadow-[var(--shadow-soft)]"
       }
     },
+    compoundVariants: [
+      { tone: "cloud", variant: "soft", className: scenicToneClasses.cloud },
+      { tone: "meadow", variant: "soft", className: scenicToneClasses.meadow },
+      { tone: "river", variant: "soft", className: scenicToneClasses.river },
+      { tone: "rose", variant: "soft", className: scenicToneClasses.rose },
+      { tone: "lantern", variant: "soft", className: scenicToneClasses.lantern }
+    ],
     defaultVariants: {
-      variant: "default"
+      tone: "cloud",
+      variant: "soft"
     }
   }
 );
 
 export interface BadgeProps
-  extends React.HTMLAttributes<HTMLDivElement>,
-    VariantProps<typeof badgeVariants> {}
-
-export function Badge({ className, variant, ...props }: BadgeProps) {
-  return <div className={cn(badgeVariants({ className, variant }))} {...props} />;
+  extends React.HTMLAttributes<HTMLSpanElement>,
+    VariantProps<typeof badgeVariants> {
+  asChild?: boolean;
 }
+
+export function Badge({
+  asChild = false,
+  className,
+  tone,
+  variant,
+  ...props
+}: BadgeProps) {
+  const Comp = asChild ? Slot : "span";
+  return <Comp className={cn(badgeVariants({ className, tone, variant }))} {...props} />;
+}
+
+export { badgeVariants };
