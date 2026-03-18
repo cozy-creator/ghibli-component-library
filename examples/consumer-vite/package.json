@@ -1,0 +1,25 @@
+{
+  "name": "@ghibli/consumer-vite",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "build": "vite build",
+    "dev": "vite",
+    "lint": "tsc --project tsconfig.json --noEmit",
+    "test": "tsc --project tsconfig.json --noEmit",
+    "typecheck": "tsc --project tsconfig.json --noEmit"
+  },
+  "dependencies": {
+    "react": "latest",
+    "react-dom": "latest"
+  },
+  "devDependencies": {
+    "@ghibli/tsconfig": "workspace:*",
+    "@types/react": "latest",
+    "@types/react-dom": "latest",
+    "@vitejs/plugin-react": "^5.0.0",
+    "typescript": "latest",
+    "vite": "^7.0.0"
+  }
+}
