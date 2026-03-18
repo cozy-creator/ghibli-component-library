@@ -1,31 +1,51 @@
-import { BookOpenIcon, PaintbrushIcon, SparklesIcon } from "lucide-react";
-import { NavLink, Outlet } from "react-router-dom";
+import { BookCopy, Flower2, LayoutPanelLeft, LibraryBig, Shapes } from "lucide-react";
+import { Link, NavLink, Outlet, useLocation } from "react-router-dom";
 
-import { PaperPanel, cn } from "@ghibli/ui";
+import { Badge, Button, Card, CardContent, CardHeader, CardTitle, cn } from "@ghibli/ui";
 
-const docsLinks = [
-  { href: "/docs/getting-started", label: "Getting started" },
-  { href: "/docs/themes", label: "Themes" },
-  { href: "/docs/components/button", label: "Components" },
-  { href: "/docs/blocks/hero-paper", label: "Blocks" }
+import { componentDocs, guides, patternDocs } from "@/apps/web/src/data/library-docs";
+
+const topNavItems = [
+  { href: "/", label: "Home" },
+  { href: "/guides/getting-started", label: "Guides" },
+  { href: "/components", label: "Components" },
+  { href: "/patterns", label: "Patterns" },
+  { href: "/examples", label: "Examples" }
 ];
 
-const mockupLinks = [
-  { href: "/mockups/creator-gallery", label: "Creator gallery" },
-  { href: "/mockups/travel-dashboard", label: "Travel dashboard" },
-  { href: "/mockups/paper-saas", label: "Paper SaaS" },
-  { href: "/mockups/kitchen-sink", label: "Kitchen sink" }
+const browseItems = [
+  { href: "/components", label: "All components" },
+  { href: "/patterns", label: "All patterns" },
+  { href: "/examples", label: "Example gallery" }
 ];
+
+function TopNavLink({ href, label, pathname }: { href: string; label: string; pathname: string }) {
+  const active = href === "/" ? pathname === "/" : pathname.startsWith(href);
+
+  return (
+    <Link
+      className={cn(
+        "rounded-full px-3 py-2 text-sm transition-colors",
+        active
+          ? "bg-[color:var(--paper)] text-[color:var(--ink-strong)] shadow-[var(--shadow-soft)]"
+          : "text-[color:var(--muted-foreground)] hover:bg-white/45 hover:text-[color:var(--foreground)]"
+      )}
+      to={href}
+    >
+      {label}
+    </Link>
+  );
+}
 
 function SidebarLink({ href, label }: { href: string; label: string }) {
   return (
     <NavLink
       className={({ isActive }) =>
         cn(
-          "rounded-[calc(var(--radius)-0.125rem)] border px-4 py-3 text-sm transition-colors",
+          "rounded-[calc(var(--radius)-0.35rem)] px-3 py-2 text-sm transition-colors",
           isActive
-            ? "border-[color:var(--primary-edge)] bg-[color:var(--primary)] text-[color:var(--primary-foreground)]"
-            : "border-[color:var(--border)] bg-white/30 text-[color:var(--foreground)] hover:bg-white/50"
+            ? "bg-[color:var(--paper)] text-[color:var(--ink-strong)] shadow-[var(--shadow-soft)]"
+            : "text-[color:var(--muted-foreground)] hover:bg-white/45 hover:text-[color:var(--foreground)]"
         )
       }
       to={href}
@@ -36,69 +56,152 @@ function SidebarLink({ href, label }: { href: string; label: string }) {
 }
 
 export function SiteShell() {
+  const location = useLocation();
+
   return (
-    <div className="mx-auto grid min-h-screen w-full max-w-[92rem] gap-6 px-4 py-5 lg:grid-cols-[19rem_minmax(0,1fr)] lg:px-6 lg:py-6">
-      <aside className="grid gap-4 lg:sticky lg:top-6 lg:self-start">
-        <PaperPanel className="grid gap-6 p-5" tone="meadow">
-          <div className="grid gap-2">
-            <div className="inline-flex size-12 items-center justify-center rounded-full border border-white/45 bg-white/45 shadow-[var(--shadow-button)]">
-              <SparklesIcon className="size-5 text-[color:var(--ink-strong)]" />
-            </div>
-            <div>
-              <h1 className="font-[var(--font-heading)] text-4xl text-[color:var(--ink-strong)]">
-                Ghibli UI
-              </h1>
-              <p className="mt-1 text-sm leading-7 text-[color:var(--muted-foreground)]">
-                Registry-first React components with paper textures, soft edges, and scenic mockups.
-              </p>
+    <div className="docs-site">
+      <a className="skip-link" href="#content">
+        Skip to content
+      </a>
+      <header className="site-header">
+        <div className="docs-container">
+          <div className="site-header-row">
+            <Link className="site-brand" to="/">
+              <span className="site-brand-mark">
+                <Flower2 className="size-5 text-[color:var(--ink-strong)]" />
+              </span>
+              <span className="grid gap-0.5">
+                <span className="font-[var(--font-heading)] text-3xl text-[color:var(--ink-strong)]">Ghibli UI</span>
+                <span className="text-xs uppercase tracking-[0.18em] text-[color:var(--muted-foreground)]">
+                  Documentation-first registry
+                </span>
+              </span>
+            </Link>
+            <nav className="site-nav" aria-label="Primary">
+              {topNavItems.map((item) => (
+                <TopNavLink href={item.href} key={item.href} label={item.label} pathname={location.pathname} />
+              ))}
+            </nav>
+            <div className="site-actions">
+              <Button asChild size="sm" variant="secondary">
+                <Link to="/guides/getting-started">Install guide</Link>
+              </Button>
+              <Button asChild size="sm" variant="ghost">
+                <Link to="/guides/development">Storybook</Link>
+              </Button>
             </div>
           </div>
-          <nav className="grid gap-5">
-            <div className="grid gap-2">
-              <div className="flex items-center gap-2 text-xs tracking-[0.18em] uppercase text-[color:var(--muted-foreground)]">
-                <BookOpenIcon className="size-4" />
-                Docs
+        </div>
+      </header>
+      <div className="docs-container">
+        <div className="docs-layout">
+          <aside className="docs-sidebar">
+            <Card>
+              <CardHeader>
+                <CardTitle>Library map</CardTitle>
+              </CardHeader>
+              <CardContent className="grid gap-6">
+                <div className="grid gap-2">
+                  <div className="flex items-center gap-2 text-xs uppercase tracking-[0.18em] text-[color:var(--muted-foreground)]">
+                    <BookCopy className="size-4" />
+                    Guides
+                  </div>
+                  <div className="grid gap-1">
+                    {guides.map((guide) => (
+                      <SidebarLink href={`/guides/${guide.slug}`} key={guide.slug} label={guide.title} />
+                    ))}
+                  </div>
+                </div>
+                <div className="grid gap-2">
+                  <div className="flex items-center gap-2 text-xs uppercase tracking-[0.18em] text-[color:var(--muted-foreground)]">
+                    <LibraryBig className="size-4" />
+                    Browse
+                  </div>
+                  <div className="grid gap-1">
+                    {browseItems.map((item) => (
+                      <SidebarLink href={item.href} key={item.href} label={item.label} />
+                    ))}
+                  </div>
+                </div>
+                <div className="grid gap-2">
+                  <div className="flex items-center gap-2 text-xs uppercase tracking-[0.18em] text-[color:var(--muted-foreground)]">
+                    <LayoutPanelLeft className="size-4" />
+                    At a glance
+                  </div>
+                  <div className="flex flex-wrap gap-2">
+                    <Badge tone="river">{`${componentDocs.length} components`}</Badge>
+                    <Badge tone="meadow">{`${patternDocs.length} patterns`}</Badge>
+                  </div>
+                </div>
+                <div className="rounded-[calc(var(--radius)-0.35rem)] border border-[color:var(--border)] bg-[color:var(--paper-soft)] p-4">
+                  <div className="flex items-center gap-2 text-sm font-medium text-[color:var(--ink-strong)]">
+                    <Shapes className="size-4" />
+                    Storybook mirrors the same taxonomy
+                  </div>
+                  <p className="mt-2 text-sm leading-7 text-[color:var(--muted-foreground)]">
+                    Foundations, Components, Patterns, and Examples stay aligned with the docs app.
+                  </p>
+                </div>
+              </CardContent>
+            </Card>
+          </aside>
+          <main className="docs-main" id="content">
+            <div className="docs-banner">
+              <div className="grid gap-1">
+                <p className="text-xs uppercase tracking-[0.18em] text-[color:var(--muted-foreground)]">
+                  Registry + docs + storybook
+                </p>
+                <h2 className="font-[var(--font-heading)] text-3xl text-[color:var(--ink-strong)] md:text-4xl">
+                  Installable scenic UI with clearer docs and steadier structure
+                </h2>
               </div>
-              <div className="grid gap-2">
-                {docsLinks.map((link) => (
-                  <SidebarLink key={link.href} {...link} />
-                ))}
+              <div className="rounded-full border border-[color:var(--border)] bg-white/40 px-4 py-2 text-sm text-[color:var(--muted-foreground)]">
+                pnpm dlx shadcn@latest add @ghibli/style
               </div>
             </div>
-            <div className="grid gap-2">
-              <div className="flex items-center gap-2 text-xs tracking-[0.18em] uppercase text-[color:var(--muted-foreground)]">
-                <PaintbrushIcon className="size-4" />
-                Mockups
-              </div>
-              <div className="grid gap-2">
-                {mockupLinks.map((link) => (
-                  <SidebarLink key={link.href} {...link} />
-                ))}
-              </div>
+            <div className="docs-page">
+              <Outlet />
             </div>
-          </nav>
-        </PaperPanel>
-      </aside>
-      <main className="grid gap-5">
-        <PaperPanel className="p-4 md:p-5">
-          <div className="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
-            <div>
-              <p className="text-sm tracking-[0.2em] uppercase text-[color:var(--muted-foreground)]">
-                shadcn registry + Storybook
-              </p>
+          </main>
+        </div>
+      </div>
+      <footer className="site-footer">
+        <div className="docs-container">
+          <div className="site-footer-grid">
+            <div className="grid gap-2">
               <h2 className="font-[var(--font-heading)] text-3xl text-[color:var(--ink-strong)]">
-                Copy-paste components, not a package dependency
+                Ghibli UI
               </h2>
+              <p className="text-sm leading-7 text-[color:var(--muted-foreground)]">
+                A shareable registry-first component library with guides, examples, and grouped installable patterns.
+              </p>
             </div>
-            <div className="rounded-full border border-[color:var(--border)] bg-white/35 px-4 py-2 text-sm text-[color:var(--muted-foreground)]">
-              `pnpm dlx shadcn@latest add @ghibli/button`
+            <div className="grid gap-5 sm:grid-cols-3">
+              <div className="grid gap-2">
+                <p className="text-xs uppercase tracking-[0.18em] text-[color:var(--muted-foreground)]">Guides</p>
+                <div className="grid gap-2">
+                  <Link className="text-sm hover:underline" to="/guides/getting-started">Getting started</Link>
+                  <Link className="text-sm hover:underline" to="/guides/installation">Installation</Link>
+                </div>
+              </div>
+              <div className="grid gap-2">
+                <p className="text-xs uppercase tracking-[0.18em] text-[color:var(--muted-foreground)]">Library</p>
+                <div className="grid gap-2">
+                  <Link className="text-sm hover:underline" to="/components">Components</Link>
+                  <Link className="text-sm hover:underline" to="/patterns">Patterns</Link>
+                </div>
+              </div>
+              <div className="grid gap-2">
+                <p className="text-xs uppercase tracking-[0.18em] text-[color:var(--muted-foreground)]">Workflow</p>
+                <div className="grid gap-2">
+                  <Link className="text-sm hover:underline" to="/examples">Examples</Link>
+                  <Link className="text-sm hover:underline" to="/guides/development">Development</Link>
+                </div>
+              </div>
             </div>
           </div>
-        </PaperPanel>
-        <PaperPanel className="ghibli-page min-h-[calc(100vh-13rem)] p-5 md:p-7">
-          <Outlet />
-        </PaperPanel>
-      </main>
+        </div>
+      </footer>
     </div>
   );
 }
