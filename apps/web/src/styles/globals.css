@@ -1,0 +1,210 @@
+@import url("https://fonts.googleapis.com/css2?family=Averia+Serif+Libre:wght@400;700&family=M+PLUS+Rounded+1c:wght@400;500;700&display=swap");
+@import "tailwindcss";
+@import "tw-animate-css";
+
+:root {
+  --background: #f6eed8;
+  --foreground: #4b3826;
+  --card: #fbf5e6;
+  --card-foreground: #4e3c2d;
+  --paper: #f4e7c8;
+  --secondary: #efe2be;
+  --secondary-foreground: #55402d;
+  --muted: #e8dcc1;
+  --muted-foreground: #6a5a47;
+  --primary: #6e8a56;
+  --primary-foreground: #f9f3e4;
+  --primary-edge: #567043;
+  --accent: #84b0c3;
+  --accent-foreground: #2d4152;
+  --border: #ccbc9b;
+  --border-strong: #9f8360;
+  --ring: #8fb38a;
+  --sun: #eab768;
+  --sun-soft: #f4d8a7;
+  --sun-edge: #c98b3d;
+  --clay: #d48361;
+  --clay-edge: #b25d3e;
+  --ink-strong: #342313;
+  --moss: #7f9468;
+  --sky: #97c6d7;
+  --meadow-surface: #e5efdc;
+  --meadow-ink: #425239;
+  --meadow-border: #94a37c;
+  --twilight-surface: #536579;
+  --twilight-ink: #f9f1dd;
+  --twilight-border: #8ca0ba;
+  --font-heading: "Averia Serif Libre", Georgia, serif;
+  --font-body: "M PLUS Rounded 1c", "Trebuchet MS", system-ui, sans-serif;
+  --radius: 1rem;
+  --shadow-paper:
+    0 18px 40px rgba(115, 86, 53, 0.16),
+    0 4px 10px rgba(115, 86, 53, 0.12);
+  --shadow-button: 0 6px 14px rgba(89, 67, 42, 0.14);
+  --shadow-inset: inset 0 1px 0 rgba(255, 255, 255, 0.6);
+  --shadow-lantern:
+    0 10px 18px rgba(201, 139, 61, 0.28),
+    0 0 0 1px rgba(201, 139, 61, 0.26);
+  --texture-paper:
+    radial-gradient(circle at 1px 1px, rgba(80, 61, 40, 0.05) 1px, transparent 0);
+}
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-border: var(--border);
+  --color-ring: var(--ring);
+  --font-sans: var(--font-body);
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  margin: 0;
+  min-height: 100vh;
+  font-family: var(--font-body);
+  color: var(--foreground);
+  background:
+    radial-gradient(circle at top, rgba(255, 255, 255, 0.45), transparent 38%),
+    linear-gradient(180deg, rgba(151, 198, 215, 0.26), transparent 16rem),
+    linear-gradient(180deg, rgba(255, 246, 226, 0.8), rgba(246, 238, 216, 0.94)),
+    var(--background);
+}
+
+body::before {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  content: "";
+  opacity: 0.45;
+  background-image: var(--texture-paper);
+  background-size: 14px 14px;
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+button,
+input,
+textarea,
+select {
+  font: inherit;
+}
+
+#root {
+  isolation: isolate;
+}
+
+::selection {
+  color: var(--ink-strong);
+  background: rgba(234, 183, 104, 0.48);
+}
+
+.ghibli-page {
+  position: relative;
+  display: grid;
+  gap: 1.75rem;
+}
+
+.ghibli-page::before {
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  content: "";
+  border-radius: calc(var(--radius) + 1rem);
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.32), transparent 12rem);
+}
+
+.ghibli-prose {
+  max-width: 70ch;
+  line-height: 1.85;
+  color: var(--muted-foreground);
+}
+
+.ghibli-prose code {
+  display: inline-flex;
+  align-items: center;
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  padding: 0.12rem 0.55rem;
+  background: rgba(255, 255, 255, 0.45);
+  font-family: "SFMono-Regular", ui-monospace, monospace;
+  font-size: 0.82em;
+  color: var(--ink-strong);
+}
+
+.paper-grid {
+  display: grid;
+  gap: 1.25rem;
+}
+
+.paper-grid[data-columns="2"] {
+  grid-template-columns: repeat(auto-fit, minmax(18rem, 1fr));
+}
+
+.paper-grid[data-columns="3"] {
+  grid-template-columns: repeat(auto-fit, minmax(15rem, 1fr));
+}
+
+.story-scene {
+  position: relative;
+  height: 100%;
+  min-height: 100%;
+  overflow: hidden;
+  background:
+    radial-gradient(circle at top, rgba(255, 255, 255, 0.38), transparent 36%),
+    linear-gradient(180deg, rgba(151, 198, 215, 0.8), rgba(236, 230, 192, 0.9) 58%, rgba(143, 180, 115, 0.95));
+}
+
+.story-scene::after {
+  position: absolute;
+  inset: 0;
+  content: "";
+  opacity: 0.18;
+  background-image: var(--texture-paper);
+  background-size: 14px 14px;
+}
+
+.floating-leaf {
+  animation: leaf-drift 9s ease-in-out infinite;
+}
+
+@keyframes leaf-drift {
+  0%,
+  100% {
+    transform: translate3d(0, 0, 0) rotate(-4deg);
+  }
+
+  50% {
+    transform: translate3d(0.35rem, -0.45rem, 0) rotate(4deg);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
