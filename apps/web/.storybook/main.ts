@@ -12,6 +12,9 @@ const config: StorybookConfig = {
       plugins: [tailwindcss()],
       resolve: {
         alias: {
+          "@/components/blocks": fileURLToPath(new URL("../../../registry/ghibli/blocks", import.meta.url)),
+          "@/components/ui": fileURLToPath(new URL("../../../registry/ghibli/ui", import.meta.url)),
+          "@/lib": fileURLToPath(new URL("../../../registry/ghibli/lib", import.meta.url)),
           "@": fileURLToPath(new URL("../../../", import.meta.url))
         }
       }
