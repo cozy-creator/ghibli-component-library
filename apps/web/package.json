@@ -54,6 +54,7 @@
     "@types/react-dom": "latest",
     "@vitejs/plugin-react": "^5.0.0",
     "eslint": "^9.0.0",
+    "happy-dom": "latest",
     "jsdom": "latest",
     "storybook": "latest",
     "typescript": "latest",
