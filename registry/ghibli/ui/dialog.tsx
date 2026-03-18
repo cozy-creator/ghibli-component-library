@@ -1,64 +1,70 @@
 import * as React from "react";
 import * as DialogPrimitive from "@radix-ui/react-dialog";
-import { XIcon } from "lucide-react";
+import { X } from "lucide-react";
 
-import { cn, panelBaseClass } from "../lib/utils";
+import { Button } from "@/components/ui/button";
+import { cn, paperSurfaceClass } from "@/lib/utils";
 
-function Dialog(props: React.ComponentProps<typeof DialogPrimitive.Root>) {
-  return <DialogPrimitive.Root {...props} />;
+export function Dialog(props: React.ComponentProps<typeof DialogPrimitive.Root>) {
+  return <DialogPrimitive.Root data-slot="dialog" {...props} />;
 }
 
-function DialogTrigger(props: React.ComponentProps<typeof DialogPrimitive.Trigger>) {
-  return <DialogPrimitive.Trigger {...props} />;
+export function DialogTrigger(props: React.ComponentProps<typeof DialogPrimitive.Trigger>) {
+  return <DialogPrimitive.Trigger data-slot="dialog-trigger" {...props} />;
 }
 
-function DialogPortal(props: React.ComponentProps<typeof DialogPrimitive.Portal>) {
-  return <DialogPrimitive.Portal {...props} />;
+export function DialogClose(props: React.ComponentProps<typeof DialogPrimitive.Close>) {
+  return <DialogPrimitive.Close data-slot="dialog-close" {...props} />;
 }
 
-function DialogClose(props: React.ComponentProps<typeof DialogPrimitive.Close>) {
-  return <DialogPrimitive.Close {...props} />;
+export function DialogPortal(props: React.ComponentProps<typeof DialogPrimitive.Portal>) {
+  return <DialogPrimitive.Portal data-slot="dialog-portal" {...props} />;
 }
 
-function DialogOverlay({
+export function DialogOverlay({
   className,
   ...props
 }: React.ComponentProps<typeof DialogPrimitive.Overlay>) {
   return (
     <DialogPrimitive.Overlay
       className={cn(
-        "fixed inset-0 z-50 bg-[color:rgba(42,32,21,0.46)] backdrop-blur-sm data-[state=closed]:animate-out data-[state=open]:animate-in",
+        "fixed inset-0 z-50 bg-[color:rgba(54,42,31,0.34)] backdrop-blur-[2px] data-[state=closed]:animate-out data-[state=open]:animate-in data-[state=open]:fade-in-0 data-[state=closed]:fade-out-0",
         className
       )}
+      data-slot="dialog-overlay"
       {...props}
     />
   );
 }
 
-function DialogContent({
+export function DialogContent({
   children,
   className,
-  showClose = true,
+  showCloseButton = true,
   ...props
 }: React.ComponentProps<typeof DialogPrimitive.Content> & {
-  showClose?: boolean;
+  showCloseButton?: boolean;
 }) {
   return (
     <DialogPortal>
       <DialogOverlay />
       <DialogPrimitive.Content
         className={cn(
-          panelBaseClass,
-          "fixed left-1/2 top-1/2 z-50 grid w-[min(92vw,36rem)] -translate-x-1/2 -translate-y-1/2 gap-4 rounded-[calc(var(--radius)+0.875rem)] border-[color:var(--border-strong)] bg-[color:var(--card)] p-6 shadow-[var(--shadow-paper)]",
+          paperSurfaceClass,
+          "fixed left-1/2 top-1/2 z-50 grid w-[min(92vw,36rem)] -translate-x-1/2 -translate-y-1/2 gap-4 p-5",
+          "data-[state=closed]:animate-out data-[state=open]:animate-in data-[state=open]:zoom-in-95 data-[state=closed]:zoom-out-95",
           className
         )}
+        data-slot="dialog-content"
         {...props}
       >
         {children}
-        {showClose ? (
-          <DialogPrimitive.Close className="absolute right-4 top-4 inline-flex size-9 items-center justify-center rounded-full border border-transparent text-[color:var(--muted-foreground)] transition-colors hover:border-[color:var(--border)] hover:bg-[color:var(--secondary)] hover:text-[color:var(--foreground)]">
-            <XIcon className="size-4" />
-            <span className="sr-only">Close</span>
+        {showCloseButton ? (
+          <DialogPrimitive.Close asChild>
+            <Button className="absolute right-3 top-3" size="sm" variant="ghost">
+              <X className="size-4" />
+              <span className="sr-only">Close</span>
+            </Button>
           </DialogPrimitive.Close>
         ) : null}
       </DialogPrimitive.Content>
@@ -66,58 +72,48 @@ function DialogContent({
   );
 }
 
-function DialogHeader({ className, ...props }: React.HTMLAttributes<HTMLDivElement>) {
-  return <div className={cn("grid gap-2", className)} {...props} />;
+export function DialogHeader({ className, ...props }: React.HTMLAttributes<HTMLDivElement>) {
+  return <div className={cn("grid gap-2", className)} data-slot="dialog-header" {...props} />;
 }
 
-function DialogFooter({ className, ...props }: React.HTMLAttributes<HTMLDivElement>) {
-  return (
-    <div
-      className={cn(
-        "flex flex-col-reverse gap-3 sm:flex-row sm:justify-end sm:[&>*]:w-auto",
-        className
-      )}
-      {...props}
-    />
-  );
-}
-
-function DialogTitle({
+export function DialogTitle({
   className,
   ...props
 }: React.ComponentProps<typeof DialogPrimitive.Title>) {
   return (
     <DialogPrimitive.Title
       className={cn(
-        "font-[var(--font-heading)] text-3xl leading-none text-[color:var(--ink-strong)]",
+        "font-[var(--font-heading)] text-3xl text-[color:var(--ink-strong)]",
         className
       )}
+      data-slot="dialog-title"
       {...props}
     />
   );
 }
 
-function DialogDescription({
+export function DialogDescription({
   className,
   ...props
 }: React.ComponentProps<typeof DialogPrimitive.Description>) {
   return (
     <DialogPrimitive.Description
-      className={cn("text-sm leading-relaxed text-[color:var(--muted-foreground)]", className)}
+      className={cn("text-sm leading-7 text-[color:var(--muted-foreground)]", className)}
+      data-slot="dialog-description"
       {...props}
     />
   );
 }
 
-export {
-  Dialog,
-  DialogClose,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogOverlay,
-  DialogPortal,
-  DialogTitle,
-  DialogTrigger
-};
+export function DialogFooter({ className, ...props }: React.HTMLAttributes<HTMLDivElement>) {
+  return (
+    <div
+      className={cn(
+        "-mx-5 -mb-5 flex flex-col-reverse gap-2 border-t border-[color:var(--border)] bg-white/30 px-5 py-4 sm:flex-row sm:justify-end",
+        className
+      )}
+      data-slot="dialog-footer"
+      {...props}
+    />
+  );
+}

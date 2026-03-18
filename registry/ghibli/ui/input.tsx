@@ -1,9 +1,7 @@
 import * as React from "react";
 
-import { cn, fieldBaseClass } from "../lib/utils";
+import { cn, paperFieldClass } from "@/lib/utils";
 
-export type InputProps = React.InputHTMLAttributes<HTMLInputElement>;
-
-export function Input({ className, type = "text", ...props }: InputProps) {
-  return <input className={cn(fieldBaseClass, className)} type={type} {...props} />;
+export function Input({ className, type, ...props }: React.ComponentProps<"input">) {
+  return <input className={cn(paperFieldClass, className)} data-slot="input" type={type} {...props} />;
 }

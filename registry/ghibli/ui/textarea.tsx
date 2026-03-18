@@ -1,13 +1,12 @@
 import * as React from "react";
 
-import { cn, fieldBaseClass } from "../lib/utils";
+import { cn, paperFieldClass } from "@/lib/utils";
 
-export type TextareaProps = React.TextareaHTMLAttributes<HTMLTextAreaElement>;
-
-export function Textarea({ className, ...props }: TextareaProps) {
+export function Textarea({ className, ...props }: React.ComponentProps<"textarea">) {
   return (
     <textarea
-      className={cn(fieldBaseClass, "min-h-28 resize-y py-3 leading-relaxed", className)}
+      className={cn("min-h-28 resize-y py-3", paperFieldClass, className)}
+      data-slot="textarea"
       {...props}
     />
   );
