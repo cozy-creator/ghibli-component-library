@@ -1,1 +1,71 @@
+@import url("https://fonts.googleapis.com/css2?family=Averia+Serif+Libre:wght@400;700&family=M+PLUS+Rounded+1c:wght@400;500;700&display=swap");
 @import "tailwindcss";
+@import "tw-animate-css";
+
+:root {
+  --background: #f7f1e5;
+  --foreground: #4d3b2e;
+  --card: #fcf7ed;
+  --card-foreground: #4d3b2e;
+  --popover: #fffaf2;
+  --popover-foreground: #4d3b2e;
+  --paper: #f4ead7;
+  --paper-soft: #faf4e8;
+  --muted: #eadfcb;
+  --muted-foreground: #7a6857;
+  --primary: #6c8b69;
+  --primary-foreground: #faf5ea;
+  --primary-edge: #527054;
+  --secondary: #e8dbc0;
+  --secondary-foreground: #554433;
+  --accent: #7fa8bb;
+  --accent-foreground: #28404e;
+  --border: #cfbea7;
+  --border-soft: #e5d9c8;
+  --border-strong: #a88e70;
+  --ring: #8fb39a;
+  --danger: #ca755d;
+  --danger-foreground: #fff7f1;
+  --danger-edge: #aa5b43;
+  --ink-strong: #33241a;
+  --ink-soft: #7d6552;
+  --font-heading: "Averia Serif Libre", Georgia, serif;
+  --font-body: "M PLUS Rounded 1c", "Trebuchet MS", system-ui, sans-serif;
+  --radius: 1rem;
+  --shadow-paper:
+    0 20px 46px rgba(92, 66, 39, 0.14),
+    0 6px 18px rgba(92, 66, 39, 0.12);
+  --shadow-soft: 0 6px 14px rgba(92, 66, 39, 0.08);
+  --shadow-raised: 0 12px 22px rgba(92, 66, 39, 0.16);
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  min-height: 100vh;
+  font-family: var(--font-body);
+  color: var(--foreground);
+  background:
+    radial-gradient(circle at top, rgba(255, 255, 255, 0.48), transparent 34%),
+    linear-gradient(180deg, rgba(127, 168, 187, 0.2), transparent 15rem),
+    linear-gradient(180deg, rgba(255, 249, 240, 0.86), rgba(247, 241, 229, 0.96)),
+    var(--background);
+}
+
+a {
+  color: inherit;
+}
+
+button,
+input,
+textarea {
+  font: inherit;
+}
+
+::selection {
+  color: var(--ink-strong);
+  background: rgba(239, 187, 117, 0.45);
+}
