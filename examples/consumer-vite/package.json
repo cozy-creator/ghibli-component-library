@@ -11,14 +11,18 @@
     "typecheck": "tsc --project tsconfig.json --noEmit"
   },
   "dependencies": {
+    "@ghibli/ui": "workspace:*",
     "react": "latest",
     "react-dom": "latest"
   },
   "devDependencies": {
     "@ghibli/tsconfig": "workspace:*",
+    "@tailwindcss/vite": "latest",
     "@types/react": "latest",
     "@types/react-dom": "latest",
     "@vitejs/plugin-react": "^5.0.0",
+    "tailwindcss": "latest",
+    "tw-animate-css": "latest",
     "typescript": "latest",
     "vite": "^7.0.0"
   }
