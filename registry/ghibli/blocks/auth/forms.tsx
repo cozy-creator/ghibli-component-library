@@ -1,36 +1,10 @@
 import * as React from "react";
-import { ArrowLeft, KeyRound, Lock, Mail, UserRound } from "lucide-react";
+import { ArrowLeft, Eye, EyeOff } from "lucide-react";
 
-import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { FormField } from "@/components/blocks/form/form-field";
+import { NoticeBanner } from "@/components/blocks/feedback/notice-banner";
+import { CartoonButton } from "@/components/ui/cartoon-button";
 import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { cn } from "@/lib/utils";
-
-function Field({
-  children,
-  className
-}: {
-  children: React.ReactNode;
-  className?: string;
-}) {
-  return <div className={cn("grid gap-2", className)}>{children}</div>;
-}
-
-function FieldLabel({
-  children,
-  icon: Icon
-}: {
-  children: React.ReactNode;
-  icon: typeof Mail;
-}) {
-  return (
-    <Label className="gap-2">
-      <Icon className="size-4 text-[color:var(--muted-foreground)]" />
-      {children}
-    </Label>
-  );
-}
 
 interface BaseAuthFormProps {
   className?: string;
@@ -62,59 +36,78 @@ export function LoginForm({
   submitting,
   title = "Sign in"
 }: LoginFormProps) {
+  const [showPassword, setShowPassword] = React.useState(false);
+
   return (
-    <Card className={className}>
-      <CardHeader>
-        <CardTitle>{title}</CardTitle>
-        <CardDescription>{helperText}</CardDescription>
-      </CardHeader>
-      <CardContent>
-        <form className="grid gap-4" onSubmit={onSubmit}>
-          <Field>
-            <FieldLabel icon={Mail}>Email</FieldLabel>
-            <Input
-              autoComplete="email"
-              onChange={(event) => onEmailChange(event.target.value)}
-              placeholder="melina@ghibli-ui.dev"
-              type="email"
-              value={email}
-            />
-          </Field>
-          <Field>
-            <div className="flex items-center justify-between gap-3">
-              <FieldLabel icon={Lock}>Password</FieldLabel>
-              {onForgotPassword ? (
-                <button
-                  className="text-xs text-[color:var(--muted-foreground)] underline-offset-4 hover:text-[color:var(--ink-strong)] hover:underline"
-                  onClick={(event) => {
-                    event.preventDefault();
-                    onForgotPassword();
-                  }}
-                  type="button"
-                >
-                  Forgot password?
-                </button>
-              ) : null}
-            </div>
-            <Input
-              autoComplete="current-password"
-              onChange={(event) => onPasswordChange(event.target.value)}
-              placeholder="Your passphrase"
-              type="password"
-              value={password}
-            />
-          </Field>
-          {error ? (
-            <p className="rounded-[calc(var(--radius)-0.35rem)] border border-[color:var(--danger-edge)] bg-[color:rgba(202,117,93,0.16)] px-3 py-2 text-sm text-[color:var(--danger)]">
-              {error}
-            </p>
-          ) : null}
-          <Button disabled={submitting} type="submit">
-            {submitting ? "Signing in..." : "Sign in"}
-          </Button>
-        </form>
-      </CardContent>
-    </Card>
+    <form className={className ? `${className} space-y-4` : "space-y-4"} onSubmit={onSubmit}>
+      <div className="space-y-1">
+        <h3 className="font-[var(--font-heading)] text-3xl text-[color:var(--ink-strong)]">{title}</h3>
+        <p className="text-sm leading-7 text-muted-foreground">{helperText}</p>
+      </div>
+
+      <FormField htmlFor="login-email" label="Email or username">
+        <Input
+          autoComplete="email"
+          id="login-email"
+          onChange={(event) => onEmailChange(event.target.value)}
+          placeholder="you@example.com"
+          value={email}
+        />
+      </FormField>
+
+      <FormField
+        action={
+          onForgotPassword ? (
+            <button
+              className="text-xs text-muted-foreground transition-colors hover:text-primary"
+              onClick={onForgotPassword}
+              type="button"
+            >
+              Forgot password?
+            </button>
+          ) : undefined
+        }
+        htmlFor="login-password"
+        label="Password"
+      >
+        <div className="relative">
+          <Input
+            autoComplete="current-password"
+            className="pr-10"
+            id="login-password"
+            onChange={(event) => onPasswordChange(event.target.value)}
+            placeholder="••••••••"
+            type={showPassword ? "text" : "password"}
+            value={password}
+          />
+          <button
+            className="absolute right-3 top-1/2 z-30 -translate-y-1/2 text-muted-foreground hover:text-foreground"
+            onClick={() => setShowPassword((previous) => !previous)}
+            type="button"
+          >
+            {showPassword ? <EyeOff size={14} /> : <Eye size={14} />}
+          </button>
+        </div>
+      </FormField>
+
+      {error ? (
+        <NoticeBanner
+          description={error}
+          title="We couldn’t sign you in just yet."
+          tone="rose"
+        />
+      ) : null}
+
+      <CartoonButton
+        className="w-full"
+        color="#7b9d68"
+        disabled={submitting}
+        loading={Boolean(submitting)}
+        loadingText="Signing in..."
+        text="Sign in"
+        type="submit"
+      />
+    </form>
   );
 }
 
@@ -146,61 +139,98 @@ export function RegisterForm({
   submitting,
   title = "Create account"
 }: RegisterFormProps) {
+  const [showPassword, setShowPassword] = React.useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = React.useState(false);
+
   return (
-    <Card className={className}>
-      <CardHeader>
-        <CardTitle>{title}</CardTitle>
-        <CardDescription>{helperText}</CardDescription>
-      </CardHeader>
-      <CardContent>
-        <form className="grid gap-4" onSubmit={onSubmit}>
-          <Field>
-            <FieldLabel icon={UserRound}>Display name</FieldLabel>
-            <Input onChange={(event) => onNameChange(event.target.value)} placeholder="Melina" value={name} />
-          </Field>
-          <Field>
-            <FieldLabel icon={Mail}>Email</FieldLabel>
+    <form className={className ? `${className} space-y-4` : "space-y-4"} onSubmit={onSubmit}>
+      <div className="space-y-1">
+        <h3 className="font-[var(--font-heading)] text-3xl text-[color:var(--ink-strong)]">{title}</h3>
+        <p className="text-sm leading-7 text-muted-foreground">{helperText}</p>
+      </div>
+
+      <FormField htmlFor="register-name" label="Display name">
+        <Input
+          id="register-name"
+          onChange={(event) => onNameChange(event.target.value)}
+          placeholder="Melina"
+          value={name}
+        />
+      </FormField>
+
+      <FormField htmlFor="register-email" label="Email">
+        <Input
+          autoComplete="email"
+          id="register-email"
+          onChange={(event) => onEmailChange(event.target.value)}
+          placeholder="you@example.com"
+          type="email"
+          value={email}
+        />
+      </FormField>
+
+      <div className="grid gap-4 md:grid-cols-2">
+        <FormField htmlFor="register-password" label="Password">
+          <div className="relative">
             <Input
-              autoComplete="email"
-              onChange={(event) => onEmailChange(event.target.value)}
-              placeholder="melina@ghibli-ui.dev"
-              type="email"
-              value={email}
+              autoComplete="new-password"
+              className="pr-10"
+              id="register-password"
+              onChange={(event) => onPasswordChange(event.target.value)}
+              placeholder="Choose a passphrase"
+              type={showPassword ? "text" : "password"}
+              value={password}
             />
-          </Field>
-          <Field className="md:grid-cols-2 md:gap-4">
-            <div className="grid gap-2">
-              <FieldLabel icon={Lock}>Password</FieldLabel>
-              <Input
-                autoComplete="new-password"
-                onChange={(event) => onPasswordChange(event.target.value)}
-                placeholder="Choose a passphrase"
-                type="password"
-                value={password}
-              />
-            </div>
-            <div className="grid gap-2">
-              <FieldLabel icon={KeyRound}>Confirm</FieldLabel>
-              <Input
-                autoComplete="new-password"
-                onChange={(event) => onConfirmPasswordChange(event.target.value)}
-                placeholder="Repeat password"
-                type="password"
-                value={confirmPassword}
-              />
-            </div>
-          </Field>
-          {error ? (
-            <p className="rounded-[calc(var(--radius)-0.35rem)] border border-[color:var(--danger-edge)] bg-[color:rgba(202,117,93,0.16)] px-3 py-2 text-sm text-[color:var(--danger)]">
-              {error}
-            </p>
-          ) : null}
-          <Button disabled={submitting} type="submit">
-            {submitting ? "Creating..." : "Create account"}
-          </Button>
-        </form>
-      </CardContent>
-    </Card>
+            <button
+              className="absolute right-3 top-1/2 z-30 -translate-y-1/2 text-muted-foreground hover:text-foreground"
+              onClick={() => setShowPassword((previous) => !previous)}
+              type="button"
+            >
+              {showPassword ? <EyeOff size={14} /> : <Eye size={14} />}
+            </button>
+          </div>
+        </FormField>
+
+        <FormField htmlFor="register-confirm-password" label="Confirm password">
+          <div className="relative">
+            <Input
+              autoComplete="new-password"
+              className="pr-10"
+              id="register-confirm-password"
+              onChange={(event) => onConfirmPasswordChange(event.target.value)}
+              placeholder="Repeat password"
+              type={showConfirmPassword ? "text" : "password"}
+              value={confirmPassword}
+            />
+            <button
+              className="absolute right-3 top-1/2 z-30 -translate-y-1/2 text-muted-foreground hover:text-foreground"
+              onClick={() => setShowConfirmPassword((previous) => !previous)}
+              type="button"
+            >
+              {showConfirmPassword ? <EyeOff size={14} /> : <Eye size={14} />}
+            </button>
+          </div>
+        </FormField>
+      </div>
+
+      {error ? (
+        <NoticeBanner
+          description={error}
+          title="Registration couldn’t be completed."
+          tone="rose"
+        />
+      ) : null}
+
+      <CartoonButton
+        className="w-full"
+        color="#7b9d68"
+        disabled={submitting}
+        loading={Boolean(submitting)}
+        loadingText="Creating account..."
+        text="Create account"
+        type="submit"
+      />
+    </form>
   );
 }
 
@@ -225,48 +255,65 @@ export function ForgotPasswordForm({
   title = "Reset password"
 }: ForgotPasswordFormProps) {
   return (
-    <Card className={className}>
-      <CardHeader>
+    <form className={className ? `${className} space-y-4` : "space-y-4"} onSubmit={onSubmit}>
+      <div className="space-y-1">
         <div className="flex items-center justify-between gap-3">
-          <div className="grid gap-2">
-            <CardTitle>{title}</CardTitle>
-            <CardDescription>{helperText}</CardDescription>
-          </div>
+          <h3 className="font-[var(--font-heading)] text-3xl text-[color:var(--ink-strong)]">{title}</h3>
           {onBack ? (
-            <Button onClick={onBack} size="sm" type="button" variant="ghost">
-              <ArrowLeft className="size-4" />
-              Back
-            </Button>
+            <ButtonLike onBack={onBack} />
           ) : null}
         </div>
-      </CardHeader>
-      <CardContent>
-        <form className="grid gap-4" onSubmit={onSubmit}>
-          <Field>
-            <FieldLabel icon={Mail}>Email</FieldLabel>
-            <Input
-              autoComplete="email"
-              onChange={(event) => onEmailChange(event.target.value)}
-              placeholder="melina@ghibli-ui.dev"
-              type="email"
-              value={email}
-            />
-          </Field>
-          {error ? (
-            <p className="rounded-[calc(var(--radius)-0.35rem)] border border-[color:var(--danger-edge)] bg-[color:rgba(202,117,93,0.16)] px-3 py-2 text-sm text-[color:var(--danger)]">
-              {error}
-            </p>
-          ) : null}
-          {message ? (
-            <p className="rounded-[calc(var(--radius)-0.35rem)] border border-[color:var(--meadow-border)] bg-[color:rgba(160,191,153,0.2)] px-3 py-2 text-sm text-[color:var(--meadow-ink)]">
-              {message}
-            </p>
-          ) : null}
-          <Button disabled={submitting} type="submit">
-            {submitting ? "Sending..." : "Send reset link"}
-          </Button>
-        </form>
-      </CardContent>
-    </Card>
+        <p className="text-sm leading-7 text-muted-foreground">{helperText}</p>
+      </div>
+
+      <FormField htmlFor="forgot-password-email" label="Email">
+        <Input
+          autoComplete="email"
+          id="forgot-password-email"
+          onChange={(event) => onEmailChange(event.target.value)}
+          placeholder="you@example.com"
+          type="email"
+          value={email}
+        />
+      </FormField>
+
+      {error ? (
+        <NoticeBanner
+          description={error}
+          title="We couldn’t send the reset link."
+          tone="rose"
+        />
+      ) : null}
+      {message ? (
+        <NoticeBanner
+          description={message}
+          title="Check your email"
+          tone="meadow"
+        />
+      ) : null}
+
+      <CartoonButton
+        className="w-full"
+        color="#7b9d68"
+        disabled={submitting}
+        loading={Boolean(submitting)}
+        loadingText="Sending..."
+        text="Send reset link"
+        type="submit"
+      />
+    </form>
+  );
+}
+
+function ButtonLike({ onBack }: { onBack: () => void }) {
+  return (
+    <button
+      className="inline-flex items-center gap-2 text-sm text-muted-foreground transition-colors hover:text-foreground"
+      onClick={onBack}
+      type="button"
+    >
+      <ArrowLeft className="size-4" />
+      Back
+    </button>
   );
 }
