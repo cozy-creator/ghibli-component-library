@@ -4,7 +4,8 @@ import {
   AccountApiCreditsSection,
   AccountLinkedAccountsSection,
   AccountProfileSection,
-  AccountSubscriptionSection
+  AccountSubscriptionSection,
+  AccountUserDisplayBox
 } from "@ghibli/ui";
 
 import { creditLedger, creditOffers, linkedAccounts, subscriptionOffers } from "@/apps/web/src/data/demo-fixtures";
@@ -19,6 +20,7 @@ type Story = StoryObj<typeof meta>;
 export const Overview: Story = {
   render: () => (
     <div className="grid gap-4">
+      <AccountUserDisplayBox email="melina@cozy.art" generatedCount={128} name="Melina Sketch" />
       <AccountProfileSection email="melina@ghibli-ui.dev" name="Melina Sketch" planLabel="Painterly Plan" />
       <AccountLinkedAccountsSection accounts={linkedAccounts} />
       <AccountSubscriptionSection
