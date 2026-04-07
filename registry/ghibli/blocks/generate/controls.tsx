@@ -1,7 +1,8 @@
 import * as React from "react";
-import { ChevronDown, ImagePlus, Minus, Plus, Sparkles, Wand2 } from "lucide-react";
+import { ChevronDown, ImagePlus, Minus, Plus, Sparkles, Wand2, X } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
+import { CartoonButton } from "@/components/ui/cartoon-button";
 import {
   Dialog,
   DialogContent,
@@ -21,6 +22,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger
 } from "@/components/ui/dropdown-menu";
+import { HandDrawnFrame } from "@/components/ui/hand-drawn-frame";
 import { Textarea } from "@/components/ui/textarea";
 import { cn, type SelectOption, useControllableState } from "@/lib/utils";
 
@@ -29,29 +31,6 @@ export interface GenerateAttachment {
   kind?: "image" | "video";
   name: string;
   sizeLabel?: string;
-}
-
-interface ChoiceChipProps {
-  active?: boolean;
-  children: React.ReactNode;
-  onClick?: () => void;
-}
-
-function ChoiceChip({ active, children, onClick }: ChoiceChipProps) {
-  return (
-    <button
-      className={cn(
-        "inline-flex items-center gap-2 rounded-full border px-3 py-2 text-sm transition-colors",
-        active
-          ? "border-[color:var(--primary-edge)] bg-[color:var(--primary)] text-[color:var(--primary-foreground)]"
-          : "border-[color:var(--border)] bg-[color:var(--paper-soft)] text-[color:var(--foreground)] hover:bg-white/60"
-      )}
-      onClick={onClick}
-      type="button"
-    >
-      {children}
-    </button>
-  );
 }
 
 export interface GenerateModeToggleProps {
@@ -65,58 +44,236 @@ export function GenerateModeToggle({
   options,
   value
 }: GenerateModeToggleProps) {
+  const optionCount = Math.max(options.length, 1);
+  const activeIndex = Math.max(
+    0,
+    options.findIndex((option) => option.value === value)
+  );
+
   return (
-    <div className="inline-flex flex-wrap items-center gap-2 rounded-full border border-[color:var(--border)] bg-[color:var(--paper-soft)] p-1">
-      {options.map((option) => (
-        <ChoiceChip
-          active={option.value === value}
-          key={option.value}
-          onClick={() => onValueChange?.(option.value)}
-        >
-          {option.label}
-        </ChoiceChip>
-      ))}
-    </div>
+    <HandDrawnFrame
+      className="inline-block w-full bg-[color:var(--paper-soft)] sm:w-auto"
+      strokeColor="var(--border)"
+      strokeWidth={1.25}
+      svgClassName="opacity-85"
+      variant="banner"
+    >
+      <div
+        aria-label="Generation mode"
+        className="relative inline-grid h-11 w-full overflow-hidden p-1"
+        role="radiogroup"
+        style={{ gridTemplateColumns: `repeat(${optionCount}, minmax(0, 1fr))` }}
+      >
+        <span
+          aria-hidden
+          className="pointer-events-none absolute inset-y-1 left-1 border border-[color:var(--primary-edge)] bg-[color:var(--primary)] shadow-[inset_0_1px_0_rgba(255,255,255,0.18)] transition-transform duration-300 ease-[cubic-bezier(0.22,1,0.36,1)]"
+          style={{
+            transform: `translateX(calc(${activeIndex} * 100%))`,
+            width: `calc((100% - 0.5rem) / ${optionCount})`
+          }}
+        />
+        {options.map((option) => (
+          <button
+            aria-checked={option.value === value}
+            className={cn(
+              "relative z-10 inline-flex h-full items-center justify-center px-4 text-sm font-medium transition-colors duration-200",
+              "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[color:var(--ring)] focus-visible:ring-inset",
+              option.value === value
+                ? "text-[color:var(--primary-foreground)]"
+                : "text-[color:var(--foreground)] hover:text-[color:var(--ink-strong)]",
+              option.disabled && "pointer-events-none opacity-50"
+            )}
+            key={option.value}
+            onClick={() => onValueChange?.(option.value)}
+            role="radio"
+            type="button"
+          >
+            <span className="truncate">{option.label}</span>
+          </button>
+        ))}
+      </div>
+    </HandDrawnFrame>
   );
 }
 
 interface MenuSelectProps {
+  contentClassName?: string;
   icon?: React.ReactNode;
   label: string;
   onValueChange?: ((value: string) => void) | undefined;
+  optionVariant?: "default" | "radio-list" | "aspect-ruler";
   options: SelectOption[];
   value: string;
 }
 
-function MenuSelect({ icon, label, onValueChange, options, value }: MenuSelectProps) {
+function MenuSelect({
+  contentClassName,
+  icon,
+  label,
+  onValueChange,
+  optionVariant = "default",
+  options,
+  value
+}: MenuSelectProps) {
+  const [open, setOpen] = React.useState(false);
+  const isAspectRuler = optionVariant === "aspect-ruler";
+  const [aspectRulerValue, setAspectRulerValue] = React.useState<string | null>(null);
+  const [showAspectCallout, setShowAspectCallout] = React.useState(false);
   const activeOption = options.find((option) => option.value === value);
+  const displayedAspectValue = isAspectRuler ? aspectRulerValue ?? value : value;
+
+  const handleOpenChange = (nextOpen: boolean) => {
+    setOpen(nextOpen);
+
+    if (isAspectRuler) {
+      setAspectRulerValue(nextOpen ? value : null);
+      setShowAspectCallout(false);
+    }
+  };
+
+  const handleAspectRulerSelect = (nextValue: string) => {
+    setAspectRulerValue(nextValue);
+    setShowAspectCallout(true);
+    onValueChange?.(nextValue);
+  };
 
   return (
-    <DropdownMenu>
-      <DropdownMenuTrigger asChild>
-        <Button variant="secondary">
-          {icon}
-          <span>{activeOption?.label ?? label}</span>
-          <ChevronDown className="size-4" />
-        </Button>
-      </DropdownMenuTrigger>
-      <DropdownMenuContent>
-        <DropdownMenuLabel>{label}</DropdownMenuLabel>
-        <DropdownMenuSeparator />
-        <DropdownMenuRadioGroup onValueChange={onValueChange} value={value}>
-          {options.map((option) => (
-            <DropdownMenuRadioItem itemValue={option.value} key={option.value}>
-              <div className="grid gap-0.5">
-                <span>{option.label}</span>
-                {option.description ? (
-                  <span className="text-xs text-[color:var(--muted-foreground)]">
-                    {option.description}
-                  </span>
-                ) : null}
-              </div>
-            </DropdownMenuRadioItem>
-          ))}
-        </DropdownMenuRadioGroup>
+    <DropdownMenu onOpenChange={handleOpenChange} open={open}>
+      <HandDrawnFrame
+        className="w-full bg-[color:var(--paper)] sm:w-auto"
+        strokeColor="var(--border)"
+        strokeWidth={1.25}
+        svgClassName="opacity-85"
+        variant="banner"
+      >
+        <DropdownMenuTrigger asChild>
+          <Button className="w-full bg-transparent hover:bg-white/20 sm:w-auto" variant="ghost">
+            {icon}
+            <span>{activeOption?.label ?? label}</span>
+            <ChevronDown className="size-4" />
+          </Button>
+        </DropdownMenuTrigger>
+      </HandDrawnFrame>
+      <DropdownMenuContent
+        className={cn(
+          isAspectRuler &&
+            "w-[min(28.5rem,calc(100vw-1.5rem))] min-w-0 overflow-visible border-[color:var(--border)] bg-[color:var(--foreground)] p-0 text-[color:var(--paper-soft)] ring-0",
+          optionVariant === "radio-list" && "min-w-0 p-1.5",
+          contentClassName
+        )}
+      >
+        {isAspectRuler ? (
+          <div className="grid gap-3 bg-[color:var(--foreground)] px-3 pt-4 pb-3">
+            <div className="mx-auto flex w-[97.5%] items-center justify-between gap-3">
+              <p className="text-sm font-medium tracking-[0.04em] text-[color:var(--paper-soft)]">
+                {label}
+              </p>
+
+              <Button
+                aria-label={`Close ${label.toLowerCase()} options`}
+                className="h-8 w-8 shrink-0 p-0 text-[color:var(--paper-soft)] hover:bg-white/10 hover:text-white"
+                onClick={() => handleOpenChange(false)}
+                size="sm"
+                type="button"
+                variant="ghost"
+              >
+                <X className="size-4" />
+              </Button>
+            </div>
+
+            <div className="relative mx-auto w-[97.5%] pb-2">
+              <div
+                aria-hidden="true"
+                className="pointer-events-none absolute top-[3.5rem] left-[7.143%] right-[7.143%] h-px bg-[color:var(--paper)]"
+              />
+
+              <DropdownMenuRadioGroup className="relative grid grid-cols-7 items-start" value={displayedAspectValue}>
+                {options.map((option) => {
+                  const isSelected = option.value === displayedAspectValue;
+
+                  return (
+                    <DropdownMenuRadioItem
+                      className={cn(
+                        "group/aspect-ruler relative flex min-w-0 cursor-pointer justify-center rounded-none bg-transparent px-0 py-0 text-[color:var(--paper-soft)] focus:bg-transparent focus:text-[color:var(--paper-soft)]",
+                        option.disabled && "pointer-events-none opacity-40"
+                      )}
+                      disabled={option.disabled}
+                      key={option.value}
+                      onClick={() => handleAspectRulerSelect(option.value)}
+                      value={option.value}
+                    >
+                      <span className="relative flex h-[4.75rem] w-full items-start justify-center">
+                        {showAspectCallout && isSelected ? (
+                          <span className="absolute top-0 inline-grid min-w-[6.9rem] max-w-[7.4rem] items-center justify-center border border-[color:var(--border)] bg-[color:var(--paper-soft)] px-2 py-1 text-center text-[11px] font-medium leading-tight text-[color:var(--foreground)] shadow-[0_8px_18px_rgba(0,0,0,0.18)]">
+                            <span>{option.label}</span>
+                            {option.description ? <span>({option.description})</span> : null}
+                          </span>
+                        ) : null}
+
+                        <span
+                          aria-hidden="true"
+                          className={cn(
+                            "absolute top-[2.8rem] h-4 w-px bg-[color:var(--paper)] transition-opacity",
+                            isSelected ? "opacity-100" : "opacity-80"
+                          )}
+                        />
+                        <span
+                          aria-hidden="true"
+                          className={cn(
+                            "absolute top-[3.3rem] rounded-full border border-[color:var(--paper)] transition-all",
+                            isSelected
+                              ? "size-4 bg-[color:var(--paper)] shadow-[0_0_0_2px_color-mix(in_oklab,var(--foreground)_82%,transparent)]"
+                              : "size-2 bg-[color:var(--foreground)] group-hover/aspect-ruler:bg-[color:var(--paper)]"
+                          )}
+                        />
+                      </span>
+                    </DropdownMenuRadioItem>
+                  );
+                })}
+              </DropdownMenuRadioGroup>
+            </div>
+          </div>
+        ) : (
+          <>
+            <DropdownMenuLabel
+              className={cn(
+                optionVariant === "radio-list" &&
+                  "px-2 pb-1 text-center text-[13px] font-medium leading-tight whitespace-nowrap text-[color:var(--foreground)] sm:text-sm"
+              )}
+            >
+              {label}
+            </DropdownMenuLabel>
+            <DropdownMenuSeparator />
+            <DropdownMenuRadioGroup onValueChange={onValueChange} value={value}>
+              {options.map((option) => (
+                <DropdownMenuRadioItem
+                  className={cn(
+                    optionVariant === "radio-list" &&
+                      "group/aspect-option gap-3 rounded-none px-2.5 py-2 pr-2 text-base text-[color:var(--foreground)] focus:bg-[color:var(--paper-soft)] focus:text-[color:var(--foreground)]"
+                  )}
+                  key={option.value}
+                  value={option.value}
+                >
+                  {optionVariant === "radio-list" ? (
+                    <>
+                      <span className="flex size-4 shrink-0 items-center justify-center rounded-full border border-[color:var(--border)] transition-colors group-data-[state=checked]/aspect-option:border-[color:var(--foreground)]">
+                        <span className="size-2 rounded-full bg-[color:var(--foreground)] opacity-0 transition-opacity group-data-[state=checked]/aspect-option:opacity-100" />
+                      </span>
+                      <span>{option.label}</span>
+                    </>
+                  ) : (
+                    <div className="grid gap-0.5">
+                      <span>{option.label}</span>
+                      {option.description ? (
+                        <span className="text-xs text-muted-foreground">{option.description}</span>
+                      ) : null}
+                    </div>
+                  )}
+                </DropdownMenuRadioItem>
+              ))}
+            </DropdownMenuRadioGroup>
+          </>
+        )}
       </DropdownMenuContent>
     </DropdownMenu>
   );
@@ -139,7 +296,14 @@ export interface GenerateAspectRatioSelectProps {
 }
 
 export function GenerateAspectRatioSelect(props: GenerateAspectRatioSelectProps) {
-  return <MenuSelect icon={<Wand2 className="size-4" />} label="Aspect ratio" {...props} />;
+  return (
+    <MenuSelect
+      icon={<Wand2 className="size-4" />}
+      label="Aspect ratio"
+      optionVariant="aspect-ruler"
+      {...props}
+    />
+  );
 }
 
 export interface GenerateNumImagesControlProps {
@@ -156,25 +320,23 @@ export function GenerateNumImagesControl({
   value
 }: GenerateNumImagesControlProps) {
   return (
-    <div className="inline-flex items-center gap-2 rounded-full border border-[color:var(--border)] bg-[color:var(--paper-soft)] px-2 py-1">
-      <Button
-        disabled={value <= min}
-        onClick={() => onValueChange?.(value - 1)}
-        size="sm"
-        variant="ghost"
-      >
-        <Minus className="size-4" />
-      </Button>
-      <span className="min-w-10 text-center text-sm font-medium">{value} imgs</span>
-      <Button
-        disabled={value >= max}
-        onClick={() => onValueChange?.(value + 1)}
-        size="sm"
-        variant="ghost"
-      >
-        <Plus className="size-4" />
-      </Button>
-    </div>
+    <HandDrawnFrame
+      className="w-full bg-[color:var(--paper)] sm:w-auto"
+      strokeColor="var(--border)"
+      strokeWidth={1.25}
+      svgClassName="opacity-85"
+      variant="banner"
+    >
+      <div className="inline-flex h-11 items-center gap-1 px-1">
+        <Button disabled={value <= min} onClick={() => onValueChange?.(value - 1)} size="sm" variant="ghost">
+          <Minus className="size-4" />
+        </Button>
+        <span className="min-w-10 text-center text-sm font-medium">{value} imgs</span>
+        <Button disabled={value >= max} onClick={() => onValueChange?.(value + 1)} size="sm" variant="ghost">
+          <Plus className="size-4" />
+        </Button>
+      </div>
+    </HandDrawnFrame>
   );
 }
 
@@ -263,7 +425,7 @@ export function GenerateUploadDialog({
             Accept files from the host app while keeping the surface fully presentational.
           </DialogDescription>
         </DialogHeader>
-        <label className="grid cursor-pointer gap-2 rounded-[calc(var(--radius)-0.25rem)] border border-dashed border-[color:var(--border-strong)] bg-[color:var(--paper-soft)] p-4 text-sm text-[color:var(--muted-foreground)]">
+        <label className="grid cursor-pointer gap-2 border border-dashed border-[color:var(--border-strong)] bg-[color:var(--paper-soft)] p-4 text-sm text-[color:var(--muted-foreground)]">
           <span>Choose images or videos</span>
           <input
             className="sr-only"
@@ -282,7 +444,7 @@ export function GenerateUploadDialog({
           ) : (
             attachments.map((attachment) => (
               <div
-                className="flex items-center justify-between gap-3 rounded-[calc(var(--radius)-0.35rem)] border border-[color:var(--border)] bg-white/40 px-3 py-2"
+                className="flex items-center justify-between gap-3 border border-[color:var(--border)] bg-white/40 px-3 py-2"
                 key={attachment.id}
               >
                 <div className="grid">
@@ -292,11 +454,7 @@ export function GenerateUploadDialog({
                     {attachment.sizeLabel ? ` • ${attachment.sizeLabel}` : ""}
                   </span>
                 </div>
-                <Button
-                  onClick={() => onRemoveAttachment?.(attachment.id)}
-                  size="sm"
-                  variant="ghost"
-                >
+                <Button onClick={() => onRemoveAttachment?.(attachment.id)} size="sm" variant="ghost">
                   Remove
                 </Button>
               </div>
@@ -324,10 +482,16 @@ export function GenerateButton({
   onClick
 }: GenerateButtonProps) {
   return (
-    <Button disabled={disabled} onClick={onClick} size="lg">
-      <Sparkles className="size-4" />
-      {isGenerating ? "Generating..." : isAuthenticated ? label : "Sign in to generate"}
-    </Button>
+    <CartoonButton
+      className="w-full sm:w-auto"
+      color="#7b9d68"
+      disabled={disabled}
+      icon={<Sparkles className="size-4" />}
+      loading={Boolean(isGenerating)}
+      loadingText="Generating..."
+      onClick={onClick ?? null}
+      text={isAuthenticated ? label : "Sign in to generate"}
+    />
   );
 }
 

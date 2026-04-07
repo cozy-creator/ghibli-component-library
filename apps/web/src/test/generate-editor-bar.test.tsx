@@ -1,6 +1,6 @@
 import { fireEvent, render, screen } from "@testing-library/react";
 
-import { GenerateEditorBar } from "@ghibli/ui";
+import { GenerateEditorBar, GeneratePromptComposer } from "@ghibli/ui";
 
 const modeOptions = [
   { label: "Image", value: "image" },
@@ -39,5 +39,18 @@ describe("generate editor bar", () => {
 
     fireEvent.click(screen.getByRole("button", { name: /generate/i }));
     expect(handleGenerate).toHaveBeenCalledTimes(1);
+  });
+
+  it("renders the prompt composer attachment surface", () => {
+    render(
+      <GeneratePromptComposer
+        attachments={[{ id: "mood", kind: "image", name: "moodboard.jpg", sizeLabel: "1.2 MB" }]}
+        prompt="Cozy river cabin"
+      />
+    );
+
+    expect(screen.getByDisplayValue("Cozy river cabin")).toBeInTheDocument();
+    expect(screen.getByText("moodboard.jpg")).toBeInTheDocument();
+    expect(screen.getByText("1.2 MB")).toBeInTheDocument();
   });
 });
