@@ -4,7 +4,7 @@ import { PreviewCard } from "@/apps/web/src/components/docs/preview-card";
 import { libraryExamples } from "@/apps/web/src/data/library-docs";
 
 const meta = {
-  title: "Examples/Library Examples"
+  title: "Foundations/Showcase Gallery"
 } satisfies Meta;
 
 export default meta;
