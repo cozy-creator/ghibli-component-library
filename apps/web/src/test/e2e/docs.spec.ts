@@ -1,45 +1,48 @@
 import { expect, test } from "@playwright/test";
 
-test("renders the library home, component docs, pattern docs, and examples gallery", async ({ page }) => {
+test("renders the linear component showcase and redirects legacy routes into anchors", async ({ page }) => {
   await page.goto("/");
 
   await expect(
     page.getByRole("heading", {
-      name: "Scenic React components built for sharing, not hiding inside one product"
+      name: "Ghibli components, displayed one by one."
     })
   ).toBeVisible();
-
-  await page.goto("/components");
-
-  await page.getByLabel("Search").fill("Tooltip");
-  await expect(page.getByRole("heading", { name: "Tooltip" })).toBeVisible();
+  await expect(page.getByText("pnpm dlx shadcn@latest add @ghibli/all")).toBeVisible();
+  await expect(page.getByRole("heading", { exact: true, name: "Button" })).toBeVisible();
+  await expect(page.getByRole("heading", { exact: true, name: "Generate Prompt Composer" })).toBeVisible();
+  await expect(page.getByRole("heading", { exact: true, name: "Footer" })).toBeVisible();
 
   await page.goto("/components/button");
 
-  await expect(page.getByRole("heading", { name: "Button" })).toBeVisible();
-  await expect(
-    page.getByText("pnpm dlx shadcn@latest add @ghibli/button", { exact: true })
-  ).toBeVisible();
-  await expect(page.getByRole("heading", { name: "Examples" })).toBeVisible();
+  await expect(page).toHaveURL(/#component-button$/);
+  await expect(page.getByRole("heading", { exact: true, name: "Button" })).toBeVisible();
+  await expect(page.getByText("pnpm dlx shadcn@latest add @ghibli/button")).toHaveCount(0);
 
   await page.goto("/patterns/auth-forms");
 
-  await expect(
-    page.getByRole("heading", { name: "Auth Forms" })
-  ).toBeVisible();
-  await expect(page.getByText("LoginForm")).toBeVisible();
+  await expect(page).toHaveURL(/#pattern-auth-forms$/);
+  await expect(page.getByRole("heading", { name: "Auth Forms" })).toBeVisible();
+  await expect(page.getByText("Sign in").first()).toBeVisible();
   await expect(page.getByText("Reference screen")).toHaveCount(0);
 });
 
-test("renders the examples gallery on mobile and desktop", async ({ page }) => {
+test("renders the showcase on mobile and desktop without horizontal page overflow", async ({ page }) => {
   await page.setViewportSize({ height: 844, width: 390 });
-  await page.goto("/examples");
+  await page.goto("/");
 
-  await expect(page.getByRole("heading", { name: "Generic examples built from the same installable source" })).toBeVisible();
-  await expect(page.getByRole("heading", { name: "Auth starter" })).toBeVisible();
+  await expect(page.getByRole("heading", { exact: true, name: "Storybook" })).toBeVisible();
+  await expect(page.getByRole("heading", { exact: true, name: "User Display Box" })).toBeVisible();
+  await expect.poll(async () =>
+    page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth + 1)
+  ).toBe(true);
 
   await page.setViewportSize({ height: 900, width: 1440 });
   await page.reload();
 
-  await expect(page.getByRole("heading", { name: "Marketing composition" })).toBeVisible();
+  await expect(page.getByRole("heading", { exact: true, name: "Community Cards" })).toBeVisible();
+  await expect(page.getByRole("heading", { exact: true, name: "Footer" })).toBeVisible();
+  await expect.poll(async () =>
+    page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth + 1)
+  ).toBe(true);
 });
