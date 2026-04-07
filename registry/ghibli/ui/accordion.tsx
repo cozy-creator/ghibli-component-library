@@ -79,7 +79,7 @@ export function Accordion({
 
   return (
     <AccordionContext.Provider value={{ toggleItem, type, value: currentValue }}>
-      <div className={cn("grid gap-2", className)} data-slot="accordion" {...props}>
+      <div className={cn("flex w-full flex-col", className)} data-slot="accordion" {...props}>
         {children}
       </div>
     </AccordionContext.Provider>
@@ -110,10 +110,7 @@ export function AccordionItem({
   return (
     <AccordionItemContext.Provider value={{ disabled, open, value }}>
       <div
-        className={cn(
-          "rounded-[calc(var(--radius)-0.2rem)] border border-[color:var(--border)] bg-white/35 px-4",
-          className
-        )}
+        className={cn("not-last:border-b", className)}
         data-slot="accordion-item"
         data-state={open ? "open" : "closed"}
         {...props}
@@ -139,7 +136,7 @@ export function AccordionTrigger({
   return (
     <button
       className={cn(
-        "flex w-full items-center justify-between gap-3 py-4 text-left text-sm font-medium text-[color:var(--ink-strong)] transition-colors",
+        "group/accordion-trigger relative flex w-full items-start justify-between border border-transparent py-2.5 text-left text-sm font-medium transition-all",
         "disabled:cursor-not-allowed disabled:opacity-60",
         focusRingClass,
         className
@@ -160,7 +157,7 @@ export function AccordionTrigger({
     >
       <span>{children}</span>
       <ChevronDown
-        className={cn("size-4 transition-transform", itemContext.open && "rotate-180")}
+        className={cn("size-4 shrink-0 text-muted-foreground transition-transform", itemContext.open && "rotate-180")}
       />
     </button>
   );
@@ -181,13 +178,15 @@ export function AccordionContent({
     <div
       className={cn(
         "grid overflow-hidden text-sm text-[color:var(--muted-foreground)] transition-all",
-        itemContext.open ? "grid-rows-[1fr] pb-4" : "grid-rows-[0fr]",
+        itemContext.open ? "grid-rows-[1fr]" : "grid-rows-[0fr]",
         className
       )}
       data-slot="accordion-content"
       {...props}
     >
-      <div className="min-h-0 overflow-hidden leading-7">{children}</div>
+      <div className="min-h-0 overflow-hidden pt-0 pb-2.5 leading-7 [&_a]:underline [&_a]:underline-offset-3 [&_a]:hover:text-foreground [&_p:not(:last-child)]:mb-4">
+        {children}
+      </div>
     </div>
   );
 }

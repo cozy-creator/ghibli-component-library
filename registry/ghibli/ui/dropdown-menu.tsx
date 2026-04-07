@@ -51,7 +51,11 @@ export function DropdownMenuContent({
     <PopoverPrimitive.Portal>
       <PopoverPrimitive.Content
         align={align}
-        className={cn(paperSurfaceClass, "z-50 min-w-56 p-2", className)}
+        className={cn(
+          paperSurfaceClass,
+          "z-50 min-w-56 p-2",
+          className
+        )}
         data-slot="dropdown-menu-content"
         sideOffset={sideOffset}
         {...props}
@@ -96,7 +100,7 @@ export function DropdownMenuItem({
   return (
     <button
       className={cn(
-        "flex w-full items-center gap-2 rounded-[calc(var(--radius)-0.45rem)] px-2 py-2 text-left text-sm text-[color:var(--foreground)] transition-colors hover:bg-[color:var(--paper-soft)]",
+        "flex w-full items-center gap-2 px-2 py-2 text-left text-sm text-[color:var(--foreground)] transition-colors hover:bg-[color:var(--paper-soft)]",
         focusRingClass,
         className
       )}
@@ -134,6 +138,7 @@ export function DropdownMenuCheckboxItem({
 }
 
 interface DropdownMenuRadioGroupProps {
+  className?: string;
   children: React.ReactNode;
   onValueChange?: ((value: string) => void) | undefined;
   value?: string | undefined;
@@ -145,12 +150,15 @@ const DropdownMenuRadioGroupContext = React.createContext<DropdownMenuRadioGroup
 
 export function DropdownMenuRadioGroup({
   children,
+  className,
   onValueChange,
   value
 }: DropdownMenuRadioGroupProps) {
   return (
     <DropdownMenuRadioGroupContext.Provider value={{ children, onValueChange, value }}>
-      <div data-slot="dropdown-menu-radio-group">{children}</div>
+      <div className={className} data-slot="dropdown-menu-radio-group">
+        {children}
+      </div>
     </DropdownMenuRadioGroupContext.Provider>
   );
 }
@@ -159,17 +167,20 @@ export function DropdownMenuRadioItem({
   children,
   className,
   itemValue,
+  value,
   ...props
 }: React.ButtonHTMLAttributes<HTMLButtonElement> & {
-  itemValue: string;
+  itemValue?: string;
+  value?: string;
 }) {
   const context = React.useContext(DropdownMenuRadioGroupContext);
-  const isActive = context?.value === itemValue;
+  const resolvedValue = value ?? itemValue ?? "";
+  const isActive = context?.value === resolvedValue;
 
   return (
     <DropdownMenuItem
       className={cn("justify-between", className)}
-      onClick={() => context?.onValueChange?.(itemValue)}
+      onClick={() => context?.onValueChange?.(resolvedValue)}
       {...props}
     >
       <span>{children}</span>
@@ -195,7 +206,7 @@ export function DropdownMenuSubTrigger({
   return (
     <button
       className={cn(
-        "flex w-full items-center gap-2 rounded-[calc(var(--radius)-0.45rem)] px-2 py-2 text-left text-sm text-[color:var(--foreground)] transition-colors hover:bg-[color:var(--paper-soft)]",
+        "flex w-full items-center gap-2 px-2 py-2 text-left text-sm text-[color:var(--foreground)] transition-colors hover:bg-[color:var(--paper-soft)]",
         focusRingClass,
         className
       )}
