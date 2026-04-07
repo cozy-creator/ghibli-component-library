@@ -237,9 +237,7 @@ createRoot(root).render(
         "exec",
         "shadcn",
         "add",
-        "@ghibli/button",
-        "@ghibli/dropdown-menu",
-        "@ghibli/generate-editor-bar",
+        "@ghibli/all",
         "--cwd",
         tempDir
       ],
