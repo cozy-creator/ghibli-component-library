@@ -5,7 +5,7 @@ import { DocsFaqAccordion } from "@ghibli/ui";
 import { faqItems } from "@/apps/web/src/data/demo-fixtures";
 
 const meta = {
-  title: "Patterns/Marketing/Docs FAQ Accordion"
+  title: "Patterns/Docs/Docs FAQ Accordion"
 } satisfies Meta;
 
 export default meta;
