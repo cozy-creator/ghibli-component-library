@@ -3,7 +3,7 @@ import type { Meta, StoryObj } from "@storybook/react-vite";
 import { Button, EmptyState } from "@ghibli/ui";
 
 const meta = {
-  title: "Patterns/Layout/Empty State"
+  title: "Patterns/Feedback/Empty State"
 } satisfies Meta;
 
 export default meta;
