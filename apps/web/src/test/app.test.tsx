@@ -10,8 +10,12 @@ describe("app", () => {
 
     expect(
       screen.getByRole("heading", {
-        name: /scenic react components built for sharing, not hiding inside one product/i
+        name: /ghibli components, displayed one by one/i
       })
     ).toBeInTheDocument();
+    expect(screen.getByText("pnpm dlx shadcn@latest add @ghibli/all")).toBeInTheDocument();
+    expect(screen.getByRole("heading", { name: "Button" })).toBeInTheDocument();
+    expect(screen.getByRole("heading", { name: "Generate Prompt Composer" })).toBeInTheDocument();
+    expect(screen.getByRole("heading", { name: "Footer" })).toBeInTheDocument();
   });
 });
