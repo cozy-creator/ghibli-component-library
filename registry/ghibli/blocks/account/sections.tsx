@@ -1,10 +1,14 @@
 import * as React from "react";
-import { CheckCircle2, Coins, Link2, Sparkles, UserRound } from "lucide-react";
+import { Camera, CheckCircle2, Coins, Link2, Loader2, Pencil, Sparkles, Trash2, UserRound } from "lucide-react";
 
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { CartoonButton } from "@/components/ui/cartoon-button";
+import { HandDrawnFrame } from "@/components/ui/hand-drawn-frame";
+import { Skeleton } from "@/components/ui/skeleton";
+import { cn } from "@/lib/utils";
 
 function SectionShell({
   children,
@@ -32,6 +36,202 @@ function SectionShell({
       </CardHeader>
       <CardContent className="grid gap-4">{children}</CardContent>
     </Card>
+  );
+}
+
+export interface AccountUserDisplayBoxProps {
+  avatarAlt?: string;
+  avatarBusy?: "remove" | "upload" | null;
+  avatarError?: string;
+  avatarUrl?: string;
+  className?: string;
+  email?: string;
+  generatedCount?: number | null;
+  generatedLabel?: string;
+  hasCustomAvatar?: boolean;
+  hasPassword?: boolean;
+  isLoadingGeneratedCount?: boolean;
+  name: string;
+  onEditName?: () => void;
+  onPasswordAction?: () => void;
+  onRemoveAvatar?: () => void;
+  onUploadAvatar?: () => void;
+  passwordActionLabel?: string;
+}
+
+export function AccountUserDisplayBox({
+  avatarAlt,
+  avatarBusy = null,
+  avatarError,
+  avatarUrl,
+  className,
+  email,
+  generatedCount,
+  generatedLabel,
+  hasCustomAvatar = false,
+  hasPassword = true,
+  isLoadingGeneratedCount = false,
+  name,
+  onEditName,
+  onPasswordAction,
+  onRemoveAvatar,
+  onUploadAvatar,
+  passwordActionLabel
+}: AccountUserDisplayBoxProps) {
+  const displayName = name || "Account";
+  const initial = displayName[0]?.toUpperCase() ?? "?";
+  const isUploadingAvatar = avatarBusy === "upload";
+  const generatedText =
+    generatedLabel ??
+    (generatedCount === null || generatedCount === undefined
+      ? "Generations unavailable right now"
+      : `${generatedCount} Total generations`);
+
+  return (
+    <section className={cn("w-full", className)}>
+      <HandDrawnFrame
+        className="overflow-hidden bg-[linear-gradient(180deg,rgba(255,255,255,0.5),rgba(250,244,232,0.96))]"
+        strokeColor="var(--border)"
+        strokeWidth={1.65}
+        variant="surface"
+      >
+        <Card className="border-0 bg-transparent shadow-none">
+          <CardContent className="space-y-4">
+            <div className="flex flex-col gap-4 sm:flex-row sm:items-end">
+              <div className="shrink-0">
+                <div className="relative size-24">
+                  <div className="group relative size-24 overflow-hidden">
+                    <Avatar className="size-24 border-2 border-[color:var(--border-strong)] bg-[color:var(--card)]">
+                      {avatarUrl ? (
+                        <AvatarImage
+                          alt={avatarAlt ?? displayName}
+                          className={cn(
+                            "transition duration-200",
+                            isUploadingAvatar
+                              ? "brightness-[0.45]"
+                              : "group-hover:brightness-[0.45] group-focus-within:brightness-[0.45]"
+                          )}
+                          src={avatarUrl}
+                        />
+                      ) : null}
+                      <AvatarFallback
+                        className={cn(
+                          "text-3xl transition duration-200",
+                          isUploadingAvatar
+                            ? "brightness-[0.45]"
+                            : "group-hover:brightness-[0.45] group-focus-within:brightness-[0.45]"
+                        )}
+                      >
+                        {initial}
+                      </AvatarFallback>
+                    </Avatar>
+
+                    <div
+                      aria-hidden
+                      className={cn(
+                        "pointer-events-none absolute inset-0 bg-black/45 transition duration-200",
+                        isUploadingAvatar
+                          ? "opacity-100"
+                          : "opacity-0 group-hover:opacity-100 group-focus-within:opacity-100"
+                      )}
+                    />
+
+                    <div
+                      className={cn(
+                        "pointer-events-none absolute inset-0 flex items-center justify-center transition duration-200",
+                        isUploadingAvatar
+                          ? "opacity-100"
+                          : "opacity-0 group-hover:opacity-100 group-focus-within:opacity-100"
+                      )}
+                    >
+                      <button
+                        aria-label={hasCustomAvatar ? "Change profile photo" : "Upload profile photo"}
+                        className="pointer-events-auto flex size-12 items-center justify-center text-white transition duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/80 focus-visible:ring-offset-2 focus-visible:ring-offset-black/30"
+                        disabled={avatarBusy !== null}
+                        onClick={onUploadAvatar}
+                        type="button"
+                      >
+                        {isUploadingAvatar ? (
+                          <Loader2 className="size-6 animate-spin" />
+                        ) : (
+                          <Camera className="size-6" />
+                        )}
+                      </button>
+                    </div>
+                  </div>
+                  {hasCustomAvatar ? (
+                    <button
+                      aria-label="Remove profile photo"
+                      className="absolute right-1 bottom-1 z-20 flex size-7 items-center justify-center text-white/90 drop-shadow-[0_1px_2px_rgba(0,0,0,0.85)] transition hover:scale-110 hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/80 focus-visible:ring-offset-2 focus-visible:ring-offset-black/30 active:scale-100 disabled:cursor-not-allowed disabled:opacity-70"
+                      disabled={avatarBusy !== null}
+                      onClick={onRemoveAvatar}
+                      type="button"
+                    >
+                      {avatarBusy === "remove" ? (
+                        <Loader2 className="size-5 animate-spin" />
+                      ) : (
+                        <Trash2 className="size-6" />
+                      )}
+                    </button>
+                  ) : null}
+                </div>
+              </div>
+
+              <div className="flex min-w-0 flex-1 flex-col gap-3 text-left sm:min-h-24 sm:flex-row sm:items-end sm:justify-between">
+                <div className="min-w-0 flex-1 space-y-1.5">
+                  <div className="flex min-h-[2.7rem] max-w-full items-center sm:min-h-[3.35rem]">
+                    <div className="group/name inline-flex max-w-full items-center gap-1.5">
+                      <div className="min-w-0 overflow-hidden pb-[0.08em]">
+                        <p
+                          className="block truncate font-[var(--font-heading)] text-3xl leading-[1.2] text-[color:var(--ink-strong)] sm:text-4xl"
+                          title={displayName}
+                        >
+                          {displayName}
+                        </p>
+                      </div>
+
+                      {onEditName ? (
+                        <button
+                          aria-label="Edit username"
+                          className="flex size-7 shrink-0 items-center justify-center text-[color:var(--ink-strong)] transition hover:scale-110 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[color:var(--border-strong)] focus-visible:ring-offset-2 active:scale-100"
+                          onClick={onEditName}
+                          type="button"
+                        >
+                          <Pencil className="size-6" />
+                        </button>
+                      ) : null}
+                    </div>
+                  </div>
+
+                  <p className="break-all text-sm leading-[1.1] text-[color:var(--foreground)] sm:text-base">
+                    {email || "No email address on file"}
+                  </p>
+
+                  {isLoadingGeneratedCount ? (
+                    <Skeleton className="h-4 w-36 border-0" />
+                  ) : (
+                    <span className="text-sm leading-[1.1] text-[color:var(--foreground)]">
+                      {generatedText}
+                    </span>
+                  )}
+                </div>
+
+                <CartoonButton
+                  className="w-full shrink-0 justify-center sm:w-auto sm:self-auto"
+                  color="#7b9d68"
+                  onClick={onPasswordAction ?? null}
+                  size="sm"
+                  text={passwordActionLabel ?? (hasPassword ? "Change password" : "Set password")}
+                  type="button"
+                />
+              </div>
+            </div>
+
+            {avatarError ? <p className="text-xs text-destructive">{avatarError}</p> : null}
+          </CardContent>
+        </Card>
+      </HandDrawnFrame>
+    </section>
   );
 }
 

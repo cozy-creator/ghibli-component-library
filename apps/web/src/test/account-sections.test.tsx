@@ -1,11 +1,18 @@
 import { render, screen } from "@testing-library/react";
 
-import { AccountApiCreditsSection, AccountLinkedAccountsSection, AccountProfileSection, AccountSubscriptionSection } from "@ghibli/ui";
+import {
+  AccountApiCreditsSection,
+  AccountLinkedAccountsSection,
+  AccountProfileSection,
+  AccountSubscriptionSection,
+  AccountUserDisplayBox
+} from "@ghibli/ui";
 
 describe("account sections", () => {
   it("renders grouped account content", () => {
     render(
       <div>
+        <AccountUserDisplayBox email="melina@cozy.art" generatedCount={64} name="Melina Sketch" />
         <AccountProfileSection email="melina@ghibli-ui.dev" name="Melina Sketch" planLabel="Painterly plan" />
         <AccountLinkedAccountsSection
           accounts={[
@@ -25,7 +32,8 @@ describe("account sections", () => {
       </div>
     );
 
-    expect(screen.getByText("Melina Sketch")).toBeInTheDocument();
+    expect(screen.getAllByText("Melina Sketch")).not.toHaveLength(0);
+    expect(screen.getByText("64 Total generations")).toBeInTheDocument();
     expect(screen.getByText("GitHub")).toBeInTheDocument();
     expect(screen.getAllByText("Painterly plan")).not.toHaveLength(0);
     expect(screen.getByText("128 credits")).toBeInTheDocument();
