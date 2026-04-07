@@ -80,7 +80,7 @@ export function SceneArt({ className, label, variant }: SceneArtProps) {
   const theme = sceneThemes[variant];
 
   return (
-    <div className={cn("story-scene", className)} style={{ background: theme.sky }}>
+    <div className={cn("story-scene relative overflow-hidden", className)} style={{ background: theme.sky }}>
       <div
         className="absolute left-[8%] top-[14%] size-14 rounded-full blur-sm"
         style={{ background: theme.sun }}
@@ -112,4 +112,3 @@ export function SceneArt({ className, label, variant }: SceneArtProps) {
     </div>
   );
 }
-
