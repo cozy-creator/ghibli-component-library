@@ -1,15 +1,14 @@
 import { Navigate, createBrowserRouter } from "react-router-dom";
 
 import { SiteShell } from "./layouts/site-shell";
-import { ComponentsIndexPage } from "./routes/components";
-import { BlockDetailPage } from "./routes/docs/block-detail";
-import { ComponentDetailPage } from "./routes/docs/component-detail";
-import { ExamplesPage } from "./routes/examples";
-import { GuideDetailPage } from "./routes/guides/guide-detail";
 import { HomePage } from "./routes/home";
-import { LegacyComponentRedirect, LegacyPatternRedirect } from "./routes/legacy-redirects";
+import {
+  LegacyComponentRedirect,
+  LegacyExamplesRedirect,
+  LegacyGuideRedirect,
+  LegacyPatternRedirect
+} from "./routes/legacy-redirects";
 import { NotFoundPage } from "./routes/not-found";
-import { PatternsIndexPage } from "./routes/patterns";
 
 export function createAppRouter() {
   return createBrowserRouter([
@@ -18,16 +17,34 @@ export function createAppRouter() {
       path: "/",
       children: [
         { element: <HomePage />, index: true },
-        { element: <Navigate replace to="/guides/getting-started" />, path: "docs/getting-started" },
-        { element: <Navigate replace to="/components" />, path: "docs/components" },
-        { element: <Navigate replace to="/patterns" />, path: "docs/blocks" },
-        { element: <Navigate replace to="/guides/getting-started" />, path: "guides" },
-        { element: <GuideDetailPage />, path: "guides/:slug" },
-        { element: <ComponentsIndexPage />, path: "components" },
-        { element: <ComponentDetailPage />, path: "components/:name" },
-        { element: <PatternsIndexPage />, path: "patterns" },
-        { element: <BlockDetailPage />, path: "patterns/:name" },
-        { element: <ExamplesPage />, path: "examples" },
+        {
+          element: <Navigate replace to={{ hash: "#install", pathname: "/" }} />,
+          path: "docs/getting-started"
+        },
+        {
+          element: <Navigate replace to={{ hash: "#component-button", pathname: "/" }} />,
+          path: "docs/components"
+        },
+        {
+          element: <Navigate replace to={{ hash: "#pattern-auth-forms", pathname: "/" }} />,
+          path: "docs/blocks"
+        },
+        {
+          element: <Navigate replace to={{ hash: "#install", pathname: "/" }} />,
+          path: "guides"
+        },
+        { element: <LegacyGuideRedirect />, path: "guides/:slug" },
+        {
+          element: <Navigate replace to={{ hash: "#component-button", pathname: "/" }} />,
+          path: "components"
+        },
+        { element: <LegacyComponentRedirect />, path: "components/:name" },
+        {
+          element: <Navigate replace to={{ hash: "#pattern-auth-forms", pathname: "/" }} />,
+          path: "patterns"
+        },
+        { element: <LegacyPatternRedirect />, path: "patterns/:name" },
+        { element: <LegacyExamplesRedirect />, path: "examples" },
         { element: <LegacyComponentRedirect />, path: "docs/components/:name" },
         { element: <LegacyPatternRedirect />, path: "docs/blocks/:name" },
         { element: <NotFoundPage />, path: "*" }
