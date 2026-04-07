@@ -1,6 +1,6 @@
 import { render, screen } from "@testing-library/react";
 
-import { CommunityImageCard, CommunityXPostCard } from "@ghibli/ui";
+import { CommunityImageCard, CommunityTabsList, CommunityXPostCard, Tabs } from "@ghibli/ui";
 
 describe("community cards", () => {
   it("renders image and x-post cards", () => {
@@ -13,11 +13,15 @@ describe("community cards", () => {
           handle="melina"
           metrics={{ likes: "20", replies: "4", reposts: "5" }}
         />
+        <Tabs value="video">
+          <CommunityTabsList activeTab="video" />
+        </Tabs>
       </div>
     );
 
     expect(screen.getByText("Forest lantern walk")).toBeInTheDocument();
     expect(screen.getByText("Painterly component release notes.")).toBeInTheDocument();
     expect(screen.getByText("20")).toBeInTheDocument();
+    expect(screen.getByRole("tab", { name: "Video" })).toHaveAttribute("data-state", "active");
   });
 });
