@@ -4,7 +4,79 @@ import { Play, Sparkles, Heart, MessageCircle, Repeat2 } from "lucide-react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
+import { HandDrawnFrame } from "@/components/ui/hand-drawn-frame";
+import { TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { cn } from "@/lib/utils";
+
+export interface CommunityTabsListItem {
+  disabled?: boolean;
+  label: string;
+  value: string;
+}
+
+export interface CommunityTabsListProps {
+  activeTab: string;
+  className?: string;
+  disabled?: boolean;
+  tabs?: CommunityTabsListItem[];
+}
+
+const defaultCommunityTabs = [
+  { label: "Live Feed", value: "live-feed" },
+  { label: "Video", value: "video" },
+  { label: "X Posts", value: "x-posts" }
+] satisfies CommunityTabsListItem[];
+
+export function CommunityTabsList({
+  activeTab,
+  className,
+  disabled = false,
+  tabs = defaultCommunityTabs
+}: CommunityTabsListProps) {
+  return (
+    <HandDrawnFrame
+      className={cn(
+        "mx-auto w-fit max-w-full bg-[color:color-mix(in_oklab,var(--card)_84%,white)] px-1.5 py-1.5 max-[424px]:w-full",
+        className
+      )}
+      strokeColor="var(--border)"
+      strokeWidth={1.5}
+      variant="steady"
+    >
+      <TabsList className="gap-1 border-0 bg-transparent p-0 shadow-none max-[424px]:grid max-[424px]:w-full max-[424px]:grid-cols-3 max-[424px]:gap-1">
+        {tabs.map((tab) => {
+          const isActive = tab.value === activeTab;
+
+          return (
+            <TabsTrigger
+              className="min-w-0 bg-transparent p-0 text-[color:var(--muted-foreground)] shadow-none hover:text-[color:var(--foreground)] data-[state=active]:bg-transparent data-[state=active]:shadow-none max-[424px]:w-full max-[424px]:text-xs"
+              disabled={disabled || tab.disabled}
+              key={tab.value}
+              value={tab.value}
+            >
+              {isActive ? (
+                <HandDrawnFrame
+                  className="inline-flex max-w-full bg-[color:color-mix(in_oklab,var(--ring)_22%,white)] px-4 py-2 text-[color:var(--primary)] max-[424px]:px-2"
+                  contentClassName="flex min-w-0 items-center justify-center text-center leading-none"
+                  strokeColor="var(--border)"
+                  strokeWidth={1.35}
+                  svgClassName="size-full"
+                  variant="pill"
+                >
+                  <span className="whitespace-nowrap">{tab.label}</span>
+                </HandDrawnFrame>
+              ) : (
+                <span className="inline-flex items-center justify-center whitespace-nowrap px-4 py-2 max-[424px]:px-2">
+                  {tab.label}
+                </span>
+              )}
+            </TabsTrigger>
+          );
+        })}
+      </TabsList>
+    </HandDrawnFrame>
+  );
+}
 
 export interface CommunityImageCardProps {
   badge?: string;
@@ -156,5 +228,53 @@ export function CommunityXPostCard({
         <Metric icon={Heart}>{metrics?.likes ?? "180"}</Metric>
       </CardFooter>
     </Card>
+  );
+}
+
+export interface CommunityEmbedCardProps {
+  author: string;
+  avatarFallback?: string;
+  avatarUrl?: string;
+  embed: React.ReactNode;
+  footer?: React.ReactNode;
+  handle?: string;
+  title?: string;
+}
+
+export function CommunityEmbedCard({
+  author,
+  avatarFallback,
+  avatarUrl,
+  embed,
+  footer,
+  handle,
+  title
+}: CommunityEmbedCardProps) {
+  return (
+    <HandDrawnFrame
+      className="overflow-hidden bg-[color:var(--card)]"
+      strokeColor="var(--border)"
+      strokeWidth={1.55}
+      variant="card"
+    >
+      <Card className="border-0 bg-transparent shadow-none">
+        <CardHeader className="grid grid-cols-[auto_1fr_auto] items-start gap-3">
+          <Avatar>
+            {avatarUrl ? <AvatarImage alt={author} src={avatarUrl} /> : null}
+            <AvatarFallback>{avatarFallback ?? author.slice(0, 2).toUpperCase()}</AvatarFallback>
+          </Avatar>
+          <div className="grid gap-1">
+            <CardTitle className="text-xl">{title ?? author}</CardTitle>
+            {handle ? <p className="text-sm text-muted-foreground">{handle}</p> : null}
+          </div>
+        </CardHeader>
+        <CardContent className="grid gap-4">{embed}</CardContent>
+        {footer ? (
+          <CardFooter className="justify-between gap-3 text-xs text-muted-foreground">
+            {footer}
+          </CardFooter>
+        ) : null}
+      </Card>
+    </HandDrawnFrame>
   );
 }
