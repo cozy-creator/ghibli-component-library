@@ -6,25 +6,37 @@ export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
 }
 
+export const layoutContainerClass = "mx-auto w-full max-w-7xl px-4 md:px-6";
+
 export const focusRingClass =
   "outline-none focus-visible:ring-2 focus-visible:ring-[color:var(--ring)] focus-visible:ring-offset-2 focus-visible:ring-offset-[color:var(--background)]";
 
+export const fieldFocusClass = cn(
+  "outline-none focus:outline-none focus-visible:outline-none",
+  "focus:border-[color:var(--border)] focus-visible:border-[color:var(--border)]",
+  "focus:ring-0 focus-visible:ring-0"
+);
+
 export const paperSurfaceClass = cn(
-  "rounded-[var(--radius)] border border-[color:var(--border)] bg-[color:var(--card)]",
-  "shadow-[var(--shadow-paper)]"
+  "border-2 border-[color:var(--border)] bg-[color:var(--card)]"
 );
 
 export const paperInsetClass = cn(
-  "rounded-[calc(var(--radius)-0.3rem)] border border-[color:var(--border-soft)] bg-[color:var(--paper-soft)]",
-  "shadow-[inset_0_1px_0_rgba(255,255,255,0.9)]"
+  "border border-[color:var(--border-soft)] bg-[color:var(--paper-soft)]"
 );
 
 export const paperFieldClass = cn(
-  "h-11 w-full rounded-[calc(var(--radius)-0.35rem)] border border-[color:var(--border)]",
-  "bg-[color:var(--paper-soft)] px-3 py-2 text-sm text-[color:var(--foreground)] transition-colors",
-  "placeholder:text-[color:var(--muted-foreground)]",
-  "disabled:cursor-not-allowed disabled:opacity-60",
-  focusRingClass
+  "h-11 w-full border border-[color:var(--border)]",
+  "bg-[color:color-mix(in_oklab,var(--paper-soft)_90%,white)] px-3 py-2 text-sm text-[color:var(--foreground)] transition-colors",
+  "placeholder:text-[color:var(--muted-foreground)] disabled:cursor-not-allowed disabled:opacity-60",
+  fieldFocusClass
+);
+
+export const cartoonButtonFrameClass = cn(
+  "border-2 border-[#7a5a2b] font-medium shadow-[inset_0_1px_0_rgba(255,255,255,0.45),0_3px_0_rgba(122,90,43,0.58)]",
+  "[font-family:'Comic_Sans_MS','Chalkboard_SE',cursive]",
+  "hover:-translate-y-[1px] active:translate-y-[2px]",
+  "active:shadow-[inset_0_1px_0_rgba(255,255,255,0.35),0_1px_0_rgba(122,90,43,0.55)]"
 );
 
 export const scenicToneClasses = {
@@ -55,7 +67,10 @@ export function clamp(value: number, min: number, max: number) {
 }
 
 export interface NavItem {
+  active?: boolean;
+  external?: boolean;
   href: string;
+  icon?: React.ReactNode;
   label: string;
 }
 

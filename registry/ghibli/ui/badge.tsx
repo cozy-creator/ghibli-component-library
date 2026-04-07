@@ -2,19 +2,30 @@ import * as React from "react";
 import { Slot } from "@radix-ui/react-slot";
 import { cva, type VariantProps } from "class-variance-authority";
 
-import { cn, scenicToneClasses } from "@/lib/utils";
+import { cn, scenicToneClasses, type ScenicTone } from "@/lib/utils";
 
 const badgeVariants = cva(
-  "inline-flex items-center gap-1 rounded-full border px-2.5 py-1 text-xs font-medium tracking-[0.04em]",
+  "group/badge inline-flex w-fit shrink-0 items-center justify-center gap-1 overflow-hidden border px-2.5 py-1 text-xs font-medium tracking-[0.04em] whitespace-nowrap transition-all [&>svg]:pointer-events-none [&>svg]:size-3.5!",
   {
     variants: {
       tone: scenicToneClasses,
       variant: {
-        outline: "border-[color:var(--border-strong)] bg-transparent text-[color:var(--foreground)]",
+        default:
+          "border-[color:var(--primary-edge)] bg-[color:var(--primary)] text-[color:var(--primary-foreground)]",
+        secondary:
+          "border-[color:var(--border)] bg-[color:var(--paper)] text-[color:var(--foreground)]",
+        destructive:
+          "border-[color:var(--danger-edge)] bg-[color:rgba(202,117,93,0.14)] text-[color:var(--danger)]",
+        outline:
+          "border-[color:var(--border-strong)] bg-transparent text-[color:var(--foreground)]",
+        ghost: "border-transparent bg-transparent text-[color:var(--muted-foreground)]",
+        link:
+          "border-transparent bg-transparent p-0 text-[color:var(--ink-strong)] underline-offset-4 hover:underline",
         soft: "border-[color:var(--border)] bg-[color:var(--paper-soft)] text-[color:var(--foreground)]",
-        solid: "border-[color:var(--primary-edge)] bg-[color:var(--primary)] text-[color:var(--primary-foreground)]",
+        solid:
+          "border-[color:var(--primary-edge)] bg-[color:var(--primary)] text-[color:var(--primary-foreground)]",
         stamp:
-          "border-[color:var(--ink-soft)] bg-[color:var(--paper)] text-[color:var(--ink-strong)] shadow-[var(--shadow-soft)]"
+          "border-[color:var(--ink-soft)] bg-[color:var(--paper)] text-[color:var(--ink-strong)]"
       }
     },
     compoundVariants: [
@@ -35,6 +46,7 @@ export interface BadgeProps
   extends React.HTMLAttributes<HTMLSpanElement>,
     VariantProps<typeof badgeVariants> {
   asChild?: boolean;
+  tone?: ScenicTone;
 }
 
 export function Badge({
@@ -45,7 +57,15 @@ export function Badge({
   ...props
 }: BadgeProps) {
   const Comp = asChild ? Slot : "span";
-  return <Comp className={cn(badgeVariants({ className, tone, variant }))} {...props} />;
+
+  return (
+    <Comp
+      className={cn(badgeVariants({ className, tone, variant }))}
+      data-slot="badge"
+      data-variant={variant}
+      {...props}
+    />
+  );
 }
 
 export { badgeVariants };

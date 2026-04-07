@@ -26,10 +26,11 @@ export function Avatar({
     <AvatarContext.Provider value={{ size }}>
       <div
         className={cn(
-          "relative inline-flex shrink-0 items-center justify-center overflow-hidden rounded-full border border-[color:var(--border-strong)] bg-[color:var(--paper-soft)] shadow-[var(--shadow-soft)]",
+          "group/avatar relative inline-flex shrink-0 items-center justify-center overflow-hidden border border-[color:var(--border-strong)] bg-[color:var(--paper-soft)]",
           avatarSizes[size],
           className
         )}
+        data-size={size}
         data-slot="avatar"
         {...props}
       >
@@ -40,7 +41,14 @@ export function Avatar({
 }
 
 export function AvatarImage({ alt, className, ...props }: React.ComponentProps<"img">) {
-  return <img alt={alt} className={cn("size-full object-cover", className)} data-slot="avatar-image" {...props} />;
+  return (
+    <img
+      alt={alt}
+      className={cn("aspect-square size-full object-cover", className)}
+      data-slot="avatar-image"
+      {...props}
+    />
+  );
 }
 
 export function AvatarFallback({
@@ -49,6 +57,7 @@ export function AvatarFallback({
   ...props
 }: React.HTMLAttributes<HTMLSpanElement>) {
   const { size } = React.useContext(AvatarContext);
+
   return (
     <span
       className={cn(
@@ -65,10 +74,17 @@ export function AvatarFallback({
 }
 
 export function AvatarBadge({ className, ...props }: React.HTMLAttributes<HTMLSpanElement>) {
+  const { size } = React.useContext(AvatarContext);
+
   return (
     <span
       className={cn(
-        "absolute bottom-0 right-0 inline-flex size-3 rounded-full border border-white bg-[color:var(--primary)]",
+        "absolute bottom-0 right-0 z-10 inline-flex items-center justify-center bg-[color:var(--primary)] text-[color:var(--primary-foreground)] ring-2 ring-[color:var(--card)] select-none",
+        size === "sm"
+          ? "size-2.5 [&>svg]:hidden"
+          : size === "lg"
+            ? "size-4 [&>svg]:size-2.5"
+            : "size-3 [&>svg]:size-2",
         className
       )}
       data-slot="avatar-badge"
@@ -79,6 +95,26 @@ export function AvatarBadge({ className, ...props }: React.HTMLAttributes<HTMLSp
 
 export function AvatarGroup({ className, ...props }: React.HTMLAttributes<HTMLDivElement>) {
   return (
-    <div className={cn("flex -space-x-3 [&>[data-slot=avatar]]:ring-2 [&>[data-slot=avatar]]:ring-[color:var(--background)]", className)} data-slot="avatar-group" {...props} />
+    <div
+      className={cn(
+        "group/avatar-group flex -space-x-3 *:data-[slot=avatar]:ring-2 *:data-[slot=avatar]:ring-[color:var(--card)]",
+        className
+      )}
+      data-slot="avatar-group"
+      {...props}
+    />
+  );
+}
+
+export function AvatarGroupCount({ className, ...props }: React.HTMLAttributes<HTMLDivElement>) {
+  return (
+    <div
+      className={cn(
+        "relative flex size-10 shrink-0 items-center justify-center border border-[color:var(--border-strong)] bg-[color:var(--paper)] text-sm text-[color:var(--ink-soft)] ring-2 ring-[color:var(--card)] group-has-data-[size=lg]/avatar-group:size-14 group-has-data-[size=sm]/avatar-group:size-8 [&>svg]:size-4 group-has-data-[size=lg]/avatar-group:[&>svg]:size-5 group-has-data-[size=sm]/avatar-group:[&>svg]:size-3",
+        className
+      )}
+      data-slot="avatar-group-count"
+      {...props}
+    />
   );
 }
