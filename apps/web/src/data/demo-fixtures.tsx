@@ -45,29 +45,29 @@ function scenicDataUri({
 }
 
 export const libraryNavItems = [
-  { href: "/", label: "Home" },
-  { href: "/guides/getting-started", label: "Guides" },
-  { href: "/components", label: "Components" },
-  { href: "/patterns", label: "Patterns" },
-  { href: "/examples", label: "Examples" }
+  { href: "#install", label: "Install" },
+  { href: "#component-button", label: "Components" },
+  { href: "#pattern-generate-editor-bar", label: "Generate" },
+  { href: "#component-footer", label: "Footer" },
+  { href: "#storybook", label: "Storybook" }
 ];
 
 export const footerColumns = [
   {
     id: "guides",
     links: [
-      { href: "/guides/getting-started", label: "Getting started" },
-      { href: "/guides/installation", label: "Installation" },
-      { href: "/guides/development", label: "Development" }
+      { href: "#install", label: "Getting started" },
+      { href: "#component-button", label: "Components" },
+      { href: "#storybook", label: "Storybook" }
     ],
     title: "Guides"
   },
   {
     id: "library",
     links: [
-      { href: "/components", label: "Components" },
-      { href: "/patterns", label: "Patterns" },
-      { href: "/examples", label: "Examples" }
+      { href: "#component-button", label: "Buttons" },
+      { href: "#component-generate-prompt-composer", label: "Prompt composer" },
+      { href: "#pattern-community-cards", label: "Community cards" }
     ],
     title: "Library"
   },
@@ -97,7 +97,7 @@ export const headerBrand = (
         Ghibli UI
       </span>
       <span className="text-xs uppercase tracking-[0.18em] text-[color:var(--muted-foreground)]">
-        Documentation-first registry
+        Cozy component library
       </span>
     </div>
   </a>
