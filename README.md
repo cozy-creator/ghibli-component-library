@@ -4,9 +4,9 @@ Registry-first, shadcn-style React components with a soft paper-and-ink visual l
 
 Ghibli UI is designed for source distribution, not package consumption. Consumers install components with `shadcn add`, copy the source into their app, and customize it there.
 
-The repository is organized around a documentation-first workflow:
+The repository is organized around a showcase-first workflow:
 
-- `apps/web` is the primary docs experience
+- `apps/web` is the primary one-page component showcase
 - Storybook is the secondary isolated demo surface
 - `registry/ghibli` is the canonical public source
 - `registry.json` is the install contract
@@ -14,9 +14,10 @@ The repository is organized around a documentation-first workflow:
 ## What You Get
 
 - Installable scenic primitives such as buttons, cards, fields, tabs, overlays, and tooltips
-- Grouped patterns such as auth forms, marketing sections, account sections, and generation controls
-- A docs app with guides, searchable indexes, detail pages, and examples
-- Storybook grouped by `Foundations`, `Components`, `Patterns`, and `Examples`
+- New reusable primitives such as `cartoon-button` and `hand-drawn-frame`
+- Grouped patterns such as auth forms, docs surfaces, feedback banners, layout shells, marketing sections, account sections, and generation controls
+- A simple one-page showcase with one install command and one-by-one component previews
+- Storybook grouped by `Foundations`, `Components/*`, and `Patterns/*`
 
 ## Stack
 
@@ -54,7 +55,7 @@ pnpm build:storybook
 pnpm smoke:registry
 ```
 
-`pnpm dev` starts the docs app. `pnpm dev:storybook` starts Storybook.
+`pnpm dev` starts the showcase app. `pnpm dev:storybook` starts Storybook.
 
 `pnpm build:web` generates the registry into `apps/web/public/r` before building the docs app, so preview and deployment always serve the latest registry artifacts.
 
@@ -78,7 +79,7 @@ Run Storybook:
 pnpm dev:storybook
 ```
 
-The docs app is the main public experience. Storybook is useful when you want to inspect isolated states or compare variants quickly.
+The showcase app is the main public experience. Storybook is useful when you want to inspect isolated states or compare variants quickly.
 
 ## Registry Usage
 
@@ -95,37 +96,21 @@ Add this namespace to a consumer `components.json`:
 Then install items with:
 
 ```bash
-pnpm dlx shadcn@latest add @ghibli/button
-pnpm dlx shadcn@latest add @ghibli/marketing-sections
+pnpm dlx shadcn@latest add @ghibli/all
 ```
 
-Always install the style item first:
-
-```bash
-pnpm dlx shadcn@latest add @ghibli/style
-```
-
-Then add only the components or patterns your app actually needs.
+`@ghibli/all` is a fileless aggregate registry item that installs every public component and block in one command.
 
 ## Documentation Structure
 
-The docs app is structured like a shareable library site:
+The web app is now a single anchored component specimen page:
 
-- `Home`: overview, featured items, and example entry points
-- `Guides`: getting started, installation, theming, registry usage, and development
-- `Components`: searchable primitive index and detail pages
-- `Patterns`: searchable grouped-block index and detail pages
-- `Examples`: small reusable example compositions
+- install and registry setup at the top
+- every public component displayed one by one
+- interactive triggers for dropdowns, sheets, and modals
+- Storybook linked only as the isolated inspection surface
 
-Each component or pattern page includes:
-
-- preview
-- install command
-- import snippet
-- usage snippet
-- examples
-- notes
-- related items
+Legacy component, pattern, guide, and example routes redirect into the matching showcase section or item anchor.
 
 ## Consumer Example
 
