@@ -7,7 +7,6 @@ import {
   DialogTitle
 } from "@/components/ui/dialog";
 import { HandDrawnFrame } from "@/components/ui/hand-drawn-frame";
-import { Separator } from "@/components/ui/separator";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
 export type AuthDialogTab = "login" | "register";
@@ -39,7 +38,6 @@ export function AuthDialog({
   onOpenChange,
   onTabChange,
   open,
-  providerActions = [],
   registerContent,
   showForgotPassword = false,
   tab = "login",
@@ -47,15 +45,26 @@ export function AuthDialog({
 }: AuthDialogProps) {
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-[40rem] border-transparent bg-transparent p-0 shadow-none">
+      <DialogContent
+        aria-describedby={undefined}
+        style={
+          {
+            "--dialog-background": "transparent",
+            "--dialog-border-color": "transparent",
+            "--dialog-max-width": "28rem",
+            "--dialog-padding": "0px"
+          } as React.CSSProperties
+        }
+      >
         <HandDrawnFrame
           className="overflow-hidden bg-[color:var(--card)] px-5 py-5"
+          shape="card"
           strokeColor="var(--border)"
           strokeWidth={1.45}
           svgClassName="opacity-70"
-          variant="card"
+          variant={0.6}
         >
-          <DialogHeader className="pr-10">
+          <DialogHeader style={{ paddingRight: "2.5rem" }}>
             <DialogTitle>{showForgotPassword ? "Recover your password" : title}</DialogTitle>
           </DialogHeader>
           {showForgotPassword && forgotPasswordContent ? (
@@ -63,41 +72,17 @@ export function AuthDialog({
           ) : (
             <div className="grid gap-4">
               <Tabs onValueChange={(value) => onTabChange?.(value as AuthDialogTab)} value={tab}>
-                <TabsList className="w-full">
+                <TabsList style={{ width: "100%" }}>
                   <TabsTrigger className="flex-1" value="login">
                     Sign in
                   </TabsTrigger>
-                  <TabsTrigger className="flex-1" value="register">
-                    Register
-                  </TabsTrigger>
-                </TabsList>
-                <TabsContent value="login">{loginContent}</TabsContent>
-                <TabsContent value="register">{registerContent}</TabsContent>
-              </Tabs>
-              {providerActions.length > 0 ? (
-                <>
-                  <div className="flex items-center gap-3">
-                    <Separator className="flex-1" />
-                    <span className="text-xs uppercase tracking-[0.18em] text-[color:var(--muted-foreground)]">
-                      Or continue with
-                    </span>
-                    <Separator className="flex-1" />
-                  </div>
-                  <div className="grid gap-2 sm:grid-cols-2">
-                    {providerActions.map((provider) => (
-                      <button
-                        className="flex items-center justify-center gap-2 border border-[color:var(--border)] bg-[color:var(--paper-soft)] px-3 py-2 text-sm transition-colors hover:bg-white/50"
-                        key={provider.id}
-                        onClick={() => provider.onSelect?.()}
-                        type="button"
-                      >
-                        {provider.icon}
-                        {provider.label}
-                      </button>
-                    ))}
-                  </div>
-                </>
-              ) : null}
+                <TabsTrigger className="flex-1" value="register">
+                  Register
+                </TabsTrigger>
+              </TabsList>
+              <TabsContent value="login">{loginContent}</TabsContent>
+              <TabsContent value="register">{registerContent}</TabsContent>
+            </Tabs>
             </div>
           )}
         </HandDrawnFrame>

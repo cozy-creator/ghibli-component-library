@@ -12,7 +12,7 @@ export function Input({
   return (
     <HandDrawnFrame
       className={cn(
-        "w-full bg-[color:color-mix(in_oklab,var(--paper-soft)_90%,white)]",
+        "ghibli-input-frame w-full bg-[color:color-mix(in_oklab,var(--paper-soft)_90%,white)]",
         disabled && "opacity-60"
       )}
       strokeColor="var(--border)"
@@ -22,10 +22,9 @@ export function Input({
     >
       <input
         className={cn(
-          "h-11 w-full min-w-0 border-0 bg-transparent px-3 py-2 text-sm text-[color:var(--foreground)] outline-none",
-          "placeholder:text-[color:var(--muted-foreground)] disabled:cursor-not-allowed",
+          "ghibli-input-control w-full min-w-0 border-0 bg-transparent",
           "focus:outline-none focus-visible:outline-none",
-          "file:inline-flex file:h-6 file:border-0 file:bg-transparent file:text-sm file:font-medium file:text-foreground",
+          "file:inline-flex file:border-0 file:bg-transparent file:text-sm file:font-medium file:text-foreground",
           className
         )}
         data-slot="input"

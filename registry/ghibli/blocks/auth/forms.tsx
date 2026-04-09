@@ -4,7 +4,10 @@ import { ArrowLeft, Eye, EyeOff } from "lucide-react";
 import { FormField } from "@/components/blocks/form/form-field";
 import { NoticeBanner } from "@/components/blocks/feedback/notice-banner";
 import { CartoonButton } from "@/components/ui/cartoon-button";
+import { HandDrawnFrame } from "@/components/ui/hand-drawn-frame";
 import { Input } from "@/components/ui/input";
+import { Separator } from "@/components/ui/separator";
+import { cn, focusRingClass } from "@/lib/utils";
 
 interface BaseAuthFormProps {
   className?: string;
@@ -14,6 +17,13 @@ interface BaseAuthFormProps {
   title?: string;
 }
 
+interface AuthProviderAction {
+  icon?: React.ReactNode;
+  id: string;
+  label: string;
+  onSelect?: () => void;
+}
+
 export interface LoginFormProps extends BaseAuthFormProps {
   email: string;
   onEmailChange: (value: string) => void;
@@ -21,31 +31,41 @@ export interface LoginFormProps extends BaseAuthFormProps {
   onPasswordChange: (value: string) => void;
   onSubmit?: (event: React.FormEvent<HTMLFormElement>) => void;
   password: string;
+  providerActions?: AuthProviderAction[];
 }
 
 export function LoginForm({
   className,
   email,
   error,
-  helperText = "Use this form inside dialogs, sidebars, or full-page auth screens.",
+  helperText,
   onEmailChange,
-  onForgotPassword,
+  onForgotPassword: _onForgotPassword,
   onPasswordChange,
   onSubmit,
   password,
+  providerActions = [],
   submitting,
-  title = "Sign in"
+  title
 }: LoginFormProps) {
   const [showPassword, setShowPassword] = React.useState(false);
 
   return (
-    <form className={className ? `${className} space-y-4` : "space-y-4"} onSubmit={onSubmit}>
-      <div className="space-y-1">
-        <h3 className="font-[var(--font-heading)] text-3xl text-[color:var(--ink-strong)]">{title}</h3>
-        <p className="text-sm leading-7 text-muted-foreground">{helperText}</p>
-      </div>
+    <form className={cn("grid gap-4", className)} onSubmit={onSubmit}>
+      {title || helperText ? (
+        <div className="grid gap-1">
+          {title ? (
+            <h3 className="font-[var(--font-heading)] text-3xl text-[color:var(--ink-strong)]">
+              {title}
+            </h3>
+          ) : null}
+          {helperText ? (
+            <p className="text-sm leading-7 text-muted-foreground">{helperText}</p>
+          ) : null}
+        </div>
+      ) : null}
 
-      <FormField htmlFor="login-email" label="Email or username">
+      <FormField>
         <Input
           autoComplete="email"
           id="login-email"
@@ -55,21 +75,7 @@ export function LoginForm({
         />
       </FormField>
 
-      <FormField
-        action={
-          onForgotPassword ? (
-            <button
-              className="text-xs text-muted-foreground transition-colors hover:text-primary"
-              onClick={onForgotPassword}
-              type="button"
-            >
-              Forgot password?
-            </button>
-          ) : undefined
-        }
-        htmlFor="login-password"
-        label="Password"
-      >
+      <FormField>
         <div className="relative">
           <Input
             autoComplete="current-password"
@@ -100,13 +106,30 @@ export function LoginForm({
 
       <CartoonButton
         className="w-full"
-        color="#7b9d68"
+        color="var(--success)"
         disabled={submitting}
         loading={Boolean(submitting)}
         loadingText="Signing in..."
         text="Sign in"
         type="submit"
       />
+
+      {providerActions.length > 0 ? (
+        <div className="grid gap-3 pt-1">
+          <div className="flex items-center gap-3">
+            <Separator className="flex-1" />
+            <span className="text-[11px] uppercase tracking-[0.18em] text-muted-foreground">
+              Other ways to sign in
+            </span>
+            <Separator className="flex-1" />
+          </div>
+          <div className="ghibli-auth-provider-grid grid gap-2">
+            {providerActions.map((provider) => (
+              <AuthProviderButton key={provider.id} provider={provider} />
+            ))}
+          </div>
+        </div>
+      ) : null}
     </form>
   );
 }
@@ -121,6 +144,7 @@ export interface RegisterFormProps extends BaseAuthFormProps {
   onPasswordChange: (value: string) => void;
   onSubmit?: (event: React.FormEvent<HTMLFormElement>) => void;
   password: string;
+  providerActions?: AuthProviderAction[];
 }
 
 export function RegisterForm({
@@ -128,7 +152,7 @@ export function RegisterForm({
   confirmPassword,
   email,
   error,
-  helperText = "Create a soft, welcoming entry point for new users.",
+  helperText,
   name,
   onConfirmPasswordChange,
   onEmailChange,
@@ -136,29 +160,46 @@ export function RegisterForm({
   onPasswordChange,
   onSubmit,
   password,
+  providerActions = [],
   submitting,
-  title = "Create account"
+  title
 }: RegisterFormProps) {
   const [showPassword, setShowPassword] = React.useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = React.useState(false);
+  const maxUsernameLength = 20;
 
   return (
-    <form className={className ? `${className} space-y-4` : "space-y-4"} onSubmit={onSubmit}>
-      <div className="space-y-1">
-        <h3 className="font-[var(--font-heading)] text-3xl text-[color:var(--ink-strong)]">{title}</h3>
-        <p className="text-sm leading-7 text-muted-foreground">{helperText}</p>
-      </div>
+    <form className={cn("grid gap-4", className)} onSubmit={onSubmit}>
+      {title || helperText ? (
+        <div className="grid gap-1">
+          {title ? (
+            <h3 className="font-[var(--font-heading)] text-3xl text-[color:var(--ink-strong)]">
+              {title}
+            </h3>
+          ) : null}
+          {helperText ? (
+            <p className="text-sm leading-7 text-muted-foreground">{helperText}</p>
+          ) : null}
+        </div>
+      ) : null}
 
-      <FormField htmlFor="register-name" label="Display name">
-        <Input
-          id="register-name"
-          onChange={(event) => onNameChange(event.target.value)}
-          placeholder="Melina"
-          value={name}
-        />
+      <FormField>
+        <div className="relative">
+          <Input
+            className="pr-14"
+            id="register-name"
+            maxLength={maxUsernameLength}
+            onChange={(event) => onNameChange(event.target.value)}
+            placeholder="yourname"
+            value={name}
+          />
+          <span className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 text-[11px] text-muted-foreground">
+            {name.length}/{maxUsernameLength}
+          </span>
+        </div>
       </FormField>
 
-      <FormField htmlFor="register-email" label="Email">
+      <FormField>
         <Input
           autoComplete="email"
           id="register-email"
@@ -169,49 +210,48 @@ export function RegisterForm({
         />
       </FormField>
 
-      <div className="grid gap-4 md:grid-cols-2">
-        <FormField htmlFor="register-password" label="Password">
-          <div className="relative">
-            <Input
-              autoComplete="new-password"
-              className="pr-10"
-              id="register-password"
-              onChange={(event) => onPasswordChange(event.target.value)}
-              placeholder="Choose a passphrase"
-              type={showPassword ? "text" : "password"}
-              value={password}
-            />
-            <button
-              className="absolute right-3 top-1/2 z-30 -translate-y-1/2 text-muted-foreground hover:text-foreground"
-              onClick={() => setShowPassword((previous) => !previous)}
-              type="button"
-            >
-              {showPassword ? <EyeOff size={14} /> : <Eye size={14} />}
-            </button>
-          </div>
-        </FormField>
+      <FormField>
+        <div className="relative">
+          <Input
+            autoComplete="new-password"
+            className="pr-10"
+            id="register-password"
+            onChange={(event) => onPasswordChange(event.target.value)}
+            placeholder="Min. 8 characters"
+            type={showPassword ? "text" : "password"}
+            value={password}
+          />
+          <button
+            className="absolute right-3 top-1/2 z-30 -translate-y-1/2 text-muted-foreground hover:text-foreground"
+            onClick={() => setShowPassword((previous) => !previous)}
+            type="button"
+          >
+            {showPassword ? <EyeOff size={14} /> : <Eye size={14} />}
+          </button>
+        </div>
+      </FormField>
 
-        <FormField htmlFor="register-confirm-password" label="Confirm password">
-          <div className="relative">
-            <Input
-              autoComplete="new-password"
-              className="pr-10"
-              id="register-confirm-password"
-              onChange={(event) => onConfirmPasswordChange(event.target.value)}
-              placeholder="Repeat password"
-              type={showConfirmPassword ? "text" : "password"}
-              value={confirmPassword}
-            />
-            <button
-              className="absolute right-3 top-1/2 z-30 -translate-y-1/2 text-muted-foreground hover:text-foreground"
-              onClick={() => setShowConfirmPassword((previous) => !previous)}
-              type="button"
-            >
-              {showConfirmPassword ? <EyeOff size={14} /> : <Eye size={14} />}
-            </button>
-          </div>
-        </FormField>
-      </div>
+      <FormField>
+        <div className="relative">
+          <Input
+            autoComplete="new-password"
+            className="pr-10"
+            id="register-confirm-password"
+            onChange={(event) => onConfirmPasswordChange(event.target.value)}
+            placeholder="••••••••"
+            type={showConfirmPassword ? "text" : "password"}
+            value={confirmPassword}
+          />
+          <button
+            aria-label={showConfirmPassword ? "Hide confirm password" : "Show confirm password"}
+            className="absolute right-3 top-1/2 z-30 -translate-y-1/2 text-muted-foreground hover:text-foreground"
+            onClick={() => setShowConfirmPassword((previous) => !previous)}
+            type="button"
+          >
+            {showConfirmPassword ? <EyeOff size={14} /> : <Eye size={14} />}
+          </button>
+        </div>
+      </FormField>
 
       {error ? (
         <NoticeBanner
@@ -223,13 +263,30 @@ export function RegisterForm({
 
       <CartoonButton
         className="w-full"
-        color="#7b9d68"
+        color="var(--success)"
         disabled={submitting}
         loading={Boolean(submitting)}
         loadingText="Creating account..."
         text="Create account"
         type="submit"
       />
+
+      {providerActions.length > 0 ? (
+        <div className="grid gap-3 pt-1">
+          <div className="flex items-center gap-3">
+            <Separator className="flex-1" />
+            <span className="text-[11px] uppercase tracking-[0.18em] text-muted-foreground">
+              Other ways to register
+            </span>
+            <Separator className="flex-1" />
+          </div>
+          <div className="ghibli-auth-provider-grid grid gap-2">
+            {providerActions.map((provider) => (
+              <AuthProviderButton key={provider.id} provider={provider} />
+            ))}
+          </div>
+        </div>
+      ) : null}
     </form>
   );
 }
@@ -255,8 +312,8 @@ export function ForgotPasswordForm({
   title = "Reset password"
 }: ForgotPasswordFormProps) {
   return (
-    <form className={className ? `${className} space-y-4` : "space-y-4"} onSubmit={onSubmit}>
-      <div className="space-y-1">
+    <form className={cn("grid gap-4", className)} onSubmit={onSubmit}>
+      <div className="grid gap-1">
         <div className="flex items-center justify-between gap-3">
           <h3 className="font-[var(--font-heading)] text-3xl text-[color:var(--ink-strong)]">{title}</h3>
           {onBack ? (
@@ -315,5 +372,37 @@ function ButtonLike({ onBack }: { onBack: () => void }) {
       <ArrowLeft className="size-4" />
       Back
     </button>
+  );
+}
+
+function AuthProviderButton({ provider }: { provider: AuthProviderAction }) {
+  const disabled = !provider.onSelect;
+
+  return (
+    <HandDrawnFrame
+      className={cn(
+        "w-full bg-[color:var(--paper-soft)] transition-colors",
+        disabled ? "opacity-60" : "hover:bg-white/50"
+      )}
+      shape="banner"
+      strokeColor="var(--border)"
+      strokeWidth={1.05}
+      svgClassName="opacity-80"
+      variant={0.3}
+    >
+      <button
+        className={cn(
+          "flex w-full items-center justify-center gap-2 px-3 py-2 text-sm text-[color:var(--foreground)]",
+          focusRingClass,
+          disabled && "cursor-not-allowed"
+        )}
+        disabled={disabled}
+        onClick={() => provider.onSelect?.()}
+        type="button"
+      >
+        {provider.icon}
+        {provider.label}
+      </button>
+    </HandDrawnFrame>
   );
 }

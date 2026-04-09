@@ -1,4 +1,4 @@
-import { render, screen, waitFor } from "@testing-library/react";
+import { render, screen, waitFor, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 
 import { App } from "@/apps/web/src/app";
@@ -8,21 +8,34 @@ import {
 } from "@/apps/web/src/data/demo-fixtures";
 
 describe("showcase interactions", () => {
-  it("switches auth tabs inside the interactive auth modal", async () => {
+  it("opens the auth modal from Cozy-style trigger buttons", async () => {
     const user = userEvent.setup();
 
     window.history.pushState({}, "", "/");
 
-    render(<App />);
+    const { container } = render(<App />);
+    const authSection = container.querySelector("#pattern-auth-forms");
 
-    await user.click(screen.getByRole("button", { name: "Open auth modal" }));
+    expect(authSection).not.toBeNull();
+
+    await user.click(
+      within(authSection as HTMLElement).getByRole("button", { name: "Sign in" })
+    );
 
     expect(screen.getByRole("heading", { name: "Welcome back" })).toBeInTheDocument();
 
-    await user.click(screen.getByRole("tab", { name: "Register" }));
+    await user.click(screen.getByRole("button", { name: "Close" }));
+
+    await waitFor(() => {
+      expect(screen.queryByRole("heading", { name: "Welcome back" })).not.toBeInTheDocument();
+    });
+
+    await user.click(
+      within(authSection as HTMLElement).getByRole("button", { name: "Create account" })
+    );
 
     expect(screen.getByRole("tab", { name: "Register" })).toHaveAttribute("data-state", "active");
-    expect(screen.getByRole("heading", { name: "Create account" })).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "Create account" })).toBeInTheDocument();
   });
 
   it("opens the community image and video modals from the one-page showcase", async () => {

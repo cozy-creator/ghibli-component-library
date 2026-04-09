@@ -45,7 +45,15 @@ export function CommunityImageModal({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-[min(96vw,72rem)] p-0 overflow-hidden">
+      <DialogContent
+        style={
+          {
+            "--dialog-max-width": "72rem",
+            "--dialog-padding": "0px",
+            overflow: "hidden"
+          } as React.CSSProperties
+        }
+      >
         <div className="grid md:grid-cols-[minmax(0,1.4fr)_minmax(18rem,0.8fr)]">
           <div className="relative bg-[color:var(--paper-soft)]">
             <img alt={item.imageAlt ?? item.title} className="h-full w-full object-cover" src={item.imageUrl} />
@@ -112,7 +120,15 @@ export function CommunityVideoModal({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-[min(96vw,72rem)] overflow-hidden p-0">
+      <DialogContent
+        style={
+          {
+            "--dialog-max-width": "72rem",
+            "--dialog-padding": "0px",
+            overflow: "hidden"
+          } as React.CSSProperties
+        }
+      >
         <div className="grid gap-0 md:grid-cols-[minmax(0,1.35fr)_minmax(18rem,0.82fr)]">
           <div className="bg-[color:rgba(26,24,21,0.92)] p-3">
             <video
