@@ -3,6 +3,7 @@ import {
   BookOpen,
   FileText,
   Flower2,
+  LogIn,
   LogOut,
   MessageCircle,
   Sparkles,
@@ -21,12 +22,6 @@ import {
   AuthDialog,
   Badge,
   Button,
-  Card,
-  CardContent,
-  CardDescription,
-  CardFooter,
-  CardHeader,
-  CardTitle,
   CartoonButton,
   CommunityEmbedCard,
   CommunityImageCard,
@@ -67,14 +62,12 @@ import {
   LoginForm,
   NoticeBanner,
   PageHero,
-  PageHeroSkeleton,
   PageSection,
   PageShell,
   RegisterForm,
   Separator,
   ShellFooter,
   ShellHeader,
-  Skeleton,
   Tabs,
   Textarea,
   Tooltip,
@@ -88,6 +81,12 @@ import {
   GitHubHeaderIcon,
   mockHeaderAvatarUrl,
 } from "@/apps/web/src/components/site-header-icons";
+import {
+  AppleAuthIcon,
+  DiscordAuthIcon,
+  GitHubAuthIcon,
+  GoogleAuthIcon,
+} from "@/apps/web/src/components/auth-provider-icons";
 
 import {
   aspectRatioOptions,
@@ -219,6 +218,32 @@ export function HomePage() {
   const [currentPassword, setCurrentPassword] = useState("");
   const [newPassword, setNewPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
+  const authProviderActions = [
+    {
+      icon: <GoogleAuthIcon />,
+      id: "google",
+      label: "Google",
+      onSelect: () => undefined,
+    },
+    {
+      icon: <GitHubAuthIcon />,
+      id: "github",
+      label: "GitHub",
+      onSelect: () => undefined,
+    },
+    {
+      icon: <DiscordAuthIcon />,
+      id: "discord",
+      label: "Discord",
+      onSelect: () => undefined,
+    },
+    {
+      icon: <AppleAuthIcon />,
+      id: "apple",
+      label: "Apple",
+      onSelect: () => undefined,
+    },
+  ];
 
   return (
     <div
@@ -317,36 +342,108 @@ export function HomePage() {
 
         <Specimen
           id="component-hand-drawn-frame"
-          note="Reusable hand-drawn lines for cards, banners, pills, and panels."
+          note="The updated frame primitive now supports shape, intensity, variation, clipping, and stroke-width tuning."
           title="Hand Drawn Frame"
         >
-          <DemoGrid>
+          <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
             <HandDrawnFrame
               className="bg-[color:var(--card)] px-5 py-5"
-              variant="card"
+              shape="organic"
+              strokeWidth={2.4}
+              variant={0.7}
+              variation={0}
             >
-              <p className="font-[var(--font-heading)] text-2xl text-[color:var(--ink-strong)]">
-                Card frame
+              <p className="font-[var(--font-heading)] text-xl text-[color:var(--ink-strong)]">
+                Organic callout
               </p>
-              <p className="mt-2 text-sm leading-7 text-muted-foreground">
-                Irregular border, real content inside.
+              <p className="mt-2 text-xs leading-6 text-muted-foreground">
+                <code>shape="organic" variant=&#123;0.7&#125; strokeWidth=&#123;2.4&#125;</code>
               </p>
             </HandDrawnFrame>
             <HandDrawnFrame
-              className="bg-[color:var(--paper)] px-5 py-4"
-              variant="banner"
+              className="bg-[color:rgba(255,255,255,0.55)] px-5 py-4"
+              shape="steady"
+              strokeWidth={1.4}
+              variant={0.45}
+              variation={1}
             >
-              <p className="font-medium text-[color:var(--ink-strong)]">
-                Banner frame
+              <p className="font-[var(--font-heading)] text-xl text-[color:var(--ink-strong)]">
+                Steady shell chip
+              </p>
+              <p className="mt-2 text-xs leading-6 text-muted-foreground">
+                <code>shape="steady" variant=&#123;0.45&#125; variation=&#123;1&#125;</code>
               </p>
             </HandDrawnFrame>
             <HandDrawnFrame
               className="w-fit bg-[color:color-mix(in_oklab,var(--ring)_22%,white)] px-5 py-2 text-[color:var(--primary)]"
-              variant="pill"
+              shape="pill"
+              strokeWidth={1.35}
+              variant={0.9}
+              variation={2}
             >
-              Pill frame
+              <div className="grid gap-1">
+                <span className="font-medium">Pill navigation</span>
+                <span className="text-[11px] text-[color:var(--ink-soft)]">
+                  <code>shape="pill" variant=&#123;0.9&#125;</code>
+                </span>
+              </div>
             </HandDrawnFrame>
-          </DemoGrid>
+            <HandDrawnFrame
+              className="bg-[color:rgba(255,255,255,0.52)] px-5 py-5"
+              shape="panel"
+              strokeWidth={1.6}
+              variant={0.5}
+              variation={3}
+            >
+              <p className="font-[var(--font-heading)] text-xl text-[color:var(--ink-strong)]">
+                Panel grouping
+              </p>
+              <p className="mt-2 text-xs leading-6 text-muted-foreground">
+                <code>shape="panel" variant=&#123;0.5&#125;</code>
+              </p>
+            </HandDrawnFrame>
+            <HandDrawnFrame
+              className="bg-[color:rgba(255,255,255,0.58)] px-5 py-5"
+              shape="surface"
+              strokeWidth={1.4}
+              variant={0.35}
+              variation={4}
+            >
+              <p className="font-[var(--font-heading)] text-xl text-[color:var(--ink-strong)]">
+                Quiet surface
+              </p>
+              <p className="mt-2 text-xs leading-6 text-muted-foreground">
+                <code>shape="surface" variant=&#123;0.35&#125;</code>
+              </p>
+            </HandDrawnFrame>
+            <HandDrawnFrame
+              className="overflow-hidden bg-[linear-gradient(180deg,rgba(249,243,226,0.98),rgba(239,227,193,0.98))]"
+              clipContent
+              shape="card"
+              strokeWidth={1.55}
+              variant={0.6}
+              variation={1}
+            >
+              <div className="aspect-[4/5] bg-[linear-gradient(180deg,rgba(255,255,255,0.16),rgba(63,43,19,0.18))]" />
+              <div className="px-4 py-3 text-center font-[var(--font-heading)] text-[1.05rem] text-[color:var(--ink-strong)]">
+                Card clip content
+              </div>
+            </HandDrawnFrame>
+            <HandDrawnFrame
+              className="bg-[color:var(--paper)] px-5 py-4"
+              shape="banner"
+              strokeWidth={1.25}
+              variant={0.3}
+              variation={0}
+            >
+              <p className="font-[var(--font-heading)] text-xl text-[color:var(--ink-strong)]">
+                Calm banner
+              </p>
+              <p className="mt-2 text-xs leading-6 text-muted-foreground">
+                <code>shape="banner" variant=&#123;0.3&#125; variation=&#123;0&#125;</code>
+              </p>
+            </HandDrawnFrame>
+          </div>
         </Specimen>
       </ShowcaseGroup>
 
@@ -390,53 +487,21 @@ export function HomePage() {
         </Specimen>
 
         <Specimen
-          id="component-display"
-          note="Small display primitives used by the larger blocks."
-          title="Badges, Card, Avatar, Skeleton, Separator"
+          id="component-separator"
+          note="The paper divider used between compact menu, modal, and form groupings."
+          title="Separator"
         >
-          <DemoGrid>
-            <Card>
-              <CardHeader>
-                <Badge className="w-fit" tone="lantern" variant="stamp">
-                  Card
-                </Badge>
-                <CardTitle>Forest lantern walk</CardTitle>
-                <CardDescription>
-                  Paper card surface with warm borders.
-                </CardDescription>
-              </CardHeader>
-              <CardContent>
-                <div className="flex items-center gap-3">
-                  <div className="grid gap-2">
-                    <Skeleton className="h-3 w-36" />
-                    <Skeleton className="h-3 w-24" />
-                  </div>
-                </div>
-              </CardContent>
-              <CardFooter>
-                <div className="flex flex-wrap gap-2">
-                  <Badge>Default</Badge>
-                  <Badge tone="meadow" variant="soft">
-                    Meadow
-                  </Badge>
-                  <Badge tone="river" variant="outline">
-                    River
-                  </Badge>
-                </div>
-              </CardFooter>
-            </Card>
-            <DemoSurface>
-              <div className="grid gap-4">
-                <p className="font-medium text-[color:var(--ink-strong)]">
-                  Separator
-                </p>
-                <Separator />
-                <p className="text-sm leading-7 text-muted-foreground">
-                  Used between compact menu and form sections.
-                </p>
-              </div>
-            </DemoSurface>
-          </DemoGrid>
+          <DemoSurface>
+            <div className="grid gap-4">
+              <p className="font-medium text-[color:var(--ink-strong)]">
+                Separator
+              </p>
+              <Separator />
+              <p className="text-sm leading-7 text-muted-foreground">
+                Used between compact menu and form sections.
+              </p>
+            </div>
+          </DemoSurface>
         </Specimen>
 
         <Specimen
@@ -470,40 +535,35 @@ export function HomePage() {
       <ShowcaseGroup id="auth-flows">
         <Specimen
           id="pattern-auth-forms"
-          note="Presentational auth forms with no store or service dependencies."
+          note="Cozy-style auth entry points stay button-driven and open the matching modal instead of rendering full forms inline."
           title="Auth Forms"
         >
-          <div className="grid gap-5 lg:grid-cols-2">
-            <DemoSurface>
-              <LoginForm
-                email="mei@ghibli-ui.test"
-                onEmailChange={() => undefined}
-                onForgotPassword={() => undefined}
-                onPasswordChange={() => undefined}
-                password="studio-secret"
-              />
-            </DemoSurface>
-            <DemoSurface>
-              <RegisterForm
-                confirmPassword=""
-                email=""
-                name=""
-                onConfirmPasswordChange={() => undefined}
-                onEmailChange={() => undefined}
-                onNameChange={() => undefined}
-                onPasswordChange={() => undefined}
-                password=""
-              />
-            </DemoSurface>
+          <div className="flex flex-wrap gap-3">
+            <CartoonButton
+              color="var(--success)"
+              icon={<LogIn className="size-4" />}
+              onClick={() => {
+                setAuthTab("login");
+                setAuthOpen(true);
+              }}
+              text="Sign in"
+            />
+            <Button
+              onClick={() => {
+                setAuthTab("register");
+                setAuthOpen(true);
+              }}
+              variant="secondary"
+            >
+              Create account
+            </Button>
+            <CartoonButton
+              color="var(--success)"
+              onClick={() => setPasswordDialogOpen(true)}
+              size="sm"
+              text="Change password"
+            />
           </div>
-        </Specimen>
-
-        <Specimen
-          id="pattern-auth-dialog"
-          note="Modal examples stay interactive so the page does not stack open overlays."
-          title="Auth Modal"
-        >
-          <Button onClick={() => setAuthOpen(true)}>Open auth modal</Button>
           <AuthDialog
             loginContent={
               <LoginForm
@@ -512,23 +572,12 @@ export function HomePage() {
                 onForgotPassword={() => undefined}
                 onPasswordChange={() => undefined}
                 password=""
+                providerActions={authProviderActions}
               />
             }
             onOpenChange={setAuthOpen}
             onTabChange={setAuthTab}
             open={authOpen}
-            providerActions={[
-              {
-                icon: <GitHubHeaderIcon />,
-                id: "github",
-                label: "GitHub",
-              },
-              {
-                icon: <MessageCircle className="size-4" />,
-                id: "discord",
-                label: "Discord",
-              },
-            ]}
             registerContent={
               <RegisterForm
                 confirmPassword=""
@@ -539,9 +588,20 @@ export function HomePage() {
                 onNameChange={() => undefined}
                 onPasswordChange={() => undefined}
                 password=""
+                providerActions={authProviderActions}
               />
             }
             tab={authTab}
+          />
+          <AccountChangePasswordDialog
+            confirmPassword={confirmPassword}
+            currentPassword={currentPassword}
+            newPassword={newPassword}
+            onConfirmPasswordChange={setConfirmPassword}
+            onCurrentPasswordChange={setCurrentPassword}
+            onNewPasswordChange={setNewPassword}
+            onOpenChange={setPasswordDialogOpen}
+            open={passwordDialogOpen}
           />
         </Specimen>
       </ShowcaseGroup>
@@ -550,12 +610,9 @@ export function HomePage() {
         <Specimen
           id="pattern-community-cards"
           note="Image, video, embed, and x-post cards from the community feed."
-          title="Community Cards"
+          title="Cards"
         >
           <div className="grid gap-5">
-            <Tabs className="min-w-0 gap-6" onValueChange={setActiveTab} value={activeTab}>
-              <CommunityTabsList activeTab={activeTab} />
-            </Tabs>
             <DemoGrid>
               {communityImageItems.map((item) => (
                 <CommunityImageCard
@@ -889,16 +946,6 @@ export function HomePage() {
             onNewEmailChange={setNewEmail}
             onOpenChange={setEmailDialogOpen}
             open={emailDialogOpen}
-          />
-          <AccountChangePasswordDialog
-            confirmPassword={confirmPassword}
-            currentPassword={currentPassword}
-            newPassword={newPassword}
-            onConfirmPasswordChange={setConfirmPassword}
-            onCurrentPasswordChange={setCurrentPassword}
-            onNewPasswordChange={setNewPassword}
-            onOpenChange={setPasswordDialogOpen}
-            open={passwordDialogOpen}
           />
         </Specimen>
 

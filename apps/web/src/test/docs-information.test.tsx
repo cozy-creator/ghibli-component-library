@@ -22,7 +22,7 @@ describe("docs information architecture", () => {
     expect(screen.getByRole("heading", { name: "Button" })).toBeInTheDocument();
     expect(screen.getByRole("heading", { name: "Tabs Switch" })).toBeInTheDocument();
     expect(screen.getByRole("heading", { name: "User Display Box" })).toBeInTheDocument();
-    expect(screen.getByRole("heading", { name: "Community Cards" })).toBeInTheDocument();
+    expect(screen.getByRole("heading", { name: "Cards" })).toBeInTheDocument();
     expect(screen.getByRole("heading", { name: "Storybook" })).toBeInTheDocument();
 
     const orderedSections = orderedSectionIds.map((id) => {
@@ -69,7 +69,8 @@ describe("docs information architecture", () => {
     });
 
     expect(screen.getByRole("heading", { name: "Auth Forms" })).toBeInTheDocument();
-    expect(screen.getAllByText("Sign in")).not.toHaveLength(0);
+    expect(screen.getAllByRole("button", { name: "Sign in" })).not.toHaveLength(0);
+    expect(screen.getByRole("button", { name: "Create account" })).toBeInTheDocument();
     expect(screen.queryByText("pnpm dlx shadcn@latest add @ghibli/auth-forms")).not.toBeInTheDocument();
   });
 
