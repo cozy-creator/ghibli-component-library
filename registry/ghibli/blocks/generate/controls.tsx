@@ -28,8 +28,9 @@ import { cn, type SelectOption, useControllableState } from "@/lib/utils";
 
 export interface GenerateAttachment {
   id: string;
-  kind?: "image" | "video";
+  kind?: "file" | "image" | "video";
   name: string;
+  previewUrl?: string;
   sizeLabel?: string;
 }
 

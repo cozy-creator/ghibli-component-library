@@ -70,7 +70,7 @@ export const footerColumns = [
     links: [
       { href: "#component-button", label: "Buttons" },
       { href: "#component-generate-prompt-composer", label: "Prompt composer" },
-      { href: "#pattern-community-cards", label: "Community cards" }
+      { href: "#pattern-community-cards", label: "Cards" }
     ],
     title: "Library"
   },
@@ -293,8 +293,30 @@ export const aspectRatioOptions = [
 ];
 
 export const sampleAttachments = [
-  { id: "att-1", kind: "image" as const, name: "moodboard-lantern.jpg", sizeLabel: "1.4 MB" },
-  { id: "att-2", kind: "image" as const, name: "palette-clouds.png", sizeLabel: "820 KB" }
+  {
+    id: "att-1",
+    kind: "image" as const,
+    name: "moodboard-lantern.jpg",
+    previewUrl: scenicDataUri({
+      accent: "#f0b970",
+      label: "Lantern Moodboard",
+      skyBottom: "#e6d5ad",
+      skyTop: "#aac9d9"
+    }),
+    sizeLabel: "1.4 MB"
+  },
+  {
+    id: "att-2",
+    kind: "image" as const,
+    name: "palette-clouds.png",
+    previewUrl: scenicDataUri({
+      accent: "#d6d18f",
+      label: "Cloud Palette",
+      skyBottom: "#dce4c4",
+      skyTop: "#9fbed8"
+    }),
+    sizeLabel: "820 KB"
+  }
 ];
 
 export const sampleJobs = [

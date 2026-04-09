@@ -42,15 +42,24 @@ describe("generate editor bar", () => {
   });
 
   it("renders the prompt composer attachment surface", () => {
-    render(
+    const { container } = render(
       <GeneratePromptComposer
-        attachments={[{ id: "mood", kind: "image", name: "moodboard.jpg", sizeLabel: "1.2 MB" }]}
+        attachments={[
+          {
+            id: "mood",
+            kind: "image",
+            name: "moodboard.jpg",
+            previewUrl:
+              "data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 10 10'><rect width='10' height='10' fill='%23d8b36a'/></svg>",
+            sizeLabel: "1.2 MB"
+          }
+        ]}
         prompt="Riverside cabin at dusk"
       />
     );
 
     expect(screen.getByDisplayValue("Riverside cabin at dusk")).toBeInTheDocument();
-    expect(screen.getByText("moodboard.jpg")).toBeInTheDocument();
-    expect(screen.getByText("1.2 MB")).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "Open attachment menu" })).toBeInTheDocument();
+    expect(container.querySelector("img")).not.toBeNull();
   });
 });

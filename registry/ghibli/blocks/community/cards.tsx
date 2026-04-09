@@ -1,9 +1,8 @@
 import * as React from "react";
-import { Play, Sparkles, Heart, MessageCircle, Repeat2 } from "lucide-react";
+import { Heart, MessageCircle, Play, Repeat2, Sparkles } from "lucide-react";
 
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Badge } from "@/components/ui/badge";
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { HandDrawnFrame } from "@/components/ui/hand-drawn-frame";
 import { TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { cn } from "@/lib/utils";
@@ -36,37 +35,39 @@ export function CommunityTabsList({
   return (
     <HandDrawnFrame
       className={cn(
-        "mx-auto w-fit max-w-full bg-[color:color-mix(in_oklab,var(--card)_84%,white)] px-1.5 py-1.5 max-[424px]:w-full",
+        "ghibli-community-tabs-frame mx-auto w-fit max-w-full bg-[color:color-mix(in_oklab,var(--card)_84%,white)] px-1.5 py-1.5 max-[424px]:w-full",
         className
       )}
+      shape="surface"
       strokeColor="var(--border)"
       strokeWidth={1.5}
-      variant="steady"
+      variant={0.45}
     >
-      <TabsList className="gap-1 border-0 bg-transparent p-0 shadow-none max-[424px]:grid max-[424px]:w-full max-[424px]:grid-cols-3 max-[424px]:gap-1">
+      <TabsList className="ghibli-community-tabs-list gap-1 border-0 bg-transparent p-0 shadow-none max-[424px]:grid max-[424px]:w-full max-[424px]:grid-cols-3 max-[424px]:gap-1">
         {tabs.map((tab) => {
           const isActive = tab.value === activeTab;
 
           return (
             <TabsTrigger
-              className="min-w-0 bg-transparent p-0 text-[color:var(--muted-foreground)] shadow-none hover:text-[color:var(--foreground)] data-[state=active]:bg-transparent data-[state=active]:shadow-none max-[424px]:w-full max-[424px]:text-xs"
+              className="ghibli-community-tabs-trigger min-w-0 bg-transparent p-0 text-[color:var(--muted-foreground)] shadow-none hover:text-[color:var(--foreground)] data-[state=active]:bg-transparent data-[state=active]:shadow-none max-[424px]:w-full max-[424px]:text-xs"
               disabled={disabled || tab.disabled}
               key={tab.value}
               value={tab.value}
             >
               {isActive ? (
                 <HandDrawnFrame
-                  className="inline-flex max-w-full bg-[color:color-mix(in_oklab,var(--ring)_22%,white)] px-4 py-2 text-[color:var(--primary)] max-[424px]:px-2"
-                  contentClassName="flex min-w-0 items-center justify-center text-center leading-none"
+                  className="ghibli-community-tabs-pill inline-flex max-w-full bg-[color:color-mix(in_oklab,var(--ring)_22%,white)] px-4 py-2 text-[color:var(--primary)] max-[424px]:px-2"
+                  contentClassName="ghibli-community-tabs-pill-content flex min-w-0 items-center justify-center text-center leading-none"
+                  shape="pill"
                   strokeColor="var(--border)"
                   strokeWidth={1.35}
                   svgClassName="size-full"
-                  variant="pill"
+                  variant={0.9}
                 >
-                  <span className="whitespace-nowrap">{tab.label}</span>
+                  <span className="ghibli-community-tabs-text whitespace-nowrap">{tab.label}</span>
                 </HandDrawnFrame>
               ) : (
-                <span className="inline-flex items-center justify-center whitespace-nowrap px-4 py-2 max-[424px]:px-2">
+                <span className="ghibli-community-tabs-label inline-flex items-center justify-center whitespace-nowrap px-4 py-2 max-[424px]:px-2">
                   {tab.label}
                 </span>
               )}
@@ -89,7 +90,6 @@ export interface CommunityImageCardProps {
 }
 
 export function CommunityImageCard({
-  badge,
   imageAlt,
   imageUrl,
   meta,
@@ -98,22 +98,41 @@ export function CommunityImageCard({
   title
 }: CommunityImageCardProps) {
   return (
-    <button className="w-full text-left" onClick={onClick} type="button">
-      <Card className="overflow-hidden transition-transform hover:-translate-y-1">
-        <div className="aspect-[3/4] overflow-hidden border-b border-[color:var(--border)] bg-[color:var(--paper-soft)]">
-          <img
-            alt={imageAlt ?? title}
-            className="size-full object-cover transition-transform duration-300 hover:scale-[1.02]"
-            src={imageUrl}
-          />
-        </div>
-        <CardHeader>
-          {badge ? <Badge>{badge}</Badge> : null}
-          <CardTitle>{title}</CardTitle>
-          {summary ? <CardDescription>{summary}</CardDescription> : null}
-        </CardHeader>
-        {meta ? <CardFooter className="text-xs text-[color:var(--muted-foreground)]">{meta}</CardFooter> : null}
-      </Card>
+    <button
+      aria-label={`Open ${title}`}
+      className="group block w-full text-left"
+      onClick={onClick}
+      title={summary ?? meta ?? title}
+      type="button"
+    >
+      <HandDrawnFrame
+        className="overflow-hidden bg-[linear-gradient(180deg,rgba(249,243,226,0.98),rgba(239,227,193,0.98))] transition-transform duration-300 group-hover:-translate-y-1"
+        clipContent
+        shape="card"
+        strokeColor="var(--border)"
+        strokeWidth={1.55}
+        variant={0.6}
+        variation={1}
+      >
+        <Card className="gap-0 overflow-hidden border-0 bg-transparent py-0 shadow-none">
+          <div className="relative aspect-[4/5] overflow-hidden border-b-2 border-[color:var(--border-soft)] bg-[color:var(--paper-soft)]">
+            <img
+              alt={imageAlt ?? title}
+              className="size-full object-cover transition duration-500 group-hover:scale-[1.02]"
+              src={imageUrl}
+            />
+            {meta ? (
+              <span className="absolute left-3 top-3 border border-[color:var(--border-soft)] bg-[color:rgba(255,251,244,0.82)] px-2 py-1 text-[10px] font-medium tracking-[0.08em] text-[color:var(--ink-strong)] uppercase">
+                {meta}
+              </span>
+            ) : null}
+            <div className="pointer-events-none absolute inset-0 bg-[linear-gradient(180deg,rgba(255,255,255,0.05),transparent_35%,rgba(59,39,15,0.18))]" />
+          </div>
+          <div className="px-3 py-3 text-center font-[var(--font-heading)] text-[1.1rem] leading-tight text-[color:var(--ink-strong)] sm:px-4 sm:py-3.5">
+            {title}
+          </div>
+        </Card>
+      </HandDrawnFrame>
     </button>
   );
 }
@@ -136,21 +155,36 @@ export function CommunityVideoCard({
   title
 }: CommunityVideoCardProps) {
   return (
-    <button className="w-full text-left" onClick={onPlay} type="button">
-      <Card className="overflow-hidden transition-transform hover:-translate-y-1">
-        <div className="relative aspect-video overflow-hidden border-b border-[color:var(--border)] bg-[color:var(--paper-soft)]">
-          <img alt={posterAlt ?? title} className="size-full object-cover" src={posterUrl} />
-          <div className="absolute inset-0 bg-[linear-gradient(180deg,transparent,rgba(42,31,23,0.34))]" />
-          <div className="absolute bottom-3 left-3 inline-flex items-center gap-2 rounded-full border border-white/30 bg-black/35 px-3 py-1 text-xs text-white backdrop-blur-sm">
-            <Play className="size-3 fill-current" />
-            {duration ?? "Preview"}
+    <button
+      aria-label={`Play ${title}`}
+      className="group block w-full text-left"
+      onClick={onPlay}
+      title={meta ?? title}
+      type="button"
+    >
+      <HandDrawnFrame
+        className="overflow-hidden bg-[linear-gradient(180deg,rgba(249,243,226,0.98),rgba(239,227,193,0.98))] transition-transform duration-300 group-hover:-translate-y-1"
+        clipContent
+        shape="card"
+        strokeColor="var(--border)"
+        strokeWidth={1.55}
+        variant={0.6}
+        variation={1}
+      >
+        <Card className="gap-0 overflow-hidden border-0 bg-transparent py-0 shadow-none">
+          <div className="relative aspect-video overflow-hidden border-b-2 border-[color:var(--border-soft)] bg-[color:var(--paper-soft)]">
+            <img alt={posterAlt ?? title} className="size-full object-cover" src={posterUrl} />
+            <div className="absolute inset-0 bg-[radial-gradient(circle_at_top,rgba(255,255,255,0.14),transparent_40%),linear-gradient(180deg,rgba(0,0,0,0.08),rgba(0,0,0,0.68))]" />
+            <span className="absolute bottom-3 left-3 inline-flex items-center gap-2 border border-white/20 bg-black/42 px-3 py-1 text-xs text-white backdrop-blur-md">
+              <Play className="size-3.5 fill-current" />
+              {duration ?? "Preview"}
+            </span>
           </div>
-        </div>
-        <CardHeader>
-          <CardTitle>{title}</CardTitle>
-        </CardHeader>
-        {meta ? <CardFooter className="text-xs text-[color:var(--muted-foreground)]">{meta}</CardFooter> : null}
-      </Card>
+          <div className="px-4 py-3 text-center font-[var(--font-heading)] text-[1.1rem] leading-tight text-[color:var(--ink-strong)] sm:px-5 sm:py-3.5">
+            {title}
+          </div>
+        </Card>
+      </HandDrawnFrame>
     </button>
   );
 }
@@ -196,38 +230,36 @@ export function CommunityXPostCard({
   note
 }: CommunityXPostCardProps) {
   return (
-    <Card>
-      <CardHeader className="grid grid-cols-[auto_1fr_auto] items-start gap-3">
-        <Avatar>
-          {avatarUrl ? <AvatarImage alt={author} src={avatarUrl} /> : null}
-          <AvatarFallback>{avatarFallback ?? author.slice(0, 2).toUpperCase()}</AvatarFallback>
-        </Avatar>
-        <div className="grid gap-1">
-          <CardTitle className="text-xl">{author}</CardTitle>
-          <p className="text-sm text-[color:var(--muted-foreground)]">@{handle}</p>
+    <CommunityEmbedCard
+      author={author}
+      embed={
+        <div className="grid gap-4">
+          <p className="text-sm leading-7 text-[color:var(--foreground)]">{body}</p>
+          {mediaUrl ? (
+            <div className="overflow-hidden rounded-[calc(var(--radius)-0.25rem)] border border-[color:var(--border)]">
+              <img alt="" className="aspect-[16/9] w-full object-cover" src={mediaUrl} />
+            </div>
+          ) : null}
+          {note ? (
+            <div className="flex items-center gap-2 rounded-[calc(var(--radius)-0.35rem)] bg-[color:var(--paper-soft)] px-3 py-2 text-xs text-[color:var(--muted-foreground)]">
+              <Sparkles className="size-4" />
+              {note}
+            </div>
+          ) : null}
         </div>
-        <Badge tone="river">x-post</Badge>
-      </CardHeader>
-      <CardContent className="grid gap-4">
-        <p className="text-sm leading-7 text-[color:var(--foreground)]">{body}</p>
-        {mediaUrl ? (
-          <div className="overflow-hidden rounded-[calc(var(--radius)-0.25rem)] border border-[color:var(--border)]">
-            <img alt="" className="aspect-[16/9] w-full object-cover" src={mediaUrl} />
-          </div>
-        ) : null}
-        {note ? (
-          <div className="flex items-center gap-2 rounded-[calc(var(--radius)-0.35rem)] bg-[color:var(--paper-soft)] px-3 py-2 text-xs text-[color:var(--muted-foreground)]">
-            <Sparkles className="size-4" />
-            {note}
-          </div>
-        ) : null}
-      </CardContent>
-      <CardFooter className="flex flex-wrap gap-4 text-xs text-[color:var(--muted-foreground)]">
-        <Metric icon={MessageCircle}>{metrics?.replies ?? "24"}</Metric>
-        <Metric icon={Repeat2}>{metrics?.reposts ?? "48"}</Metric>
-        <Metric icon={Heart}>{metrics?.likes ?? "180"}</Metric>
-      </CardFooter>
-    </Card>
+      }
+      footer={
+        <div className="flex flex-wrap gap-4 text-xs text-[color:var(--muted-foreground)]">
+          <Metric icon={MessageCircle}>{metrics?.replies ?? "24"}</Metric>
+          <Metric icon={Repeat2}>{metrics?.reposts ?? "48"}</Metric>
+          <Metric icon={Heart}>{metrics?.likes ?? "180"}</Metric>
+        </div>
+      }
+      handle={handle.startsWith("@") ? handle : `@${handle}`}
+      title={author}
+      {...(avatarFallback ? { avatarFallback } : {})}
+      {...(avatarUrl ? { avatarUrl } : {})}
+    />
   );
 }
 
@@ -253,9 +285,10 @@ export function CommunityEmbedCard({
   return (
     <HandDrawnFrame
       className="overflow-hidden bg-[color:var(--card)]"
+      shape="card"
       strokeColor="var(--border)"
       strokeWidth={1.55}
-      variant="card"
+      variant={0.6}
     >
       <Card className="border-0 bg-transparent shadow-none">
         <CardHeader className="grid grid-cols-[auto_1fr_auto] items-start gap-3">
