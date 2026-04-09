@@ -45,11 +45,11 @@ describe("generate editor bar", () => {
     render(
       <GeneratePromptComposer
         attachments={[{ id: "mood", kind: "image", name: "moodboard.jpg", sizeLabel: "1.2 MB" }]}
-        prompt="Cozy river cabin"
+        prompt="Riverside cabin at dusk"
       />
     );
 
-    expect(screen.getByDisplayValue("Cozy river cabin")).toBeInTheDocument();
+    expect(screen.getByDisplayValue("Riverside cabin at dusk")).toBeInTheDocument();
     expect(screen.getByText("moodboard.jpg")).toBeInTheDocument();
     expect(screen.getByText("1.2 MB")).toBeInTheDocument();
   });

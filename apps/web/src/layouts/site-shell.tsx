@@ -1,21 +1,39 @@
+import { Flower2, LogOut, UserRound } from "lucide-react";
 import { Outlet } from "react-router-dom";
 
 import { HandDrawnFrame, ShellHeader } from "@ghibli/ui";
 
+import {
+  DocsHeaderIcon,
+  GitHubHeaderIcon,
+  mockHeaderAvatarUrl,
+} from "@/apps/web/src/components/site-header-icons";
+
+const repoUrl = "https://github.com/rodrigoluz/ghibli-component-library";
+
+function jumpToAnchor(anchorId: string) {
+  window.location.hash = anchorId;
+}
+
+function BrandMark({ className }: { className?: string }) {
+  return (
+    <HandDrawnFrame
+      className={className ?? "size-12 shrink-0 bg-white/45 p-2.5"}
+      strokeColor="var(--border-strong)"
+      strokeWidth={1.85}
+    >
+      <Flower2
+        aria-hidden="true"
+        className="size-full text-[color:var(--ink-strong)]"
+      />
+    </HandDrawnFrame>
+  );
+}
+
 function SiteBrand() {
   return (
     <a className="inline-flex items-center gap-3" href="#install">
-      <HandDrawnFrame
-        className="size-12 shrink-0 bg-white/45 p-1.5"
-        strokeColor="var(--border-strong)"
-        strokeWidth={1.85}
-      >
-        <img
-          alt="Cozy.art logo"
-          className="size-full object-cover"
-          src="/cozyart.png"
-        />
-      </HandDrawnFrame>
+      <BrandMark />
       <div className="grid gap-0.5">
         <span className="font-[var(--font-heading)] text-3xl text-[color:var(--ink-strong)]">
           Ghibli UI Library
@@ -41,6 +59,57 @@ export function SiteShell() {
             { href: "#shell-navigation", label: "Shell" },
             { href: "#core-primitives", label: "Primitives" },
           ]}
+          renderLink={(item, className, children) =>
+            item.external ? (
+              <a
+                className={className}
+                href={item.href}
+                rel="noreferrer"
+                target="_blank"
+              >
+                {children}
+              </a>
+            ) : (
+              <a className={className} href={item.href}>
+                {children}
+              </a>
+            )
+          }
+          socialItems={[
+            {
+              external: true,
+              href: repoUrl,
+              icon: <GitHubHeaderIcon />,
+              iconOnly: true,
+              label: "GitHub",
+            },
+            {
+              href: "#docs-screens",
+              icon: <DocsHeaderIcon />,
+              iconOnly: true,
+              label: "Docs",
+            },
+          ]}
+          user={{
+            avatarUrl: mockHeaderAvatarUrl,
+            initials: "MS",
+            menuItems: [
+              {
+                icon: <UserRound className="size-4" />,
+                id: "account",
+                label: "Account",
+                onSelect: () => jumpToAnchor("account-flows"),
+              },
+              {
+                destructive: true,
+                icon: <LogOut className="size-4" />,
+                id: "sign-out",
+                label: "Sign out",
+              },
+            ],
+            name: "User",
+            subtitle: "mei@ghibli-ui.test",
+          }}
         />
         <main className="flex-1" id="content">
           <Outlet />

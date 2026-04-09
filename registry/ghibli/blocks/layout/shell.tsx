@@ -1,5 +1,5 @@
 import * as React from "react";
-import { ExternalLink, LogOut, Menu, UserRound } from "lucide-react";
+import { ExternalLink, LogOut, Menu } from "lucide-react";
 
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
@@ -191,7 +191,7 @@ export function ShellHeader({
             ))}
           </nav>
           <div className="shell-header-desktop-actions items-center gap-2 lg:justify-self-end">
-            <div className="flex items-center gap-0">
+            <div className="flex items-center gap-2">
               {socialItems.map((item) => (
                 <HeaderLink item={item} key={item.href} renderLink={renderLink} />
               ))}
@@ -225,10 +225,13 @@ export function ShellHeader({
                   <div className="grid gap-3 border border-[color:var(--border)] bg-[color:var(--paper-soft)] p-3">
                     <div className="flex min-w-0 items-center gap-3">
                       <Avatar size="sm">
-                        {user.avatarUrl ? <AvatarImage alt={user.name} src={user.avatarUrl} /> : null}
-                        <AvatarFallback>
-                          {user.initials ?? user.name.slice(0, 2).toUpperCase()}
-                        </AvatarFallback>
+                        {user.avatarUrl ? (
+                          <AvatarImage alt={user.name} src={user.avatarUrl} />
+                        ) : (
+                          <AvatarFallback>
+                            {user.initials ?? user.name.slice(0, 2).toUpperCase()}
+                          </AvatarFallback>
+                        )}
                       </Avatar>
                       <div className="grid min-w-0 flex-1 gap-0.5">
                         <span
@@ -303,23 +306,27 @@ function ShellHeaderUser({ user }: { user: ShellUser }) {
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
         <button
+          aria-label={user.name}
           className={cn(
-            "inline-flex max-w-[16rem] items-center align-middle",
+            "inline-flex max-w-[16rem] items-center rounded-none align-middle",
             focusRingClass
           )}
         >
           <HandDrawnFrame
-            className="min-w-0 bg-white/45 px-2 py-2"
-            contentClassName="grid min-w-0 grid-cols-[auto_minmax(0,1fr)] items-center gap-3"
+            className="min-w-0 bg-white/45 px-3 py-2"
+            contentClassName="shell-header-user-trigger"
             strokeColor="var(--border)"
             strokeWidth={1.9}
             variant="steady"
           >
             <Avatar size="sm">
-              {user.avatarUrl ? <AvatarImage alt={user.name} src={user.avatarUrl} /> : null}
-              <AvatarFallback>
-                {user.initials ?? user.name.slice(0, 2).toUpperCase()}
-              </AvatarFallback>
+              {user.avatarUrl ? (
+                <AvatarImage alt={user.name} src={user.avatarUrl} />
+              ) : (
+                <AvatarFallback>
+                  {user.initials ?? user.name.slice(0, 2).toUpperCase()}
+                </AvatarFallback>
+              )}
             </Avatar>
             <span
               className="hidden min-w-0 truncate pb-[0.08em] text-sm leading-[1.2] text-[color:var(--ink-strong)] xl:block"
@@ -332,27 +339,26 @@ function ShellHeaderUser({ user }: { user: ShellUser }) {
       </DropdownMenuTrigger>
       <DropdownMenuContent
         align="end"
-        className="w-max min-w-[10rem] overflow-visible border-0 bg-transparent p-0 ring-0"
+        sideOffset={4}
+        className="shell-header-user-menu overflow-visible border-0 bg-transparent p-0 ring-0"
+        style={{
+          minWidth: "var(--radix-popover-trigger-width)",
+          width: "var(--radix-popover-trigger-width)"
+        }}
       >
         <HandDrawnFrame
-          className="w-full bg-[color:var(--paper)] px-1.5 py-1.5"
-          contentClassName="grid gap-0.5"
+          className="w-full bg-[color:var(--paper)] px-3 py-2"
+          contentClassName="grid gap-1"
           strokeColor="var(--border)"
           strokeWidth={1.6}
           variant="panel"
         >
-          <DropdownMenuItem className="pointer-events-none">
-            <UserRound className="size-4" />
-            {user.name}
-          </DropdownMenuItem>
-          {user.subtitle ? (
-            <DropdownMenuItem className="pointer-events-none text-muted-foreground">
-              {user.subtitle}
-            </DropdownMenuItem>
-          ) : null}
           {user.menuItems?.map((item) => (
             <DropdownMenuItem
-              className={cn(item.destructive && "text-destructive")}
+              className={cn(
+                "gap-1.5 px-0 py-1.5 whitespace-nowrap focus:bg-[color:var(--ring)] focus:text-[color:var(--ink-strong)] data-[highlighted]:bg-[color:var(--ring)] data-[highlighted]:text-[color:var(--ink-strong)]",
+                item.destructive && "text-destructive"
+              )}
               key={item.id}
               onClick={item.onSelect}
             >

@@ -2,8 +2,9 @@ import { useState, type ReactNode } from "react";
 import {
   BookOpen,
   FileText,
-  Github,
+  Flower2,
   ImageIcon,
+  LogOut,
   MessageCircle,
   Sparkles,
   UserRound,
@@ -94,6 +95,12 @@ import {
 } from "@ghibli/ui";
 
 import {
+  DocsHeaderIcon,
+  GitHubHeaderIcon,
+  mockHeaderAvatarUrl,
+} from "@/apps/web/src/components/site-header-icons";
+
+import {
   aspectRatioOptions,
   communityImageItems,
   communityVideoItems,
@@ -132,17 +139,18 @@ function CodeBlock({ children }: { children: string }) {
   );
 }
 
-function CozyLogo({ className }: { className?: string }) {
+const repoUrl = "https://github.com/rodrigoluz/ghibli-component-library";
+
+function LibraryMark({ className }: { className?: string }) {
   return (
     <HandDrawnFrame
-      className={className ?? "size-12 shrink-0 bg-white/45 p-1.5"}
+      className={className ?? "size-12 shrink-0 bg-white/45 p-2.5"}
       strokeColor="var(--border-strong)"
       strokeWidth={1.85}
     >
-      <img
-        alt="Cozy.art logo"
-        className="size-full object-cover"
-        src="/cozyart.png"
+      <Flower2
+        aria-hidden="true"
+        className="size-full text-[color:var(--ink-strong)]"
       />
     </HandDrawnFrame>
   );
@@ -234,7 +242,7 @@ export function HomePage() {
   const [aspectRatio, setAspectRatio] = useState("3:4");
   const [numImages, setNumImages] = useState(2);
   const [prompt, setPrompt] = useState(
-    "A quiet ferry deck at dusk, paper lantern reflections across the water, cozy watercolor lighting.",
+    "A quiet ferry deck at dusk, paper lantern reflections across the water, soft watercolor lighting.",
   );
   const [negativePrompt, setNegativePrompt] = useState("");
   const [authOpen, setAuthOpen] = useState(false);
@@ -243,7 +251,7 @@ export function HomePage() {
   const [passwordDialogOpen, setPasswordDialogOpen] = useState(false);
   const [communityImageOpen, setCommunityImageOpen] = useState(false);
   const [communityVideoOpen, setCommunityVideoOpen] = useState(false);
-  const [newEmail, setNewEmail] = useState("new-address@cozy.art");
+  const [newEmail, setNewEmail] = useState("new-address@ghibli-ui.test");
   const [currentPassword, setCurrentPassword] = useState("");
   const [newPassword, setNewPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
@@ -284,22 +292,22 @@ export function HomePage() {
       </section>
 
       <ShowcaseGroup
-        description="The layout shell, sticky header, sidebar navigation, and page wrappers now follow the same Cozy page chrome used across the source app."
+        description="The layout shell, sticky header, sidebar navigation, and page wrappers follow the same paper-and-ink chrome used across the showcase."
         id="shell-navigation"
         title="Shell & Navigation"
       >
         <Specimen
           id="component-user-popup"
-          note="The layout shell header, social links, and user menu are shown directly instead of abstract placeholders."
+          note="The layout shell header, utility links, and user menu are shown directly instead of abstract placeholders."
           title="Header / User Popup"
         >
           <div className="[&>header]:static">
             <ShellHeader
               brand={
                 <a className="inline-flex items-center gap-3" href="#install">
-                  <CozyLogo />
+                  <LibraryMark />
                   <span className="font-[var(--font-heading)] text-2xl text-[color:var(--ink-strong)]">
-                    cozy.art
+                    Ghibli UI
                   </span>
                 </a>
               }
@@ -311,19 +319,20 @@ export function HomePage() {
               socialItems={[
                 {
                   external: true,
-                  href: "https://github.com",
-                  icon: <Github className="size-4" />,
+                  href: repoUrl,
+                  icon: <GitHubHeaderIcon />,
                   iconOnly: true,
                   label: "GitHub",
                 },
                 {
                   href: "#docs-screens",
-                  icon: <BookOpen className="size-4" />,
+                  icon: <DocsHeaderIcon />,
                   iconOnly: true,
                   label: "Docs",
                 },
               ]}
               user={{
+                avatarUrl: mockHeaderAvatarUrl,
                 initials: "MS",
                 menuItems: [
                   {
@@ -331,10 +340,15 @@ export function HomePage() {
                     id: "account",
                     label: "Account",
                   },
-                  { destructive: true, id: "logout", label: "Sign out" },
+                  {
+                    destructive: true,
+                    icon: <LogOut className="size-4" />,
+                    id: "logout",
+                    label: "Sign out",
+                  },
                 ],
-                name: "Melina Sketch",
-                subtitle: "melina@cozy.art",
+                name: "User",
+                subtitle: "mei@ghibli-ui.test",
               }}
             />
           </div>
@@ -444,7 +458,7 @@ export function HomePage() {
 
         <Specimen
           id="component-cartoon-button"
-          note="The chunky CTA used across Cozy generate flows."
+          note="The chunky CTA used across the generate flow."
           title="Cartoon Button"
         >
           <div className="flex flex-wrap gap-3">
@@ -576,7 +590,7 @@ export function HomePage() {
 
         <Specimen
           id="component-tabs"
-          note="Tabs and the Cozy community tab switch."
+          note="Tabs and the community tab switch."
           title="Tabs Switch"
         >
           <div className="grid gap-5">
@@ -598,7 +612,7 @@ export function HomePage() {
       </ShowcaseGroup>
 
       <ShowcaseGroup
-        description="Auth is kept presentational and interactive on this page, so the Cozy dialog rhythm is visible without pulling in backend dependencies."
+        description="Auth is kept presentational and interactive on this page, so the dialog rhythm stays visible without pulling in backend dependencies."
         id="auth-flows"
         title="Auth Flows"
       >
@@ -610,11 +624,11 @@ export function HomePage() {
           <div className="grid gap-5 lg:grid-cols-2">
             <DemoSurface>
               <LoginForm
-                email="melina@cozy.art"
+                email="mei@ghibli-ui.test"
                 onEmailChange={() => undefined}
                 onForgotPassword={() => undefined}
                 onPasswordChange={() => undefined}
-                password="cozy-secret"
+                password="studio-secret"
               />
             </DemoSurface>
             <DemoSurface>
@@ -653,7 +667,7 @@ export function HomePage() {
             open={authOpen}
             providerActions={[
               {
-                icon: <Github className="size-4" />,
+                icon: <GitHubHeaderIcon />,
                 id: "github",
                 label: "GitHub",
               },
@@ -681,7 +695,7 @@ export function HomePage() {
       </ShowcaseGroup>
 
       <ShowcaseGroup
-        description="Community feed pieces are shown as smaller cards and modal surfaces instead of one opaque page, while keeping the same Cozy presentation."
+        description="Community feed pieces are shown as smaller cards and modal surfaces instead of one opaque page, while keeping the same presentation style."
         id="community-flows"
         title="Community Flows"
       >
@@ -720,7 +734,7 @@ export function HomePage() {
               <CommunityXPostCard {...xPostDemo} />
             </div>
             <CommunityEmbedCard
-              author="Cozy Release"
+              author="Ghibli UI"
               embed={
                 <NoticeBanner
                   description="A compact embed wrapper for custom community content."
@@ -729,7 +743,7 @@ export function HomePage() {
                 />
               }
               footer={<span>Reusable feed shell</span>}
-              handle="@cozyart"
+              handle="@ghibliui"
             />
           </div>
         </Specimen>
@@ -772,7 +786,7 @@ export function HomePage() {
       >
         <Specimen
           id="component-generate-mode-toggle"
-          note="The image and storyboard toggle from the Cozy generate controls."
+          note="The image and storyboard toggle from the generate controls."
           title="Generate Mode Toggle"
         >
           <GenerateModeToggle
@@ -822,7 +836,7 @@ export function HomePage() {
 
         <Specimen
           id="component-generate-prompt-composer"
-          note="The reusable prompt input surface extracted from the Cozy generate page."
+          note="The reusable prompt input surface extracted from the generate page."
           title="Generate Prompt Composer"
         >
           <GeneratePromptComposer
@@ -902,7 +916,7 @@ export function HomePage() {
       </ShowcaseGroup>
 
       <ShowcaseGroup
-        description="Docs surfaces stay installable, while the bigger Cozy page types are compressed into smaller reference specimens on the same page."
+        description="Docs surfaces stay installable, while the bigger route-level page types are compressed into smaller reference specimens on the same page."
         id="docs-screens"
         title="Docs, Info, Legal, Reset, Not Found"
       >
@@ -915,7 +929,7 @@ export function HomePage() {
             <DocsArticle>
               <DocsH2>Docs article</DocsH2>
               <DocsParagraph>
-                Use this block for prose pages that still need the Cozy paper
+                Use this block for prose pages that still need the paper
                 rhythm.
               </DocsParagraph>
               <DocsCallout>
@@ -930,7 +944,7 @@ export function HomePage() {
 
         <Specimen
           id="reference-screens"
-          note="These route-level specimens stay on the one-page showcase so teams can inspect the larger Cozy page shapes without leaving the install surface."
+          note="These route-level specimens stay on the one-page showcase so teams can inspect the larger page shapes without leaving the install surface."
           title="Info, Legal, Reset, Not Found"
         >
           <div className="grid gap-5 lg:grid-cols-2">
@@ -946,7 +960,7 @@ export function HomePage() {
                   title="Feature note"
                 >
                   <NoticeBanner
-                    description="This mirrors the calm tone of Cozy.art information screens."
+                    description="This mirrors the calm tone of the information screens."
                     title="Feature availability"
                     tone="cloud"
                   />
@@ -960,7 +974,7 @@ export function HomePage() {
                 Legal and policy screens use the same prose block, stronger ink
                 headings, and calm spacing.
               </DocsParagraph>
-              <DocsCodeBlock>{`Questions about privacy can be directed to privacy@cozy.art.`}</DocsCodeBlock>
+              <DocsCodeBlock>{`Questions about privacy can be directed to privacy@ghibli-ui.test.`}</DocsCodeBlock>
             </DocsArticle>
 
             <DemoSurface>
@@ -1004,14 +1018,14 @@ export function HomePage() {
       >
         <Specimen
           id="component-user-display-box"
-          note="The profile display box extracted from the Cozy account page."
+          note="The profile display box extracted from the account page."
           title="User Display Box"
         >
           <AccountUserDisplayBox
-            email="melina@cozy.art"
+            email="mei@ghibli-ui.test"
             generatedCount={128}
             hasCustomAvatar
-            name="Melina Sketch"
+            name="User"
             onEditName={() => setEmailDialogOpen(true)}
             onPasswordAction={() => setPasswordDialogOpen(true)}
             onRemoveAvatar={() => undefined}
@@ -1036,7 +1050,7 @@ export function HomePage() {
             </Button>
           </div>
           <AccountChangeEmailDialog
-            currentEmail="melina@cozy.art"
+            currentEmail="mei@ghibli-ui.test"
             newEmail={newEmail}
             onNewEmailChange={setNewEmail}
             onOpenChange={setEmailDialogOpen}
@@ -1061,8 +1075,8 @@ export function HomePage() {
         >
           <div className="grid gap-4">
             <AccountProfileSection
-              email="melina@cozy.art"
-              name="Melina Sketch"
+              email="mei@ghibli-ui.test"
+              name="User"
               planLabel="Painterly plan"
             />
             <AccountLinkedAccountsSection accounts={linkedAccounts} />
@@ -1085,7 +1099,7 @@ export function HomePage() {
       </ShowcaseGroup>
 
       <ShowcaseGroup
-        description="The page closes with shared feedback patterns, isolated Storybook access, and the Cozy footer treatment."
+        description="The page closes with shared feedback patterns, isolated Storybook access, and the shared footer treatment."
         id="footer-endmatter"
         title="Footer & Endmatter"
       >
@@ -1096,7 +1110,7 @@ export function HomePage() {
         >
           <div className="grid gap-5">
             <NoticeBanner
-              description="This mirrors the compact guidance banners used in Cozy.art."
+              description="This mirrors the compact guidance banners used across the library."
               title="Keep prompts short and visual."
               tone="meadow"
             />
@@ -1135,7 +1149,7 @@ export function HomePage() {
 
         <Specimen
           id="component-footer"
-          note="The Cozy footer treatment through the shared layout shell."
+          note="The shared footer treatment through the layout shell."
           title="Footer"
         >
           <ShellFooter
@@ -1145,7 +1159,7 @@ export function HomePage() {
                 className="inline-flex items-center justify-center"
                 href="#install"
               >
-                <CozyLogo className="size-10 shrink-0 bg-white/45 p-1.5" />
+                <LibraryMark className="size-10 shrink-0 bg-white/45 p-2" />
               </a>
             }
             columns={
@@ -1154,7 +1168,7 @@ export function HomePage() {
                 text: link.label,
               })) ?? []
             }
-            text="© 2026 cozy.art"
+            text="© 2026 Ghibli UI"
           />
         </Specimen>
       </ShowcaseGroup>

@@ -12,7 +12,7 @@ describe("account sections", () => {
   it("renders grouped account content", () => {
     render(
       <div>
-        <AccountUserDisplayBox email="melina@cozy.art" generatedCount={64} name="Melina Sketch" />
+        <AccountUserDisplayBox email="mei@ghibli-ui.test" generatedCount={64} name="User" />
         <AccountProfileSection email="melina@ghibli-ui.dev" name="Melina Sketch" planLabel="Painterly plan" />
         <AccountLinkedAccountsSection
           accounts={[
@@ -32,7 +32,7 @@ describe("account sections", () => {
       </div>
     );
 
-    expect(screen.getAllByText("Melina Sketch")).not.toHaveLength(0);
+    expect(screen.getAllByText("User")).not.toHaveLength(0);
     expect(screen.getByText("64 Total generations")).toBeInTheDocument();
     expect(screen.getByText("GitHub")).toBeInTheDocument();
     expect(screen.getAllByText("Painterly plan")).not.toHaveLength(0);
