@@ -205,7 +205,7 @@ export function ShellHeader({
                 <Menu className="size-4" />
               </Button>
             </SheetTrigger>
-            <SheetContent className="w-[min(90vw,24rem)] gap-0">
+            <SheetContent className="shell-header-sheet">
               <SheetHeader className="px-5 pt-5 pb-4">
                 <SheetTitle>{mobileTitle}</SheetTitle>
               </SheetHeader>
