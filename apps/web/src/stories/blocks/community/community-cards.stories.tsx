@@ -5,7 +5,7 @@ import { CommunityImageCard, CommunityTabsList, CommunityVideoCard, CommunityXPo
 import { communityImageItems, communityVideoItems, xPostDemo } from "@/apps/web/src/data/demo-fixtures";
 
 const meta = {
-  title: "Patterns/Community/Community Cards"
+  title: "Patterns/Community/Cards"
 } satisfies Meta;
 
 export default meta;
