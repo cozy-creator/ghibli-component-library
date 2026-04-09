@@ -18,15 +18,12 @@ describe("docs information architecture", () => {
       "footer-endmatter"
     ];
 
-    expect(screen.getAllByText("pnpm dlx shadcn@latest add @ghibli/all")).toHaveLength(1);
-    expect(screen.getByText("Shell & Navigation")).toBeInTheDocument();
-    expect(screen.getByText("Core Primitives")).toBeInTheDocument();
+    expect(screen.getAllByText("pnpm dlx shadcn@latest add @ghibli/components")).toHaveLength(1);
     expect(screen.getByRole("heading", { name: "Button" })).toBeInTheDocument();
     expect(screen.getByRole("heading", { name: "Tabs Switch" })).toBeInTheDocument();
     expect(screen.getByRole("heading", { name: "User Display Box" })).toBeInTheDocument();
     expect(screen.getByRole("heading", { name: "Community Cards" })).toBeInTheDocument();
     expect(screen.getByRole("heading", { name: "Storybook" })).toBeInTheDocument();
-    expect(screen.getByText("Footer & Endmatter")).toBeInTheDocument();
 
     const orderedSections = orderedSectionIds.map((id) => {
       const section = container.querySelector(`#${id}`);
@@ -74,6 +71,30 @@ describe("docs information architecture", () => {
     expect(screen.getByRole("heading", { name: "Auth Forms" })).toBeInTheDocument();
     expect(screen.getAllByText("Sign in")).not.toHaveLength(0);
     expect(screen.queryByText("pnpm dlx shadcn@latest add @ghibli/auth-forms")).not.toBeInTheDocument();
+  });
+
+  it("redirects the removed sheet showcase route to the header specimen", async () => {
+    window.history.pushState({}, "", "/components/sheet");
+
+    render(<App />);
+
+    await waitFor(() => {
+      expect(window.location.hash).toBe("#component-user-popup");
+    });
+
+    expect(screen.getByRole("heading", { name: "Header / User Popup" })).toBeInTheDocument();
+  });
+
+  it("redirects the removed page-shell showcase route to the reference screens specimen", async () => {
+    window.history.pushState({}, "", "/patterns/page-shell");
+
+    render(<App />);
+
+    await waitFor(() => {
+      expect(window.location.hash).toBe("#reference-screens");
+    });
+
+    expect(screen.getByRole("heading", { name: "Info, Legal, Reset, Not Found" })).toBeInTheDocument();
   });
 
   it("treats removed reference routes as not found", () => {

@@ -25,7 +25,7 @@ const componentHashByName: Record<string, string> = {
   input: "#component-forms",
   label: "#component-forms",
   separator: "#component-display",
-  sheet: "#pattern-navigation",
+  sheet: "#component-user-popup",
   skeleton: "#component-display",
   tabs: "#component-tabs",
   textarea: "#component-forms",
@@ -50,8 +50,8 @@ const patternHashByName: Record<string, string> = {
   "layout-shell": "#component-user-popup",
   "marketing-sections": "#pattern-marketing-sections",
   "notice-banner": "#pattern-feedback",
-  "page-shell": "#pattern-page-shell",
-  "sidebar-nav": "#pattern-navigation"
+  "page-shell": "#reference-screens",
+  "sidebar-nav": "#component-user-popup"
 };
 
 export function LegacyComponentRedirect() {

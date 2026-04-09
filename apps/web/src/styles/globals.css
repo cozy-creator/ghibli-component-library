@@ -221,6 +221,10 @@
     gap: calc(var(--spacing) * 4);
   }
 
+  .shell-header-layout[data-has-nav="false"] {
+    grid-template-columns: minmax(0, 1fr) auto;
+  }
+
   .shell-header-brand {
     flex: none;
     justify-self: start;
