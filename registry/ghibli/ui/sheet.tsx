@@ -23,7 +23,7 @@ function SheetOverlay({
 }: React.ComponentProps<typeof DialogPrimitive.Overlay>) {
   return (
     <DialogPrimitive.Overlay
-      className={cn("fixed inset-0 z-50 bg-[color:rgba(54,42,31,0.3)] backdrop-blur-[2px]", className)}
+      className={cn("ghibli-sheet-overlay", className)}
       data-slot="sheet-overlay"
       {...props}
     />
@@ -46,14 +46,10 @@ export function SheetContent({
       <DialogPrimitive.Content
         className={cn(
           paperSurfaceClass,
-          "fixed z-50 flex flex-col gap-4 p-5 shadow-[var(--shadow-raised)]",
-          side === "right" && "bottom-0 right-0 top-0 w-[min(92vw,28rem)] data-[state=open]:slide-in-from-right-12",
-          side === "left" && "bottom-0 left-0 top-0 w-[min(92vw,28rem)] data-[state=open]:slide-in-from-left-12",
-          side === "top" && "left-0 right-0 top-0 min-h-60 data-[state=open]:slide-in-from-top-12",
-          side === "bottom" &&
-            "bottom-0 left-0 right-0 min-h-60 rounded-t-[var(--radius)] data-[state=open]:slide-in-from-bottom-12",
+          "ghibli-sheet-content",
           className
         )}
+        data-side={side}
         data-slot="sheet-content"
         {...props}
       >
