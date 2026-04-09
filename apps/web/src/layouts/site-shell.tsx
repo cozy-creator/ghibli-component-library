@@ -54,11 +54,7 @@ export function SiteShell() {
         <ShellHeader
           brand={<SiteBrand />}
           mobileTitle="Ghibli UI"
-          navItems={[
-            { href: "#install", label: "Install" },
-            { href: "#shell-navigation", label: "Shell" },
-            { href: "#core-primitives", label: "Primitives" },
-          ]}
+          navItems={[]}
           renderLink={(item, className, children) =>
             item.external ? (
               <a

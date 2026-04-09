@@ -3,7 +3,6 @@ import {
   BookOpen,
   FileText,
   Flower2,
-  ImageIcon,
   LogOut,
   MessageCircle,
   Sparkles,
@@ -73,20 +72,10 @@ import {
   PageShell,
   RegisterForm,
   Separator,
-  Sheet,
-  SheetContent,
-  SheetDescription,
-  SheetHeader,
-  SheetTitle,
-  SheetTrigger,
   ShellFooter,
   ShellHeader,
-  SidebarNav,
   Skeleton,
   Tabs,
-  TabsContent,
-  TabsList,
-  TabsTrigger,
   Textarea,
   Tooltip,
   TooltipContent,
@@ -117,18 +106,12 @@ import {
   xPostDemo,
 } from "@/apps/web/src/data/demo-fixtures";
 
-const installCommand = "pnpm dlx shadcn@latest add @ghibli/all";
+const installCommand = "pnpm dlx shadcn@latest add @ghibli/components";
 
 const registrySnippet = `{
   "registries": {
     "@ghibli": "https://<your-domain>/r/{name}.json"
   }
-}`;
-
-const usageSnippet = `import { Button, GenerateEditorBar } from "@/components";
-
-export function Example() {
-  return <Button>Generate</Button>;
 }`;
 
 function CodeBlock({ children }: { children: string }) {
@@ -174,31 +157,12 @@ function DemoSurface({ children }: { children: ReactNode }) {
 
 function ShowcaseGroup({
   children,
-  description,
   id,
-  title,
 }: {
   children: ReactNode;
-  description: string;
   id: string;
-  title: string;
 }) {
-  return (
-    <section
-      className="grid gap-6 border-t border-[color:rgba(77,59,46,0.24)] pt-10"
-      id={id}
-    >
-      <div className="grid gap-2">
-        <p className="text-xs font-semibold uppercase tracking-[0.18em] text-[color:var(--muted-foreground)]">
-          {title}
-        </p>
-        <p className="max-w-3xl text-sm leading-7 text-[color:var(--foreground)]">
-          {description}
-        </p>
-      </div>
-      <div className="grid gap-8">{children}</div>
-    </section>
-  );
+  return <section className="grid gap-8" id={id}>{children}</section>;
 }
 
 function Specimen({
@@ -266,7 +230,7 @@ export function HomePage() {
           <DemoSurface>
             <div className="grid gap-3">
               <p className="text-xs font-semibold uppercase tracking-[0.18em] text-[color:var(--muted-foreground)]">
-                Install every component
+                Install all components
               </p>
               <CodeBlock>{installCommand}</CodeBlock>
             </div>
@@ -280,22 +244,9 @@ export function HomePage() {
             </div>
           </DemoSurface>
         </div>
-
-        <DemoSurface>
-          <div className="grid gap-3">
-            <p className="text-xs font-semibold uppercase tracking-[0.18em] text-[color:var(--muted-foreground)]">
-              Use after install
-            </p>
-            <CodeBlock>{usageSnippet}</CodeBlock>
-          </div>
-        </DemoSurface>
       </section>
 
-      <ShowcaseGroup
-        description="The layout shell, sticky header, sidebar navigation, and page wrappers follow the same paper-and-ink chrome used across the showcase."
-        id="shell-navigation"
-        title="Shell & Navigation"
-      >
+      <ShowcaseGroup id="shell-navigation">
         <Specimen
           id="component-user-popup"
           note="The layout shell header, utility links, and user menu are shown directly instead of abstract placeholders."
@@ -355,91 +306,51 @@ export function HomePage() {
         </Specimen>
 
         <Specimen
-          id="pattern-navigation"
-          note="Sidebar navigation and sheet overlays are shown together because they usually travel with the same shell."
-          title="Sidebar and Sheet"
+          id="component-tabs"
+          note="The community tab switch used for live feed, video, and X posts."
+          title="Tabs Switch"
         >
-          <div className="grid gap-4 lg:grid-cols-[18rem_minmax(0,1fr)]">
-            <DemoSurface>
-              <Sheet>
-                <SheetTrigger asChild>
-                  <Button>Open sheet</Button>
-                </SheetTrigger>
-                <SheetContent>
-                  <SheetHeader>
-                    <SheetTitle>Mobile navigation</SheetTitle>
-                    <SheetDescription>
-                      Sheet content follows the same paper surface style.
-                    </SheetDescription>
-                  </SheetHeader>
-                </SheetContent>
-              </Sheet>
-            </DemoSurface>
-            <DemoSurface>
-              <div className="max-w-sm">
-                <SidebarNav
-                  groups={[
-                    {
-                      id: "demo",
-                      items: [
-                        {
-                          active: true,
-                          href: "#component-button",
-                          icon: <Sparkles className="size-4" />,
-                          id: "button",
-                          label: "Buttons",
-                        },
-                        {
-                          href: "#pattern-community-cards",
-                          icon: <ImageIcon className="size-4" />,
-                          id: "community",
-                          label: "Community",
-                        },
-                        {
-                          href: "#pattern-generate-editor-bar",
-                          icon: <Wand2 className="size-4" />,
-                          id: "generate",
-                          label: "Generate",
-                        },
-                      ],
-                      label: "Showcase",
-                    },
-                  ]}
-                />
-              </div>
-            </DemoSurface>
-          </div>
+          <Tabs className="min-w-0 gap-6" onValueChange={setActiveTab} value={activeTab}>
+            <CommunityTabsList activeTab={activeTab} />
+          </Tabs>
         </Specimen>
 
         <Specimen
-          id="pattern-page-shell"
-          note="Page shell primitives cover heroes, sections, and loading states used across docs, info, and account screens."
-          title="Page Shell"
+          id="component-hand-drawn-frame"
+          note="Reusable hand-drawn lines for cards, banners, pills, and panels."
+          title="Hand Drawn Frame"
         >
-          <DemoSurface>
-            <PageShell className="px-0 pt-0 pb-0" width="md">
-              <PageHero
-                actions={<Button size="sm">Hero action</Button>}
-                badge={<Badge variant="stamp">Page hero</Badge>}
-                description="A compact page hero preview inside the showcase."
-                title="Warm page shell"
-              />
-              <PageSection
-                description="Section wrappers keep spacing consistent."
-                title="Section title"
-              >
-                <PageHeroSkeleton />
-              </PageSection>
-            </PageShell>
-          </DemoSurface>
+          <DemoGrid>
+            <HandDrawnFrame
+              className="bg-[color:var(--card)] px-5 py-5"
+              variant="card"
+            >
+              <p className="font-[var(--font-heading)] text-2xl text-[color:var(--ink-strong)]">
+                Card frame
+              </p>
+              <p className="mt-2 text-sm leading-7 text-muted-foreground">
+                Irregular border, real content inside.
+              </p>
+            </HandDrawnFrame>
+            <HandDrawnFrame
+              className="bg-[color:var(--paper)] px-5 py-4"
+              variant="banner"
+            >
+              <p className="font-medium text-[color:var(--ink-strong)]">
+                Banner frame
+              </p>
+            </HandDrawnFrame>
+            <HandDrawnFrame
+              className="w-fit bg-[color:color-mix(in_oklab,var(--ring)_22%,white)] px-5 py-2 text-[color:var(--primary)]"
+              variant="pill"
+            >
+              Pill frame
+            </HandDrawnFrame>
+          </DemoGrid>
         </Specimen>
       </ShowcaseGroup>
 
-      <ShowcaseGroup
-        description="The reusable building blocks stay small and installable, but they now sit inside a clearer system-first page structure."
-        id="core-primitives"
-        title="Core Primitives"
-      >
+      <ShowcaseGroup id="core-primitives">
         <Specimen
           id="component-button"
           note="The base shadcn-style action primitive."
@@ -476,40 +387,6 @@ export function HomePage() {
             />
             <CartoonButton color="#7fa8bb" loading text="Uploading" />
           </div>
-        </Specimen>
-
-        <Specimen
-          id="component-hand-drawn-frame"
-          note="Reusable hand-drawn lines for cards, banners, pills, and panels."
-          title="Hand Drawn Frame"
-        >
-          <DemoGrid>
-            <HandDrawnFrame
-              className="bg-[color:var(--card)] px-5 py-5"
-              variant="card"
-            >
-              <p className="font-[var(--font-heading)] text-2xl text-[color:var(--ink-strong)]">
-                Card frame
-              </p>
-              <p className="mt-2 text-sm leading-7 text-muted-foreground">
-                Irregular border, real content inside.
-              </p>
-            </HandDrawnFrame>
-            <HandDrawnFrame
-              className="bg-[color:var(--paper)] px-5 py-4"
-              variant="banner"
-            >
-              <p className="font-medium text-[color:var(--ink-strong)]">
-                Banner frame
-              </p>
-            </HandDrawnFrame>
-            <HandDrawnFrame
-              className="w-fit bg-[color:color-mix(in_oklab,var(--ring)_22%,white)] px-5 py-2 text-[color:var(--primary)]"
-              variant="pill"
-            >
-              Pill frame
-            </HandDrawnFrame>
-          </DemoGrid>
         </Specimen>
 
         <Specimen
@@ -588,34 +465,9 @@ export function HomePage() {
           </div>
         </Specimen>
 
-        <Specimen
-          id="component-tabs"
-          note="Tabs and the community tab switch."
-          title="Tabs Switch"
-        >
-          <div className="grid gap-5">
-            <Tabs defaultValue="first">
-              <TabsList>
-                <TabsTrigger value="first">First</TabsTrigger>
-                <TabsTrigger value="second">Second</TabsTrigger>
-                <TabsTrigger value="third">Third</TabsTrigger>
-              </TabsList>
-              <TabsContent value="first">First tab content.</TabsContent>
-              <TabsContent value="second">Second tab content.</TabsContent>
-              <TabsContent value="third">Third tab content.</TabsContent>
-            </Tabs>
-            <Tabs onValueChange={setActiveTab} value={activeTab}>
-              <CommunityTabsList activeTab={activeTab} />
-            </Tabs>
-          </div>
-        </Specimen>
       </ShowcaseGroup>
 
-      <ShowcaseGroup
-        description="Auth is kept presentational and interactive on this page, so the dialog rhythm stays visible without pulling in backend dependencies."
-        id="auth-flows"
-        title="Auth Flows"
-      >
+      <ShowcaseGroup id="auth-flows">
         <Specimen
           id="pattern-auth-forms"
           note="Presentational auth forms with no store or service dependencies."
@@ -694,22 +546,16 @@ export function HomePage() {
         </Specimen>
       </ShowcaseGroup>
 
-      <ShowcaseGroup
-        description="Community feed pieces are shown as smaller cards and modal surfaces instead of one opaque page, while keeping the same presentation style."
-        id="community-flows"
-        title="Community Flows"
-      >
+      <ShowcaseGroup id="community-flows">
         <Specimen
           id="pattern-community-cards"
           note="Image, video, embed, and x-post cards from the community feed."
           title="Community Cards"
         >
           <div className="grid gap-5">
-            <div className="max-w-max">
-              <Tabs onValueChange={setActiveTab} value={activeTab}>
-                <CommunityTabsList activeTab={activeTab} />
-              </Tabs>
-            </div>
+            <Tabs className="min-w-0 gap-6" onValueChange={setActiveTab} value={activeTab}>
+              <CommunityTabsList activeTab={activeTab} />
+            </Tabs>
             <DemoGrid>
               {communityImageItems.map((item) => (
                 <CommunityImageCard
@@ -779,11 +625,7 @@ export function HomePage() {
         </Specimen>
       </ShowcaseGroup>
 
-      <ShowcaseGroup
-        description="The generate stack is shown as a full set: toggles, selectors, prompt surfaces, the editor bar, controls, and generated job history."
-        id="generate-flows"
-        title="Generate Flows"
-      >
+      <ShowcaseGroup id="generate-flows">
         <Specimen
           id="component-generate-mode-toggle"
           note="The image and storyboard toggle from the generate controls."
@@ -915,11 +757,7 @@ export function HomePage() {
         </Specimen>
       </ShowcaseGroup>
 
-      <ShowcaseGroup
-        description="Docs surfaces stay installable, while the bigger route-level page types are compressed into smaller reference specimens on the same page."
-        id="docs-screens"
-        title="Docs, Info, Legal, Reset, Not Found"
-      >
+      <ShowcaseGroup id="docs-screens">
         <Specimen
           id="pattern-docs"
           note="Docs article and FAQ blocks remain public, but now they sit beside the larger route-level page examples."
@@ -1011,11 +849,7 @@ export function HomePage() {
         </Specimen>
       </ShowcaseGroup>
 
-      <ShowcaseGroup
-        description="Account views stay split into smaller installable parts: the user display surface, dialogs, and grouped settings and billing sections."
-        id="account-flows"
-        title="Account Flows"
-      >
+      <ShowcaseGroup id="account-flows">
         <Specimen
           id="component-user-display-box"
           note="The profile display box extracted from the account page."
@@ -1098,11 +932,7 @@ export function HomePage() {
         </Specimen>
       </ShowcaseGroup>
 
-      <ShowcaseGroup
-        description="The page closes with shared feedback patterns, isolated Storybook access, and the shared footer treatment."
-        id="footer-endmatter"
-        title="Footer & Endmatter"
-      >
+      <ShowcaseGroup id="footer-endmatter">
         <Specimen
           id="pattern-feedback"
           note="Inline feedback and sticky action surfaces."

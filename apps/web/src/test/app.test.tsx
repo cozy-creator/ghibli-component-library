@@ -8,9 +8,7 @@ describe("app", () => {
 
     render(<App />);
 
-    expect(screen.getByText("pnpm dlx shadcn@latest add @ghibli/all")).toBeInTheDocument();
-    expect(screen.getByText("Shell & Navigation")).toBeInTheDocument();
-    expect(screen.getByText("Core Primitives")).toBeInTheDocument();
+    expect(screen.getByText("pnpm dlx shadcn@latest add @ghibli/components")).toBeInTheDocument();
     expect(screen.getByRole("heading", { name: "Button" })).toBeInTheDocument();
     expect(screen.getByRole("heading", { name: "Generate Prompt Composer" })).toBeInTheDocument();
     expect(screen.getByRole("heading", { name: "Footer" })).toBeInTheDocument();

@@ -11,9 +11,9 @@ test("renders the single-page showcase and redirects legacy routes into anchors"
   await expect(desktopHeader.getByRole("link", { name: "GitHub" })).toBeVisible();
   await expect(desktopHeader.getByRole("link", { name: "Docs" })).toBeVisible();
   await expect(desktopHeader.getByRole("button", { name: /User/i })).toBeVisible();
-  await expect(page.getByText("pnpm dlx shadcn@latest add @ghibli/all")).toBeVisible();
-  await expect(page.getByText("Shell & Navigation")).toBeVisible();
-  await expect(page.getByText("Core Primitives")).toBeVisible();
+  await expect(page.getByText("pnpm dlx shadcn@latest add @ghibli/components")).toBeVisible();
+  await expect(page.locator("#shell-navigation")).toBeVisible();
+  await expect(page.locator("#core-primitives")).toBeVisible();
   await expect(page.getByRole("heading", { exact: true, name: "Button" })).toBeVisible();
   await expect(page.getByRole("heading", { exact: true, name: "Generate Prompt Composer" })).toBeVisible();
   await expect(page.getByRole("heading", { exact: true, name: "Footer" })).toBeVisible();
@@ -68,7 +68,7 @@ test("renders the showcase on mobile and desktop without horizontal page overflo
   await expect(page.getByRole("heading", { exact: true, name: "Ghibli UI" })).toBeVisible();
   await page.getByRole("button", { name: "Close" }).click();
   await expect(page.getByRole("heading", { exact: true, name: "Storybook" })).toBeVisible();
-  await expect(page.getByText("Footer & Endmatter")).toBeVisible();
+  await expect(page.locator("#footer-endmatter")).toBeVisible();
   await expect(page.getByRole("heading", { exact: true, name: "User Display Box" })).toBeVisible();
   await expect.poll(async () =>
     page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth + 1)

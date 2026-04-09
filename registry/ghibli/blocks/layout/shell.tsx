@@ -171,6 +171,7 @@ export function ShellHeader({
   socialItems = [],
   user
 }: ShellHeaderProps) {
+  const hasNavItems = navItems.length > 0;
   const sheetPrimaryAction = primaryAction
     ? renderSheetPrimaryAction(primaryAction)
     : null;
@@ -183,13 +184,18 @@ export function ShellHeader({
         strokeWidth={2.1}
         variant="banner"
       >
-        <div className="shell-header-layout">
+        <div
+          className="shell-header-layout"
+          data-has-nav={hasNavItems ? "true" : "false"}
+        >
           <div className="shell-header-brand">{brand}</div>
-          <nav className="shell-header-desktop-nav items-center gap-1 lg:justify-self-center">
-            {navItems.map((item) => (
-              <HeaderLink item={item} key={item.href} renderLink={renderLink} />
-            ))}
-          </nav>
+          {hasNavItems ? (
+            <nav className="shell-header-desktop-nav items-center gap-1 lg:justify-self-center">
+              {navItems.map((item) => (
+                <HeaderLink item={item} key={item.href} renderLink={renderLink} />
+              ))}
+            </nav>
+          ) : null}
           <div className="shell-header-desktop-actions items-center gap-2 lg:justify-self-end">
             <div className="flex items-center gap-2">
               {socialItems.map((item) => (
@@ -210,17 +216,19 @@ export function ShellHeader({
                 <SheetTitle>{mobileTitle}</SheetTitle>
               </SheetHeader>
               <div className="flex min-h-0 flex-1 flex-col gap-6 px-4 pb-5">
-                <nav className="grid gap-1.5">
-                  {navItems.map((item) => (
-                    <HeaderLink
-                      closeOnActivate
-                      item={item}
-                      key={item.href}
-                      layout="sheet"
-                      renderLink={renderLink}
-                    />
-                  ))}
-                </nav>
+                {hasNavItems ? (
+                  <nav className="grid gap-1.5">
+                    {navItems.map((item) => (
+                      <HeaderLink
+                        closeOnActivate
+                        item={item}
+                        key={item.href}
+                        layout="sheet"
+                        renderLink={renderLink}
+                      />
+                    ))}
+                  </nav>
+                ) : null}
                 {user ? (
                   <div className="grid gap-3 border border-[color:var(--border)] bg-[color:var(--paper-soft)] p-3">
                     <div className="flex min-w-0 items-center gap-3">
