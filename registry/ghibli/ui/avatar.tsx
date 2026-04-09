@@ -5,9 +5,9 @@ import { cn } from "@/lib/utils";
 type AvatarSize = "sm" | "default" | "lg";
 
 const avatarSizes: Record<AvatarSize, string> = {
-  default: "size-10",
-  lg: "size-14",
-  sm: "size-8"
+  default: "h-10 w-10",
+  lg: "h-14 w-14",
+  sm: "h-8 w-8"
 };
 
 interface AvatarContextValue {
@@ -25,8 +25,8 @@ export function Avatar({
   return (
     <AvatarContext.Provider value={{ size }}>
       <div
-        className={cn(
-          "group/avatar relative inline-flex shrink-0 items-center justify-center overflow-hidden border border-[color:var(--border-strong)] bg-[color:var(--paper-soft)]",
+      className={cn(
+        "group/avatar relative inline-flex shrink-0 items-center justify-center overflow-hidden border border-[color:var(--border-strong)] bg-[color:var(--paper-soft)]",
           avatarSizes[size],
           className
         )}
@@ -44,7 +44,7 @@ export function AvatarImage({ alt, className, ...props }: React.ComponentProps<"
   return (
     <img
       alt={alt}
-      className={cn("aspect-square size-full object-cover", className)}
+      className={cn("h-full w-full object-cover", className)}
       data-slot="avatar-image"
       {...props}
     />
@@ -61,7 +61,7 @@ export function AvatarFallback({
   return (
     <span
       className={cn(
-        "inline-flex size-full items-center justify-center bg-[color:var(--paper)] font-semibold text-[color:var(--ink-strong)]",
+        "inline-flex h-full w-full items-center justify-center bg-[color:var(--paper)] font-semibold text-[color:var(--ink-strong)]",
         size === "sm" ? "text-xs" : size === "lg" ? "text-lg" : "text-sm",
         className
       )}
@@ -81,10 +81,10 @@ export function AvatarBadge({ className, ...props }: React.HTMLAttributes<HTMLSp
       className={cn(
         "absolute bottom-0 right-0 z-10 inline-flex items-center justify-center bg-[color:var(--primary)] text-[color:var(--primary-foreground)] ring-2 ring-[color:var(--card)] select-none",
         size === "sm"
-          ? "size-2.5 [&>svg]:hidden"
+          ? "h-2.5 w-2.5 [&>svg]:hidden"
           : size === "lg"
-            ? "size-4 [&>svg]:size-2.5"
-            : "size-3 [&>svg]:size-2",
+            ? "h-4 w-4 [&>svg]:h-2.5 [&>svg]:w-2.5"
+            : "h-3 w-3 [&>svg]:h-2 [&>svg]:w-2",
         className
       )}
       data-slot="avatar-badge"
@@ -110,7 +110,7 @@ export function AvatarGroupCount({ className, ...props }: React.HTMLAttributes<H
   return (
     <div
       className={cn(
-        "relative flex size-10 shrink-0 items-center justify-center border border-[color:var(--border-strong)] bg-[color:var(--paper)] text-sm text-[color:var(--ink-soft)] ring-2 ring-[color:var(--card)] group-has-data-[size=lg]/avatar-group:size-14 group-has-data-[size=sm]/avatar-group:size-8 [&>svg]:size-4 group-has-data-[size=lg]/avatar-group:[&>svg]:size-5 group-has-data-[size=sm]/avatar-group:[&>svg]:size-3",
+        "relative flex h-10 w-10 shrink-0 items-center justify-center border border-[color:var(--border-strong)] bg-[color:var(--paper)] text-sm text-[color:var(--ink-soft)] ring-2 ring-[color:var(--card)] group-has-data-[size=lg]/avatar-group:h-14 group-has-data-[size=lg]/avatar-group:w-14 group-has-data-[size=sm]/avatar-group:h-8 group-has-data-[size=sm]/avatar-group:w-8 [&>svg]:h-4 [&>svg]:w-4 group-has-data-[size=lg]/avatar-group:[&>svg]:h-5 group-has-data-[size=lg]/avatar-group:[&>svg]:w-5 group-has-data-[size=sm]/avatar-group:[&>svg]:h-3 group-has-data-[size=sm]/avatar-group:[&>svg]:w-3",
         className
       )}
       data-slot="avatar-group-count"

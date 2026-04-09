@@ -20,7 +20,7 @@ type Story = StoryObj<typeof meta>;
 export const Overview: Story = {
   render: () => (
     <div className="grid gap-4">
-      <AccountUserDisplayBox email="melina@cozy.art" generatedCount={128} name="Melina Sketch" />
+      <AccountUserDisplayBox email="mei@ghibli-ui.test" generatedCount={128} name="User" />
       <AccountProfileSection email="melina@ghibli-ui.dev" name="Melina Sketch" planLabel="Painterly Plan" />
       <AccountLinkedAccountsSection accounts={linkedAccounts} />
       <AccountSubscriptionSection

@@ -1,18 +1,27 @@
 import { expect, test } from "@playwright/test";
 
-test("renders the Cozy-derived single-page showcase and redirects legacy routes into anchors", async ({ page }) => {
+test("renders the single-page showcase and redirects legacy routes into anchors", async ({ page }) => {
   await page.goto("/");
 
-  const desktopMenuTrigger = page.locator('header [data-slot="sheet-trigger"]').first();
+  const desktopHeader = page.getByRole("banner");
+  const desktopMenuTrigger = desktopHeader.locator('[data-slot="sheet-trigger"]').first();
 
   await expect(desktopMenuTrigger).toBeHidden();
   await expect(page.getByText("Ghibli UI Library")).toBeVisible();
+  await expect(desktopHeader.getByRole("link", { name: "GitHub" })).toBeVisible();
+  await expect(desktopHeader.getByRole("link", { name: "Docs" })).toBeVisible();
+  await expect(desktopHeader.getByRole("button", { name: /User/i })).toBeVisible();
   await expect(page.getByText("pnpm dlx shadcn@latest add @ghibli/all")).toBeVisible();
   await expect(page.getByText("Shell & Navigation")).toBeVisible();
   await expect(page.getByText("Core Primitives")).toBeVisible();
   await expect(page.getByRole("heading", { exact: true, name: "Button" })).toBeVisible();
   await expect(page.getByRole("heading", { exact: true, name: "Generate Prompt Composer" })).toBeVisible();
   await expect(page.getByRole("heading", { exact: true, name: "Footer" })).toBeVisible();
+
+  await desktopHeader.getByRole("button", { name: /User/i }).click();
+  await expect(page.getByRole("button", { exact: true, name: "Account" })).toBeVisible();
+  await expect(page.getByRole("button", { exact: true, name: "Sign out" })).toBeVisible();
+  await page.keyboard.press("Escape");
 
   await page.getByRole("button", { name: "Open auth modal" }).click();
   await expect(page.getByRole("heading", { exact: true, name: "Welcome back" })).toBeVisible();

@@ -1,7 +1,5 @@
 import * as React from "react";
 import {
-  BookOpen,
-  Compass,
   Flower2,
   ImageIcon,
   Leaf,
@@ -13,6 +11,11 @@ import {
 
 import { type FaqItem } from "@ghibli/ui";
 
+import {
+  DocsHeaderIcon,
+  GitHubHeaderIcon,
+  mockHeaderAvatarUrl
+} from "@/apps/web/src/components/site-header-icons";
 import { SceneArt } from "@/apps/web/src/components/docs/scene-art";
 
 function scenicDataUri({
@@ -83,8 +86,19 @@ export const footerColumns = [
 ];
 
 export const socialItems = [
-  { href: "https://github.com", icon: <BookOpen className="size-4" />, label: "Docs" },
-  { href: "https://storybook.js.org", icon: <Compass className="size-4" />, label: "Storybook" }
+  {
+    external: true,
+    href: "https://github.com/rodrigoluz/ghibli-component-library",
+    icon: <GitHubHeaderIcon />,
+    iconOnly: true,
+    label: "GitHub"
+  },
+  {
+    href: "/guides/getting-started",
+    icon: <DocsHeaderIcon />,
+    iconOnly: true,
+    label: "Docs"
+  }
 ];
 
 export const headerBrand = (
@@ -97,19 +111,20 @@ export const headerBrand = (
         Ghibli UI
       </span>
       <span className="text-xs uppercase tracking-[0.18em] text-[color:var(--muted-foreground)]">
-        Cozy component library
+        Installable component library
       </span>
     </div>
   </a>
 );
 
 export const headerUser = {
-  initials: "GUI",
+  avatarUrl: mockHeaderAvatarUrl,
+  initials: "MS",
   menuItems: [
     { id: "docs", label: "Open docs" },
     { destructive: true, id: "exit", label: "Close panel" }
   ],
-  name: "Library Demo",
+  name: "User",
   subtitle: "Preview mode"
 };
 
