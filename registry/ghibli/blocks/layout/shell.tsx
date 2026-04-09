@@ -50,6 +50,8 @@ type RenderLink = (
   children: React.ReactNode
 ) => React.ReactNode;
 
+type HeaderLinkLayout = "desktop" | "sheet";
+
 export interface ShellHeaderProps {
   brand: React.ReactNode;
   className?: string;
@@ -77,19 +79,24 @@ export interface ShellFooterProps {
 function HeaderLink({
   closeOnActivate = false,
   item,
+  layout = "desktop",
   renderLink
 }: {
   closeOnActivate?: boolean;
   item: ShellNavItem;
+  layout?: HeaderLinkLayout;
   renderLink?: RenderLink | undefined;
 }) {
-  const linkClassName = cn(
-    "inline-flex text-sm transition-colors",
-    item.active
-      ? "text-[color:var(--ink-strong)]"
-      : "items-center gap-2 px-3 py-2 text-muted-foreground hover:bg-white/45 hover:text-foreground",
-    item.iconOnly && !item.active && "justify-center gap-0 px-1.5"
-  );
+  const isSheet = layout === "sheet";
+  const linkClassName = isSheet
+    ? "block w-full text-[color:var(--ink-strong)]"
+    : cn(
+        "inline-flex text-sm transition-colors",
+        item.active
+          ? "text-[color:var(--ink-strong)]"
+          : "items-center gap-2 px-3 py-2 text-muted-foreground hover:bg-white/45 hover:text-foreground",
+        item.iconOnly && !item.active && "justify-center gap-0 px-1.5"
+      );
   const inlineContent = (
     <>
       {item.icon}
@@ -100,14 +107,31 @@ function HeaderLink({
   const content =
     item.active && !item.iconOnly ? (
       <HandDrawnFrame
-        className="bg-[color:var(--paper)] px-3 py-2"
-        contentClassName="inline-flex items-center gap-2"
+        className={cn(
+          "bg-[color:var(--paper)]",
+          isSheet ? "w-full px-3 py-3" : "px-3 py-2"
+        )}
+        contentClassName={cn(
+          isSheet
+            ? "flex items-center gap-2.5 text-[0.95rem] leading-none"
+            : "inline-flex items-center gap-2"
+        )}
         strokeColor="var(--border)"
         strokeWidth={1.55}
         variant="pill"
       >
         {inlineContent}
       </HandDrawnFrame>
+    ) : isSheet ? (
+      <div
+        className={cn(
+          item.iconOnly
+            ? "flex min-h-12 w-full items-center justify-center border border-[color:var(--border)] bg-white/45 px-3 py-2.5 text-[color:var(--ink-strong)] transition-colors hover:bg-[color:var(--paper-soft)]"
+            : "flex min-h-12 w-full items-center gap-2.5 px-3 py-3 text-[0.95rem] leading-none text-muted-foreground transition-colors hover:bg-white/45 hover:text-[color:var(--ink-strong)]"
+        )}
+      >
+        {inlineContent}
+      </div>
     ) : (
       inlineContent
     );
@@ -127,6 +151,16 @@ function HeaderLink({
   return renderedLink;
 }
 
+function renderSheetPrimaryAction(primaryAction: React.ReactNode) {
+  if (!React.isValidElement<{ className?: string }>(primaryAction)) {
+    return primaryAction;
+  }
+
+  return React.cloneElement(primaryAction, {
+    className: cn(primaryAction.props.className, "w-full justify-center sm:w-full")
+  });
+}
+
 export function ShellHeader({
   brand,
   className,
@@ -137,6 +171,10 @@ export function ShellHeader({
   socialItems = [],
   user
 }: ShellHeaderProps) {
+  const sheetPrimaryAction = primaryAction
+    ? renderSheetPrimaryAction(primaryAction)
+    : null;
+
   return (
     <header className="sticky top-4 z-40">
       <HandDrawnFrame
@@ -145,14 +183,14 @@ export function ShellHeader({
         strokeWidth={2.1}
         variant="banner"
       >
-        <div className="flex items-center gap-3 lg:grid lg:grid-cols-[minmax(0,1fr)_auto_minmax(0,1fr)] lg:gap-4">
-          <div className="min-w-0 flex-1 lg:flex-none lg:justify-self-start">{brand}</div>
-          <nav className="hidden items-center gap-1 lg:flex lg:justify-self-center">
+        <div className="shell-header-layout">
+          <div className="shell-header-brand">{brand}</div>
+          <nav className="shell-header-desktop-nav items-center gap-1 lg:justify-self-center">
             {navItems.map((item) => (
               <HeaderLink item={item} key={item.href} renderLink={renderLink} />
             ))}
           </nav>
-          <div className="hidden items-center gap-2 lg:flex lg:justify-self-end">
+          <div className="shell-header-desktop-actions items-center gap-2 lg:justify-self-end">
             <div className="flex items-center gap-0">
               {socialItems.map((item) => (
                 <HeaderLink item={item} key={item.href} renderLink={renderLink} />
@@ -163,40 +201,26 @@ export function ShellHeader({
           </div>
           <Sheet>
             <SheetTrigger asChild>
-              <Button className="lg:hidden" size="icon" variant="secondary">
+              <Button className="shell-header-mobile-trigger" size="icon" variant="secondary">
                 <Menu className="size-4" />
               </Button>
             </SheetTrigger>
-            <SheetContent>
-              <SheetHeader>
+            <SheetContent className="w-[min(90vw,24rem)] gap-0">
+              <SheetHeader className="px-5 pt-5 pb-4">
                 <SheetTitle>{mobileTitle}</SheetTitle>
               </SheetHeader>
-              <div className="grid gap-2">
-                {navItems.map((item) => (
-                  <HeaderLink
-                    closeOnActivate
-                    item={item}
-                    key={item.href}
-                    renderLink={renderLink}
-                  />
-                ))}
-                {socialItems.map((item) => (
-                  <HeaderLink
-                    closeOnActivate
-                    item={item}
-                    key={item.href}
-                    renderLink={renderLink}
-                  />
-                ))}
-                {primaryAction ? (
-                  <div className="pt-2">
-                    {React.isValidElement(primaryAction) ? (
-                      <SheetClose asChild>{primaryAction}</SheetClose>
-                    ) : (
-                      primaryAction
-                    )}
-                  </div>
-                ) : null}
+              <div className="flex min-h-0 flex-1 flex-col gap-6 px-4 pb-5">
+                <nav className="grid gap-1.5">
+                  {navItems.map((item) => (
+                    <HeaderLink
+                      closeOnActivate
+                      item={item}
+                      key={item.href}
+                      layout="sheet"
+                      renderLink={renderLink}
+                    />
+                  ))}
+                </nav>
                 {user ? (
                   <div className="grid gap-3 border border-[color:var(--border)] bg-[color:var(--paper-soft)] p-3">
                     <div className="flex min-w-0 items-center gap-3">
@@ -228,7 +252,7 @@ export function ShellHeader({
                         {user.menuItems.map((item) => (
                           <SheetClose asChild key={item.id}>
                             <Button
-                              className="justify-start"
+                              className="w-full justify-start"
                               onClick={item.onSelect}
                               variant={item.destructive ? "ghost" : "secondary"}
                             >
@@ -241,6 +265,30 @@ export function ShellHeader({
                     ) : null}
                   </div>
                 ) : null}
+                <div className="mt-auto grid gap-3">
+                  {socialItems.length ? (
+                    <div className="grid grid-cols-2 gap-2">
+                      {socialItems.map((item) => (
+                        <HeaderLink
+                          closeOnActivate
+                          item={item}
+                          key={item.href}
+                          layout="sheet"
+                          renderLink={renderLink}
+                        />
+                      ))}
+                    </div>
+                  ) : null}
+                  {sheetPrimaryAction ? (
+                    <div>
+                      {React.isValidElement(sheetPrimaryAction) ? (
+                        <SheetClose asChild>{sheetPrimaryAction}</SheetClose>
+                      ) : (
+                        sheetPrimaryAction
+                      )}
+                    </div>
+                  ) : null}
+                </div>
               </div>
             </SheetContent>
           </Sheet>

@@ -49,7 +49,6 @@
   --rose-border: #b68a83;
   --font-heading: "Averia Serif Libre", Georgia, serif;
   --font-body: "M PLUS Rounded 1c", "Trebuchet MS", system-ui, sans-serif;
-  --radius: 1rem;
   --shadow-paper: none;
   --shadow-soft: none;
   --shadow-raised: none;
@@ -82,21 +81,15 @@
 @layer base {
   * {
     @apply border-border;
-    box-sizing: border-box;
   }
 
   html {
     scroll-behavior: smooth;
-    overflow-y: scroll;
     background-color: var(--background);
-    scrollbar-color:
-      color-mix(in oklab, var(--border-strong) 72%, transparent)
-      var(--background);
     @apply font-sans;
   }
 
   body {
-    margin: 0;
     min-height: 100vh;
     color: var(--foreground);
     background-color: var(--background);
@@ -104,9 +97,6 @@
       radial-gradient(circle at top, rgba(255, 255, 255, 0.48), transparent 34%),
       linear-gradient(180deg, rgba(127, 168, 187, 0.2), transparent 15rem),
       linear-gradient(180deg, rgba(255, 249, 240, 0.86), rgba(247, 241, 229, 0.96)),
-      var(--background);
-    scrollbar-color:
-      color-mix(in oklab, var(--border-strong) 72%, transparent)
       var(--background);
   }
 
@@ -148,16 +138,6 @@
   }
 }
 
-body::before {
-  position: fixed;
-  inset: 0;
-  pointer-events: none;
-  content: "";
-  opacity: 0.2;
-  background-image: var(--texture-paper-overlay-image);
-  background-repeat: repeat;
-}
-
 .ghibli-prose {
   max-width: 72ch;
   line-height: 1.85;
@@ -188,19 +168,51 @@ body::before {
     color-mix(in oklab, var(--paper) 76%, white);
 }
 
-.skip-link {
-  position: absolute;
-  left: 1rem;
-  top: -5rem;
-  z-index: 100;
-  border: 2px solid var(--border);
-  border-radius: 999px;
-  padding: 0.7rem 1rem;
-  background: var(--paper);
+.shell-header-layout {
+  display: flex;
+  align-items: center;
+  gap: calc(var(--spacing) * 3);
 }
 
-.skip-link:focus {
-  top: 1rem;
+.shell-header-brand {
+  min-width: 0;
+  flex: 1 1 0%;
+}
+
+.shell-header-desktop-nav,
+.shell-header-desktop-actions {
+  display: none;
+}
+
+.shell-header-mobile-trigger {
+  display: inline-flex;
+}
+
+@media (min-width: 64rem) {
+  .shell-header-layout {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr);
+    gap: calc(var(--spacing) * 4);
+  }
+
+  .shell-header-brand {
+    flex: none;
+    justify-self: start;
+  }
+
+  .shell-header-desktop-nav {
+    display: flex;
+    justify-self: center;
+  }
+
+  .shell-header-desktop-actions {
+    display: flex;
+    justify-self: end;
+  }
+
+  .shell-header-mobile-trigger {
+    display: none;
+  }
 }
 
 @layer utilities {
@@ -221,6 +233,19 @@ body::before {
   }
 }
 
+html {
+  overflow-y: scroll;
+  scrollbar-color:
+    color-mix(in oklab, var(--border-strong) 72%, transparent)
+    var(--background);
+}
+
+body {
+  scrollbar-color:
+    color-mix(in oklab, var(--border-strong) 72%, transparent)
+    var(--background);
+}
+
 html body[data-scroll-locked] {
   margin-right: 0 !important;
   padding-right: 0 !important;
@@ -232,9 +257,18 @@ html body[data-scroll-locked] {
   background: var(--background);
 }
 
-::-webkit-scrollbar-track,
-::-webkit-scrollbar-track-piece,
-::-webkit-scrollbar-button,
+::-webkit-scrollbar-track {
+  background: var(--background);
+}
+
+::-webkit-scrollbar-track-piece {
+  background: var(--background);
+}
+
+::-webkit-scrollbar-button {
+  background: var(--background);
+}
+
 ::-webkit-scrollbar-corner {
   background: var(--background);
 }
