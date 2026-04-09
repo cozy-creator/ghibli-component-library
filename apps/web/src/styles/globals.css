@@ -327,6 +327,193 @@
   transform: translateY(0);
 }
 
+.ghibli-input-control {
+  height: 2.75rem;
+  padding: 0.5rem 0.75rem;
+  color: var(--foreground);
+  font-size: 0.875rem;
+  outline: none;
+}
+
+.ghibli-input-control::placeholder {
+  color: var(--muted-foreground);
+}
+
+.ghibli-input-control:disabled {
+  cursor: not-allowed;
+}
+
+.ghibli-tabs-list.ghibli-community-tabs-list {
+  gap: 0.25rem;
+  border: 0;
+  background: transparent;
+  padding: 0;
+  box-shadow: none;
+}
+
+.ghibli-tabs-trigger.ghibli-community-tabs-trigger {
+  min-width: 0;
+  flex: 0 0 auto;
+  padding: 0;
+  white-space: nowrap;
+  background: transparent;
+  box-shadow: none;
+}
+
+.ghibli-tabs-trigger.ghibli-community-tabs-trigger[data-state="active"] {
+  background: transparent;
+  box-shadow: none;
+}
+
+.ghibli-community-tabs-pill {
+  display: inline-flex;
+  max-width: 100%;
+}
+
+.ghibli-community-tabs-pill-content,
+.ghibli-community-tabs-label,
+.ghibli-community-tabs-text {
+  white-space: nowrap;
+}
+
+@media (max-width: 423px) {
+  .ghibli-community-tabs-frame {
+    width: 100%;
+  }
+
+  .ghibli-tabs-list.ghibli-community-tabs-list {
+    display: grid;
+    width: 100%;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+
+  .ghibli-tabs-trigger.ghibli-community-tabs-trigger {
+    width: 100%;
+    font-size: 0.75rem;
+  }
+}
+
+.ghibli-tabs {
+  display: flex;
+  gap: 1rem;
+}
+
+.ghibli-tabs[data-orientation="horizontal"] {
+  flex-direction: column;
+}
+
+.ghibli-tabs[data-orientation="vertical"] {
+  flex-direction: row;
+}
+
+.ghibli-tabs-list {
+  display: inline-flex;
+  width: fit-content;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  border: 1px solid var(--border-soft);
+  background: var(--paper-soft);
+  padding: 0.25rem;
+  color: var(--muted-foreground);
+}
+
+.ghibli-tabs[data-orientation="vertical"] .ghibli-tabs-list {
+  flex-direction: column;
+}
+
+.ghibli-tabs-list[data-variant="line"] {
+  border-top: 0;
+  border-right: 0;
+  border-left: 0;
+  background: transparent;
+  padding: 0;
+}
+
+.ghibli-tabs-trigger {
+  padding: 0.5rem 0.75rem;
+  font-size: 0.875rem;
+  color: var(--muted-foreground);
+  transition: all 150ms ease;
+}
+
+.ghibli-tabs-trigger:hover {
+  color: var(--foreground);
+}
+
+.ghibli-tabs-trigger[data-state="active"] {
+  background: var(--card);
+  color: var(--ink-strong);
+}
+
+.ghibli-tabs-list[data-variant="line"] .ghibli-tabs-trigger[data-state="active"] {
+  background: transparent;
+  box-shadow: none;
+}
+
+.ghibli-tabs[data-orientation="vertical"] .ghibli-tabs-trigger {
+  width: 100%;
+  justify-content: flex-start;
+}
+
+.ghibli-tabs-content {
+  flex: 1 1 0%;
+  font-size: 0.875rem;
+  outline: none;
+}
+
+.ghibli-tabs-content[data-state="inactive"] {
+  display: none;
+}
+
+@media (min-width: 640px) {
+  .ghibli-auth-provider-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+.ghibli-dialog-overlay {
+  position: fixed;
+  inset: 0;
+  isolation: isolate;
+  z-index: 50;
+  background: rgba(54, 42, 31, 0.34);
+  backdrop-filter: blur(2px);
+  opacity: 0;
+  transition: opacity 100ms ease;
+}
+
+.ghibli-dialog-overlay[data-state="open"] {
+  opacity: 1;
+}
+
+.ghibli-dialog-content {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  z-index: 50;
+  display: grid;
+  width: 100%;
+  max-width: min(var(--dialog-max-width, 28rem), calc(100vw - 2rem));
+  gap: 1rem;
+  border: 1px solid var(--dialog-border-color, var(--border));
+  background: var(--dialog-background, var(--card));
+  padding: var(--dialog-padding, 1.25rem);
+  color: var(--foreground);
+  font-size: 0.875rem;
+  outline: none;
+  transform: translate(-50%, -50%) scale(0.95);
+  opacity: 0;
+  transition:
+    opacity 100ms ease,
+    transform 100ms ease;
+}
+
+.ghibli-dialog-content[data-state="open"] {
+  transform: translate(-50%, -50%) scale(1);
+  opacity: 1;
+}
+
 @layer utilities {
   .paper-overlay {
     background-image: var(--texture-paper-overlay-image);

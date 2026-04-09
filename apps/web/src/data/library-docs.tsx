@@ -81,6 +81,12 @@ import {
   subscriptionOffers,
   xPostDemo
 } from "@/apps/web/src/data/demo-fixtures";
+import {
+  AppleAuthIcon,
+  DiscordAuthIcon,
+  GitHubAuthIcon,
+  GoogleAuthIcon,
+} from "@/apps/web/src/components/auth-provider-icons";
 
 export interface SourceSnippet {
   code: string;
@@ -1109,20 +1115,29 @@ export const patternDocs: DocItem[] = [
     usageSnippet: snippet("Basic usage", "tsx", `<RegisterForm email={email} name={name} password={password} confirmPassword={confirmPassword} />`)
   },
   {
-    description: "Tabbed auth dialog shell with room for provider actions and password recovery.",
+    description: "Tabbed auth dialog shell with room for password recovery while the auth forms carry the provider actions.",
     examples: [
       {
         description: "Wraps the form primitives in a controlled dialog for quick auth entry points.",
         id: "auth-dialog-overview",
         preview: (
           <AuthDialog
-            loginContent={<LoginForm email="" onEmailChange={() => undefined} onPasswordChange={() => undefined} password="" />}
+            loginContent={
+              <LoginForm
+                email=""
+                onEmailChange={() => undefined}
+                onPasswordChange={() => undefined}
+                password=""
+                providerActions={[
+                  { icon: <GoogleAuthIcon />, id: "google", label: "Google", onSelect: () => undefined },
+                  { icon: <GitHubAuthIcon />, id: "github", label: "GitHub", onSelect: () => undefined },
+                  { icon: <DiscordAuthIcon />, id: "discord", label: "Discord", onSelect: () => undefined },
+                  { icon: <AppleAuthIcon />, id: "apple", label: "Apple", onSelect: () => undefined }
+                ]}
+              />
+            }
             onOpenChange={() => undefined}
             open={false}
-            providerActions={[
-              { id: "github", label: "GitHub" },
-              { id: "discord", label: "Discord" }
-            ]}
             registerContent={
               <RegisterForm
                 confirmPassword=""
@@ -1133,6 +1148,12 @@ export const patternDocs: DocItem[] = [
                 onNameChange={() => undefined}
                 onPasswordChange={() => undefined}
                 password=""
+                providerActions={[
+                  { icon: <GoogleAuthIcon />, id: "google", label: "Google", onSelect: () => undefined },
+                  { icon: <GitHubAuthIcon />, id: "github", label: "GitHub", onSelect: () => undefined },
+                  { icon: <DiscordAuthIcon />, id: "discord", label: "Discord", onSelect: () => undefined },
+                  { icon: <AppleAuthIcon />, id: "apple", label: "Apple", onSelect: () => undefined }
+                ]}
               />
             }
             showForgotPassword={false}
@@ -1157,7 +1178,7 @@ export const patternDocs: DocItem[] = [
     family: "Auth",
     importSnippet: snippet("Import", "tsx", `import { AuthDialog } from "@/components/blocks/auth/dialog";`),
     installSnippet: installSnippet("auth-dialog"),
-    inventory: ["Dialog shell", "Tabbed auth layout", "Provider action row"],
+    inventory: ["Dialog shell", "Tabbed auth layout", "Recovery state"],
     kind: "pattern",
     name: "auth-dialog",
     notes: [
@@ -1240,9 +1261,9 @@ export const patternDocs: DocItem[] = [
       </div>
     ),
     related: ["community-modals", "card", "tabs"],
-    storybookTitle: "Patterns/Community/Community Cards",
+    storybookTitle: "Patterns/Community/Cards",
     summary: "Gallery-style content cards for mixed media and editorial surfaces.",
-    title: "Community Cards",
+    title: "Cards",
     usageSnippet: snippet("Basic usage", "tsx", `<CommunityImageCard title="Forest lantern walk" imageUrl={imageUrl} />`)
   },
   {

@@ -2,21 +2,34 @@ import * as React from "react";
 import * as TabsPrimitive from "@radix-ui/react-tabs";
 import { cva, type VariantProps } from "class-variance-authority";
 
-import { cn, focusRingClass, paperInsetClass } from "@/lib/utils";
+import { cn, focusRingClass } from "@/lib/utils";
 
-export function Tabs({ className, ...props }: React.ComponentProps<typeof TabsPrimitive.Root>) {
-  return <TabsPrimitive.Root className={cn("grid gap-4", className)} data-slot="tabs" {...props} />;
+export function Tabs({
+  className,
+  orientation = "horizontal",
+  ...props
+}: React.ComponentProps<typeof TabsPrimitive.Root>) {
+  return (
+    <TabsPrimitive.Root
+      className={cn("ghibli-tabs group/tabs", className)}
+      data-orientation={orientation}
+      data-slot="tabs"
+      orientation={orientation}
+      {...props}
+    />
+  );
 }
 
-const tabsListVariants = cva(cn(paperInsetClass, "inline-flex w-fit items-center gap-2 p-1"), {
+const tabsListVariants = cva("ghibli-tabs-list group/tabs-list", {
   variants: {
     variant: {
-      line: "rounded-none border-x-0 border-t-0 bg-transparent px-0 py-0 shadow-none",
+      default: "",
+      line: "",
       soft: ""
     }
   },
   defaultVariants: {
-    variant: "soft"
+    variant: "default"
   }
 });
 
@@ -27,7 +40,8 @@ export function TabsList({
 }: React.ComponentProps<typeof TabsPrimitive.List> & VariantProps<typeof tabsListVariants>) {
   return (
     <TabsPrimitive.List
-      className={cn(tabsListVariants({ className, variant }))}
+      className={cn(tabsListVariants({ variant }), className)}
+      data-variant={variant}
       data-slot="tabs-list"
       {...props}
     />
@@ -41,9 +55,7 @@ export function TabsTrigger({
   return (
     <TabsPrimitive.Trigger
       className={cn(
-        "inline-flex min-w-28 items-center justify-center rounded-[calc(var(--radius)-0.45rem)] px-3 py-2 text-sm text-[color:var(--muted-foreground)] transition-all",
-        "data-[state=active]:bg-[color:var(--card)] data-[state=active]:text-[color:var(--ink-strong)] data-[state=active]:shadow-[var(--shadow-soft)]",
-        "hover:text-[color:var(--foreground)]",
+        "ghibli-tabs-trigger inline-flex min-w-28 flex-1 items-center justify-center gap-1.5 whitespace-nowrap disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-4",
         focusRingClass,
         className
       )}
@@ -59,7 +71,7 @@ export function TabsContent({
 }: React.ComponentProps<typeof TabsPrimitive.Content>) {
   return (
     <TabsPrimitive.Content
-      className={cn("outline-none data-[state=inactive]:hidden", className)}
+      className={cn("ghibli-tabs-content", className)}
       data-slot="tabs-content"
       {...props}
     />

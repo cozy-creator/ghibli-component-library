@@ -23,25 +23,26 @@ test("renders the single-page showcase and redirects legacy routes into anchors"
   await expect(page.getByRole("button", { exact: true, name: "Sign out" })).toBeVisible();
   await page.keyboard.press("Escape");
 
-  await page.getByRole("button", { name: "Open auth modal" }).click();
+  await page.locator("#pattern-auth-forms").getByRole("button", { name: "Sign in" }).click();
   await expect(page.getByRole("heading", { exact: true, name: "Welcome back" })).toBeVisible();
   await page.getByRole("tab", { name: "Register" }).click();
-  await expect(page.getByRole("heading", { exact: true, name: "Create account" })).toBeVisible();
-  await page.getByRole("button", { name: "Close" }).click();
+  await expect(page.getByRole("tab", { name: "Register" })).toHaveAttribute("data-state", "active");
+  await expect(page.getByRole("button", { name: "Create account" })).toBeVisible();
+  await page.keyboard.press("Escape");
   await expect(page.getByRole("heading", { exact: true, name: "Welcome back" })).toHaveCount(0);
 
   await page.getByRole("button", { name: "Open image modal" }).click();
   await expect(page.getByText("Community image")).toBeVisible();
-  await page.getByRole("button", { name: "Close" }).click();
+  await page.keyboard.press("Escape");
   await expect(page.getByText("Community image")).toHaveCount(0);
 
   await page.getByRole("button", { name: "Open video modal" }).click();
   await expect(page.getByRole("heading", { exact: true, name: "Lantern ferry glide" })).toBeVisible();
-  await page.getByRole("button", { name: "Close" }).click();
+  await page.keyboard.press("Escape");
 
   await page.getByRole("button", { name: "Open password dialog" }).click();
   await expect(page.getByRole("heading", { exact: true, name: "Change password" })).toBeVisible();
-  await page.getByRole("button", { name: "Close" }).click();
+  await page.keyboard.press("Escape");
 
   await page.goto("/components/button");
 
@@ -53,7 +54,7 @@ test("renders the single-page showcase and redirects legacy routes into anchors"
 
   await expect(page).toHaveURL(/#pattern-auth-forms$/);
   await expect(page.getByRole("heading", { name: "Auth Forms" })).toBeVisible();
-  await expect(page.getByText("Sign in").first()).toBeVisible();
+  await expect(page.locator("#pattern-auth-forms").getByRole("button", { name: "Create account" })).toBeVisible();
   await expect(page.getByText("Reference screen")).toHaveCount(0);
 });
 
@@ -62,11 +63,13 @@ test("renders the showcase on mobile and desktop without horizontal page overflo
   await page.goto("/");
 
   const mobileMenuTrigger = page.locator('header [data-slot="sheet-trigger"]').first();
+  const mobileSheet = page.locator('[data-slot="sheet-content"]');
 
   await expect(mobileMenuTrigger).toBeVisible();
   await mobileMenuTrigger.click();
   await expect(page.getByRole("heading", { exact: true, name: "Ghibli UI" })).toBeVisible();
-  await page.getByRole("button", { name: "Close" }).click();
+  await expect(mobileSheet.getByText("User", { exact: true })).toBeVisible();
+  await mobileSheet.getByRole("button", { name: "Close" }).click();
   await expect(page.getByRole("heading", { exact: true, name: "Storybook" })).toBeVisible();
   await expect(page.locator("#footer-endmatter")).toBeVisible();
   await expect(page.getByRole("heading", { exact: true, name: "User Display Box" })).toBeVisible();
@@ -78,7 +81,7 @@ test("renders the showcase on mobile and desktop without horizontal page overflo
   await page.reload();
 
   await expect(mobileMenuTrigger).toBeHidden();
-  await expect(page.getByRole("heading", { exact: true, name: "Community Cards" })).toBeVisible();
+  await expect(page.getByRole("heading", { exact: true, name: "Cards" })).toBeVisible();
   await expect(page.getByRole("heading", { exact: true, name: "Footer" })).toBeVisible();
   await expect.poll(async () =>
     page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth + 1)
