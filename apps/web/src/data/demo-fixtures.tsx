@@ -69,7 +69,7 @@ export const footerColumns = [
     id: "library",
     links: [
       { href: "#component-button", label: "Buttons" },
-      { href: "#component-generate-prompt-composer", label: "Prompt composer" },
+      { href: "#pattern-generate-editor-bar", label: "Generate bar" },
       { href: "#pattern-community-cards", label: "Cards" }
     ],
     title: "Library"
@@ -193,6 +193,8 @@ export const faqItems: FaqItem[] = [
 
 export const communityImageItems = [
   {
+    authorName: "Mina Journal",
+    createdAtLabel: "2 hours ago",
     description: "Painterly landscape card with room for title, meta, and short supporting copy.",
     id: "forest",
     imageUrl: scenicDataUri({
@@ -202,9 +204,14 @@ export const communityImageItems = [
       skyTop: "#b7d8d8"
     }),
     meta: "Updated 2h ago",
+    negativePromptText: "harsh contrast, oversharpening, cluttered skyline",
+    promptText:
+      "Painterly forest path lit by paper lanterns, soft evening haze, mossy stones, gentle watercolor blending.",
     title: "Forest lantern walk"
   },
   {
+    authorName: "Jun Atelier",
+    createdAtLabel: "Yesterday",
     description: "Warm editorial postcard treatment that still reads like a reusable UI card.",
     id: "coast",
     imageUrl: scenicDataUri({
@@ -214,9 +221,14 @@ export const communityImageItems = [
       skyTop: "#9ec7db"
     }),
     meta: "Updated yesterday",
+    negativePromptText: "busy crowds, modern signage, noisy reflections",
+    promptText:
+      "Quiet harbor cafe terrace at golden hour, warm tea steam, seaside breeze, hand-painted postcard mood.",
     title: "Harbor tea break"
   },
   {
+    authorName: "Aki Field Notes",
+    createdAtLabel: "3 days ago",
     description: "Nature-heavy visual that works for galleries, changelogs, or editorial lists.",
     id: "mountain",
     imageUrl: scenicDataUri({
@@ -232,28 +244,38 @@ export const communityImageItems = [
 
 export const communityVideoItems = [
   {
+    authorName: "Mina Journal",
+    createdAtLabel: "4 hours ago",
     description: "Looping motion card with clear runtime labeling.",
     id: "video-1",
     meta: "Preview loop • 12s",
+    negativePromptText: "camera shake, modern neon, harsh shadows",
     posterUrl: scenicDataUri({
       accent: "#f0b970",
       label: "Lantern Ferry",
       skyBottom: "#d6c38f",
       skyTop: "#9db6cd"
     }),
+    promptText:
+      "Slow ferry drifting through lantern reflections at dusk, watercolor ripples, quiet cinematic motion.",
     title: "Lantern ferry glide",
     videoUrl: "https://interactive-examples.mdn.mozilla.net/media/cc0-videos/flower.mp4"
   },
   {
+    authorName: "Jun Atelier",
+    createdAtLabel: "Yesterday",
     description: "Reference video modal with enough metadata for richer gallery flows.",
     id: "video-2",
     meta: "Preview loop • 8s",
+    negativePromptText: "compression artifacts, flicker, oversaturated lights",
     posterUrl: scenicDataUri({
       accent: "#cf8b74",
       label: "Window Rain Study",
       skyBottom: "#c8bea6",
       skyTop: "#96acc5"
     }),
+    promptText:
+      "Rain tracing a train window at night, dim interior reflections, soft hand-painted movement and muted city glow.",
     title: "Window rain study",
     videoUrl: "https://interactive-examples.mdn.mozilla.net/media/cc0-videos/flower.mp4"
   }

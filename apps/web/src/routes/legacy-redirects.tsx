@@ -14,7 +14,7 @@ const guideHashBySlug: Record<string, string> = {
 
 const componentHashByName: Record<string, string> = {
   accordion: "#pattern-docs",
-  avatar: "#component-user-display-box",
+  avatar: "#pattern-account-sections",
   badge: "#reference-screens",
   button: "#component-button",
   card: "#pattern-community-cards",
@@ -24,9 +24,9 @@ const componentHashByName: Record<string, string> = {
   "hand-drawn-frame": "#component-hand-drawn-frame",
   input: "#component-forms",
   label: "#component-forms",
-  separator: "#component-separator",
+  separator: "#component-forms",
   sheet: "#component-user-popup",
-  skeleton: "#pattern-generate-job-card",
+  skeleton: "#pattern-generate-editor-bar",
   tabs: "#component-tabs",
   textarea: "#component-forms",
   tooltip: "#component-generate-selects"
@@ -38,7 +38,7 @@ const patternHashByName: Record<string, string> = {
   "auth-dialog": "#pattern-auth-forms",
   "auth-forms": "#pattern-auth-forms",
   "community-cards": "#pattern-community-cards",
-  "community-modals": "#pattern-community-modals",
+  "community-modals": "#pattern-community-cards",
   "docs-article": "#pattern-docs",
   "docs-faq-accordion": "#pattern-docs",
   "empty-state": "#pattern-feedback",
@@ -46,7 +46,7 @@ const patternHashByName: Record<string, string> = {
   "form-field": "#component-forms",
   "generate-controls": "#pattern-generate-controls",
   "generate-editor-bar": "#pattern-generate-editor-bar",
-  "generate-job-card": "#pattern-generate-job-card",
+  "generate-job-card": "#pattern-generate-editor-bar",
   "layout-shell": "#component-user-popup",
   "marketing-sections": "#pattern-marketing-sections",
   "notice-banner": "#pattern-feedback",

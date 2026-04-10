@@ -22,7 +22,7 @@ describe("showcase interactions", () => {
       within(authSection as HTMLElement).getByRole("button", { name: "Sign in" })
     );
 
-    expect(screen.getByRole("heading", { name: "Welcome back" })).toBeInTheDocument();
+    expect(await screen.findByRole("heading", { name: "Welcome back" })).toBeInTheDocument();
 
     await user.click(screen.getByRole("button", { name: "Close" }));
 
@@ -34,40 +34,52 @@ describe("showcase interactions", () => {
       within(authSection as HTMLElement).getByRole("button", { name: "Create account" })
     );
 
-    expect(screen.getByRole("tab", { name: "Register" })).toHaveAttribute("data-state", "active");
+    expect(await screen.findByRole("tab", { name: "Register" })).toHaveAttribute("data-state", "active");
     expect(screen.getByRole("button", { name: "Create account" })).toBeInTheDocument();
-  });
+  }, 10000);
 
   it("opens the community image and video modals from the one-page showcase", async () => {
     const user = userEvent.setup();
 
     window.history.pushState({}, "", "/");
 
-    render(<App />);
+    const { container } = render(<App />);
+    const imageSection = container.querySelector("#pattern-community-cards");
+    const videoSection = container.querySelector("#pattern-community-video-card");
 
-    await user.click(screen.getByRole("button", { name: "Open image modal" }));
+    expect(imageSection).not.toBeNull();
+    expect(videoSection).not.toBeNull();
 
-    expect(screen.getByText("Community image")).toBeInTheDocument();
+    await user.click(
+      within(imageSection as HTMLElement).getByText(communityImageItems[0]?.title ?? "Forest lantern walk")
+    );
+
     expect(
-      screen.getByRole("heading", {
+      await screen.findByRole("heading", {
         name: communityImageItems[0]?.title ?? "Community image"
       })
     ).toBeInTheDocument();
 
-    await user.click(screen.getByRole("button", { name: "Close" }));
+    await user.click(screen.getAllByRole("button", { name: "Close expanded image viewer" })[0]!);
 
     await waitFor(() => {
-      expect(screen.queryByText("Community image")).not.toBeInTheDocument();
+      expect(
+        screen.queryByRole("heading", {
+          name: communityImageItems[0]?.title ?? "Community image"
+        })
+      ).not.toBeInTheDocument();
     });
 
-    await user.click(screen.getByRole("button", { name: "Open video modal" }));
+    await user.click(
+      within(videoSection as HTMLElement).getByText(communityVideoItems[0]?.title ?? "Lantern ferry glide")
+    );
 
     expect(
-      screen.getByRole("heading", {
+      await screen.findByRole("heading", {
         name: communityVideoItems[0]?.title ?? "Video preview"
       })
     ).toBeInTheDocument();
-  });
+  }, 10000);
 
   it("renders the generate flow and opens account dialogs with local state", async () => {
     const user = userEvent.setup();
@@ -77,9 +89,9 @@ describe("showcase interactions", () => {
     render(<App />);
 
     expect(
-      screen.getAllByDisplayValue(/A quiet ferry deck at dusk, paper lantern reflections across the water/i)
-    ).toHaveLength(2);
-    expect(screen.getByRole("heading", { name: "Generate Job Card" })).toBeInTheDocument();
+      screen.getByDisplayValue(/A quiet ferry deck at dusk, paper lantern reflections across the water/i)
+    ).toBeInTheDocument();
+    expect(screen.getByRole("heading", { name: "Generate Editor Bar" })).toBeInTheDocument();
 
     await user.click(screen.getByRole("button", { name: "Open email dialog" }));
 

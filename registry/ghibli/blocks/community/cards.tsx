@@ -1,11 +1,12 @@
 import * as React from "react";
-import { Heart, MessageCircle, Play, Repeat2, Sparkles } from "lucide-react";
+import { AlertCircle, Heart, Loader2, MessageCircle, Repeat2, Sparkles } from "lucide-react";
 
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { HandDrawnFrame } from "@/components/ui/hand-drawn-frame";
 import { TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { cn } from "@/lib/utils";
+import { CommunityVideoPlayer } from "@/components/blocks/community/video-player";
 
 export interface CommunityTabsListItem {
   disabled?: boolean;
@@ -81,6 +82,7 @@ export function CommunityTabsList({
 
 export interface CommunityImageCardProps {
   badge?: string;
+  fallbackImageUrl?: string;
   imageAlt?: string;
   imageUrl: string;
   meta?: string;
@@ -89,7 +91,29 @@ export interface CommunityImageCardProps {
   title: string;
 }
 
+type CommunityImageStatus = "loading" | "ready" | "error";
+
+interface CommunityImageLoadState {
+  hasError: boolean;
+  readySrc: string | null;
+  sourceKey: string;
+  useFallback: boolean;
+}
+
+function createCommunityImageLoadState(
+  sourceKey: string,
+  hasPrimarySource: boolean
+): CommunityImageLoadState {
+  return {
+    hasError: !hasPrimarySource,
+    readySrc: null,
+    sourceKey,
+    useFallback: false
+  };
+}
+
 export function CommunityImageCard({
+  fallbackImageUrl,
   imageAlt,
   imageUrl,
   meta,
@@ -97,70 +121,175 @@ export function CommunityImageCard({
   summary,
   title
 }: CommunityImageCardProps) {
+  const primarySrc = imageUrl;
+  const fallbackSrc =
+    fallbackImageUrl && fallbackImageUrl !== imageUrl ? fallbackImageUrl : null;
+  const sourceKey = `${primarySrc ?? ""}|${fallbackSrc ?? ""}`;
+  const modelLabel = title;
+  const altText = imageAlt ?? title;
+  const [loadState, setLoadState] = React.useState<CommunityImageLoadState>(() =>
+    createCommunityImageLoadState(sourceKey, Boolean(primarySrc))
+  );
+  const currentLoadState =
+    loadState.sourceKey === sourceKey
+      ? loadState
+      : createCommunityImageLoadState(sourceKey, Boolean(primarySrc));
+  const resolvedImageSrc =
+    (currentLoadState.useFallback ? fallbackSrc : primarySrc) ?? null;
+  const status: CommunityImageStatus = !resolvedImageSrc
+    ? "error"
+    : currentLoadState.hasError
+      ? "error"
+      : currentLoadState.readySrc === resolvedImageSrc
+        ? "ready"
+        : "loading";
+
+  const handleLoad = () => {
+    if (!resolvedImageSrc) {
+      return;
+    }
+
+    setLoadState((current) => {
+      const nextState =
+        current.sourceKey === sourceKey
+          ? current
+          : createCommunityImageLoadState(sourceKey, Boolean(primarySrc));
+
+      return {
+        ...nextState,
+        hasError: false,
+        readySrc: resolvedImageSrc
+      };
+    });
+  };
+
+  const handleError = () => {
+    setLoadState((current) => {
+      const nextState =
+        current.sourceKey === sourceKey
+          ? current
+          : createCommunityImageLoadState(sourceKey, Boolean(primarySrc));
+
+      if (!nextState.useFallback && fallbackSrc) {
+        return {
+          ...nextState,
+          hasError: false,
+          readySrc: null,
+          useFallback: true
+        };
+      }
+
+      return {
+        ...nextState,
+        hasError: true,
+        readySrc: null
+      };
+    });
+  };
+
   return (
-    <button
-      aria-label={`Open ${title}`}
-      className="group block w-full text-left"
-      onClick={onClick}
-      title={summary ?? meta ?? title}
-      type="button"
-    >
-      <HandDrawnFrame
-        className="overflow-hidden bg-[linear-gradient(180deg,rgba(249,243,226,0.98),rgba(239,227,193,0.98))] transition-transform duration-300 group-hover:-translate-y-1"
-        clipContent
-        shape="card"
-        strokeColor="var(--border)"
-        strokeWidth={1.55}
-        variant={0.6}
-        variation={1}
+    <article className="max-[402px]:h-full">
+      <button
+        aria-label={`Open ${modelLabel}`}
+        className="group block w-full text-left max-[402px]:h-full"
+        onClick={onClick}
+        title={summary ?? meta ?? title}
+        type="button"
       >
-        <Card className="gap-0 overflow-hidden border-0 bg-transparent py-0 shadow-none">
-          <div className="relative aspect-[4/5] overflow-hidden border-b-2 border-[color:var(--border-soft)] bg-[color:var(--paper-soft)]">
-            <img
-              alt={imageAlt ?? title}
-              className="size-full object-cover transition duration-500 group-hover:scale-[1.02]"
-              src={imageUrl}
-            />
-            {meta ? (
-              <span className="absolute left-3 top-3 border border-[color:var(--border-soft)] bg-[color:rgba(255,251,244,0.82)] px-2 py-1 text-[10px] font-medium tracking-[0.08em] text-[color:var(--ink-strong)] uppercase">
-                {meta}
-              </span>
-            ) : null}
-            <div className="pointer-events-none absolute inset-0 bg-[linear-gradient(180deg,rgba(255,255,255,0.05),transparent_35%,rgba(59,39,15,0.18))]" />
-          </div>
-          <div className="px-3 py-3 text-center font-[var(--font-heading)] text-[1.1rem] leading-tight text-[color:var(--ink-strong)] sm:px-4 sm:py-3.5">
-            {title}
-          </div>
-        </Card>
-      </HandDrawnFrame>
-    </button>
+        <HandDrawnFrame
+          className="overflow-hidden bg-[linear-gradient(180deg,rgba(249,243,226,0.98),rgba(239,227,193,0.98))] transition-transform duration-300 group-hover:-translate-y-1 max-[402px]:h-full"
+          clipContent
+          contentClassName="max-[402px]:h-full"
+          shape="card"
+          strokeColor="var(--border)"
+          strokeWidth={1.55}
+          variant={0.6}
+          variation={1}
+        >
+          <Card className="gap-0 overflow-hidden border-0 bg-transparent py-0 shadow-none max-[402px]:flex max-[402px]:h-full max-[402px]:flex-col">
+            <div className="relative aspect-[4/5] overflow-hidden border-b-2 border-[color:var(--surface-highlight-border)] bg-[color:var(--surface-highlight)] max-[402px]:shrink-0">
+              {resolvedImageSrc ? (
+                <img
+                  alt={altText}
+                  className="size-full object-cover transition duration-500 group-hover:scale-[1.02]"
+                  decoding="async"
+                  key={resolvedImageSrc}
+                  loading="lazy"
+                  onError={handleError}
+                  onLoad={handleLoad}
+                  src={resolvedImageSrc}
+                  style={{ opacity: status === "ready" ? 1 : 0.12 }}
+                />
+              ) : null}
+
+              {status === "loading" ? (
+                <div className="absolute inset-0 flex items-center justify-center bg-[linear-gradient(180deg,rgba(250,244,227,0.44),rgba(230,211,163,0.8))]">
+                  <div className="border border-[color:var(--surface-highlight-border)] bg-white/72 p-4 text-[color:var(--ink-strong)] backdrop-blur-sm">
+                    <Loader2 className="size-6 animate-spin" />
+                  </div>
+                </div>
+              ) : null}
+
+              {status === "error" ? (
+                <div className="absolute inset-0 flex items-center justify-center bg-[linear-gradient(180deg,rgba(128,101,56,0.22),rgba(87,61,29,0.58))] p-5 text-center">
+                  <div className="flex max-w-[13rem] flex-col items-center gap-2 border border-[#f0e1bb] bg-[rgba(67,47,20,0.38)] px-4 py-5 text-white backdrop-blur-md">
+                    <AlertCircle className="size-6" />
+                    <p className="text-sm font-medium">Preview unavailable</p>
+                    <p className="text-xs leading-5 text-white/80">
+                      Open the image to retry the full asset.
+                    </p>
+                  </div>
+                </div>
+              ) : null}
+
+              <div className="pointer-events-none absolute inset-0 bg-[linear-gradient(180deg,rgba(255,255,255,0.05),transparent_35%,rgba(59,39,15,0.18))]" />
+            </div>
+            <div className="px-3 py-3 text-center font-[var(--font-heading)] text-[1.1rem] leading-tight text-[color:var(--ink-strong)] sm:px-4 sm:py-3.5 max-[402px]:flex max-[402px]:min-h-[4.9rem] max-[402px]:flex-1 max-[402px]:items-center max-[402px]:justify-center">
+              {modelLabel}
+            </div>
+          </Card>
+        </HandDrawnFrame>
+      </button>
+    </article>
   );
 }
 
 export interface CommunityVideoCardProps {
-  duration?: string;
-  meta?: string;
+  isActive?: boolean;
+  onClick?: () => void;
   onPlay?: () => void;
   posterAlt?: string;
-  posterUrl: string;
+  posterUrl?: string;
   title: string;
+  videoUrl?: string;
 }
 
 export function CommunityVideoCard({
-  duration,
-  meta,
+  isActive = false,
+  onClick,
   onPlay,
   posterAlt,
   posterUrl,
-  title
+  title,
+  videoUrl
 }: CommunityVideoCardProps) {
+  const handleOpen = onClick ?? onPlay;
+
   return (
-    <button
-      aria-label={`Play ${title}`}
-      className="group block w-full text-left"
-      onClick={onPlay}
-      title={meta ?? title}
-      type="button"
+    <article
+      className="group"
+      onClick={(event) => {
+        const target = event.target;
+
+        if (
+          !(target instanceof Element) ||
+          target.closest("button, input, video")
+        ) {
+          return;
+        }
+
+        handleOpen?.();
+      }}
     >
       <HandDrawnFrame
         className="overflow-hidden bg-[linear-gradient(180deg,rgba(249,243,226,0.98),rgba(239,227,193,0.98))] transition-transform duration-300 group-hover:-translate-y-1"
@@ -172,20 +301,27 @@ export function CommunityVideoCard({
         variation={1}
       >
         <Card className="gap-0 overflow-hidden border-0 bg-transparent py-0 shadow-none">
-          <div className="relative aspect-video overflow-hidden border-b-2 border-[color:var(--border-soft)] bg-[color:var(--paper-soft)]">
-            <img alt={posterAlt ?? title} className="size-full object-cover" src={posterUrl} />
-            <div className="absolute inset-0 bg-[radial-gradient(circle_at_top,rgba(255,255,255,0.14),transparent_40%),linear-gradient(180deg,rgba(0,0,0,0.08),rgba(0,0,0,0.68))]" />
-            <span className="absolute bottom-3 left-3 inline-flex items-center gap-2 border border-white/20 bg-black/42 px-3 py-1 text-xs text-white backdrop-blur-md">
-              <Play className="size-3.5 fill-current" />
-              {duration ?? "Preview"}
-            </span>
+          <div className="border-b-2 border-[color:var(--surface-highlight-border)] bg-[color:var(--surface-highlight)]">
+            <CommunityVideoPlayer
+              autoPlay={isActive}
+              chrome="minimal"
+              className="rounded-none border-none shadow-none"
+              isActive={isActive}
+              loop
+              mode="card"
+              preload="metadata"
+              title={posterAlt ?? title}
+              {...(handleOpen ? { onOpen: handleOpen } : {})}
+              {...(posterUrl ? { poster: posterUrl } : {})}
+              {...(videoUrl ? { src: videoUrl } : {})}
+            />
           </div>
           <div className="px-4 py-3 text-center font-[var(--font-heading)] text-[1.1rem] leading-tight text-[color:var(--ink-strong)] sm:px-5 sm:py-3.5">
             {title}
           </div>
         </Card>
       </HandDrawnFrame>
-    </button>
+    </article>
   );
 }
 

@@ -15,7 +15,7 @@ test("renders the single-page showcase and redirects legacy routes into anchors"
   await expect(page.locator("#shell-navigation")).toBeVisible();
   await expect(page.locator("#core-primitives")).toBeVisible();
   await expect(page.getByRole("heading", { exact: true, name: "Button" })).toBeVisible();
-  await expect(page.getByRole("heading", { exact: true, name: "Generate Prompt Composer" })).toBeVisible();
+  await expect(page.getByRole("heading", { exact: true, name: "Generate Editor Bar" })).toBeVisible();
   await expect(page.getByRole("heading", { exact: true, name: "Footer" })).toBeVisible();
 
   await desktopHeader.getByRole("button", { name: /User/i }).click();
@@ -31,12 +31,12 @@ test("renders the single-page showcase and redirects legacy routes into anchors"
   await page.keyboard.press("Escape");
   await expect(page.getByRole("heading", { exact: true, name: "Welcome back" })).toHaveCount(0);
 
-  await page.getByRole("button", { name: "Open image modal" }).click();
-  await expect(page.getByText("Community image")).toBeVisible();
+  await page.locator("#pattern-community-cards").getByText("Forest lantern walk").click();
+  await expect(page.getByRole("heading", { exact: true, name: "Forest lantern walk" })).toBeVisible();
   await page.keyboard.press("Escape");
-  await expect(page.getByText("Community image")).toHaveCount(0);
+  await expect(page.getByRole("heading", { exact: true, name: "Forest lantern walk" })).toHaveCount(0);
 
-  await page.getByRole("button", { name: "Open video modal" }).click();
+  await page.locator("#pattern-community-video-card").getByText("Lantern ferry glide").click();
   await expect(page.getByRole("heading", { exact: true, name: "Lantern ferry glide" })).toBeVisible();
   await page.keyboard.press("Escape");
 
@@ -72,7 +72,7 @@ test("renders the showcase on mobile and desktop without horizontal page overflo
   await mobileSheet.getByRole("button", { name: "Close" }).click();
   await expect(page.getByRole("heading", { exact: true, name: "Storybook" })).toBeVisible();
   await expect(page.locator("#footer-endmatter")).toBeVisible();
-  await expect(page.getByRole("heading", { exact: true, name: "User Display Box" })).toBeVisible();
+  await expect(page.getByRole("heading", { exact: true, name: "Account Dialogs" })).toBeVisible();
   await expect.poll(async () =>
     page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth + 1)
   ).toBe(true);
@@ -81,7 +81,7 @@ test("renders the showcase on mobile and desktop without horizontal page overflo
   await page.reload();
 
   await expect(mobileMenuTrigger).toBeHidden();
-  await expect(page.getByRole("heading", { exact: true, name: "Cards" })).toBeVisible();
+  await expect(page.getByRole("heading", { exact: true, name: "Image Card" })).toBeVisible();
   await expect(page.getByRole("heading", { exact: true, name: "Footer" })).toBeVisible();
   await expect.poll(async () =>
     page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth + 1)
