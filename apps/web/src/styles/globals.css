@@ -12,6 +12,8 @@
   --popover-foreground: #4d3b2e;
   --paper: #eece84;
   --paper-soft: #faf4e8;
+  --surface-highlight: #f5ead0;
+  --surface-highlight-border: #e6d3a3;
   --muted: #eadfcb;
   --muted-foreground: #7a6857;
   --primary: #587855;
@@ -512,6 +514,345 @@
 .ghibli-dialog-content[data-state="open"] {
   transform: translate(-50%, -50%) scale(1);
   opacity: 1;
+}
+
+.ghibli-community-modal-overlay {
+  background: rgba(8, 7, 6, 0.82);
+  backdrop-filter: blur(12px);
+}
+
+.ghibli-dialog-content.ghibli-community-modal-content {
+  width: auto;
+  max-width: none;
+  gap: 0;
+  overflow: visible;
+  border: 0;
+  background: transparent;
+  padding: 0;
+  color: var(--primary-foreground);
+  box-shadow: none;
+}
+
+.ghibli-community-modal-shell {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.ghibli-community-viewer-surface {
+  overflow: hidden;
+}
+
+.ghibli-community-image-viewer {
+  position: relative;
+  height: 70vh;
+  width: 90vw;
+  flex-shrink: 0;
+  overflow: hidden;
+}
+
+.ghibli-community-image-viewer-scroll {
+  height: 100%;
+  width: 100%;
+  overflow-x: hidden;
+  overflow-y: auto;
+  padding-block: 0.75rem;
+}
+
+.ghibli-community-image-viewer-grid {
+  margin-inline: auto;
+  display: flex;
+  width: 95%;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.ghibli-community-image-viewer-stage {
+  position: relative;
+  min-height: 15rem;
+  min-width: 0;
+}
+
+.ghibli-community-image-viewer-media {
+  display: flex;
+  height: 100%;
+  align-items: center;
+  justify-content: center;
+  overflow: auto;
+}
+
+.ghibli-community-image-viewer-image {
+  display: block;
+  height: auto;
+  width: 100%;
+  max-width: none;
+}
+
+.ghibli-community-image-viewer-close-mobile {
+  position: absolute;
+  top: 0.5rem;
+  right: 0.5rem;
+  z-index: 30;
+}
+
+.ghibli-community-image-viewer-close-desktop {
+  display: none;
+}
+
+.ghibli-community-image-viewer-details {
+  overflow-y: auto;
+}
+
+.ghibli-community-video-viewer {
+  position: relative;
+  height: 70vh;
+  width: 90vw;
+  flex-shrink: 0;
+  overflow: hidden;
+}
+
+.ghibli-community-video-viewer-close {
+  position: absolute;
+  top: 0.75rem;
+  right: 0.75rem;
+  z-index: 30;
+}
+
+.ghibli-community-video-viewer-scroll {
+  height: 100%;
+  width: 100%;
+  overflow-x: hidden;
+  overflow-y: auto;
+  padding-top: 3.5rem;
+  padding-bottom: 1.5rem;
+}
+
+.ghibli-community-video-viewer-inner {
+  margin-inline: auto;
+  width: 95%;
+}
+
+.ghibli-community-video-viewer-stage {
+  width: 100%;
+}
+
+.ghibli-community-modal-nav {
+  position: absolute;
+  top: 50%;
+  z-index: 30;
+  display: inline-flex;
+  height: 2.5rem;
+  width: 2.5rem;
+  flex-shrink: 0;
+  align-items: center;
+  justify-content: center;
+  transform: translateY(-50%);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  background: rgba(60, 46, 33, 0.82);
+  color: var(--primary-foreground);
+  backdrop-filter: blur(8px);
+  transition:
+    background 120ms ease,
+    border-color 120ms ease,
+    opacity 120ms ease;
+}
+
+.ghibli-community-modal-nav:hover:not(:disabled) {
+  border-color: rgba(255, 255, 255, 0.24);
+  background: rgba(73, 56, 40, 0.94);
+  color: var(--primary-foreground);
+}
+
+.ghibli-community-modal-nav:disabled {
+  opacity: 0.55;
+}
+
+.ghibli-community-modal-nav--prev {
+  left: -1rem;
+}
+
+.ghibli-community-modal-nav--next {
+  right: -1rem;
+}
+
+.ghibli-showcase-image-card-grid {
+  display: grid;
+  width: 100%;
+  max-width: 35rem;
+  gap: 1rem;
+  align-items: stretch;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.ghibli-showcase-video-card-grid {
+  display: grid;
+  width: 100%;
+  max-width: 58rem;
+  gap: 1.25rem;
+  align-items: stretch;
+  grid-template-columns: minmax(0, 1fr);
+}
+
+.ghibli-generate-editor-stage {
+  position: relative;
+  overflow: hidden;
+  border: 1px solid color-mix(in oklab, var(--border-strong) 36%, transparent);
+  background:
+    linear-gradient(180deg, rgba(255, 249, 239, 0.62), rgba(229, 219, 194, 0.26)),
+    radial-gradient(circle at top, rgba(255, 255, 255, 0.28), transparent 46%),
+    linear-gradient(180deg, rgba(192, 206, 178, 0.48), rgba(170, 182, 151, 0.3));
+  min-height: 36rem;
+}
+
+.ghibli-generate-editor-stage-canvas {
+  min-height: 36rem;
+  padding: 1.25rem 1.25rem 18rem;
+}
+
+.ghibli-generate-editor-stage-grid {
+  display: grid;
+  gap: 1rem;
+}
+
+.ghibli-generate-editor-stage-dock {
+  position: absolute;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  padding: 0 1rem 1rem;
+}
+
+.ghibli-generate-editor-stage-inner {
+  margin-inline: auto;
+  width: 100%;
+  max-width: 80rem;
+}
+
+@media (min-width: 640px) {
+  .ghibli-community-modal-nav {
+    height: 2.75rem;
+    width: 2.75rem;
+  }
+
+  .ghibli-community-image-viewer-scroll {
+    padding-block: 1rem;
+  }
+
+  .ghibli-community-image-viewer-stage {
+    min-height: 20rem;
+  }
+
+  .ghibli-community-video-viewer-scroll {
+    padding-top: 4rem;
+    padding-bottom: 2rem;
+  }
+
+  .ghibli-community-modal-nav--prev {
+    left: -1.25rem;
+  }
+
+  .ghibli-community-modal-nav--next {
+    right: -1.25rem;
+  }
+
+  .ghibli-generate-editor-stage-canvas {
+    padding: 1.5rem 1.5rem 18rem;
+  }
+}
+
+@media (min-width: 1024px) {
+  .ghibli-community-image-viewer {
+    height: min(88vh, 52rem);
+    width: min(88vw, 78rem);
+  }
+
+  .ghibli-community-image-viewer-scroll {
+    display: flex;
+    align-items: center;
+    overflow: hidden;
+    padding-inline: 1.25rem;
+  }
+
+  .ghibli-community-image-viewer-grid {
+    display: grid;
+    height: 98%;
+    width: 100%;
+    grid-template-columns: minmax(0, 1fr) 22rem;
+    gap: 1.25rem;
+  }
+
+  .ghibli-community-image-viewer-stage {
+    height: 100%;
+    min-height: 0;
+  }
+
+  .ghibli-community-image-viewer-image {
+    height: 100%;
+    width: auto;
+    max-width: 100%;
+  }
+
+  .ghibli-community-image-viewer-close-mobile {
+    display: none;
+  }
+
+  .ghibli-community-image-viewer-close-desktop {
+    display: block;
+  }
+
+  .ghibli-community-image-viewer-details {
+    margin-top: 0;
+    height: 100%;
+    min-height: 0;
+    align-self: stretch;
+    overflow-y: auto;
+  }
+
+  .ghibli-community-image-viewer-details-content {
+    padding-right: 3rem;
+  }
+
+  .ghibli-community-video-viewer {
+    height: min(95vh, calc(100vw - 7.5rem));
+    width: min(95vh, calc(100vw - 7.5rem));
+  }
+
+  .ghibli-showcase-video-card-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .ghibli-generate-editor-stage-grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+
+  .ghibli-generate-editor-stage-dock {
+    padding: 0 1.5rem 1.5rem;
+  }
+}
+
+@media (min-width: 1440px) {
+  .ghibli-community-image-viewer-grid {
+    grid-template-columns: minmax(0, 65fr) minmax(0, 35fr);
+    gap: 0.75rem;
+  }
+}
+
+@media (min-width: 2560px) {
+  .ghibli-community-image-viewer {
+    height: 90dvh;
+    width: min(90vw, 104rem);
+  }
+
+  .ghibli-community-image-viewer-grid {
+    gap: 1rem;
+  }
+}
+
+@media (max-width: 426px) {
+  .ghibli-community-image-viewer {
+    height: 90dvh;
+  }
 }
 
 @layer utilities {

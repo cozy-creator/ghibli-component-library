@@ -21,8 +21,9 @@ describe("docs information architecture", () => {
     expect(screen.getAllByText("pnpm dlx shadcn@latest add @ghibli/components")).toHaveLength(1);
     expect(screen.getByRole("heading", { name: "Button" })).toBeInTheDocument();
     expect(screen.getByRole("heading", { name: "Tabs Switch" })).toBeInTheDocument();
-    expect(screen.getByRole("heading", { name: "User Display Box" })).toBeInTheDocument();
-    expect(screen.getByRole("heading", { name: "Cards" })).toBeInTheDocument();
+    expect(screen.getByRole("heading", { name: "Image Card" })).toBeInTheDocument();
+    expect(screen.getByRole("heading", { name: "Video Card" })).toBeInTheDocument();
+    expect(screen.getByRole("heading", { name: "Generate Editor Bar" })).toBeInTheDocument();
     expect(screen.getByRole("heading", { name: "Storybook" })).toBeInTheDocument();
 
     const orderedSections = orderedSectionIds.map((id) => {

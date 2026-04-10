@@ -54,10 +54,11 @@ export function GenerateModeToggle({
   return (
     <HandDrawnFrame
       className="inline-block w-full bg-[color:var(--paper-soft)] sm:w-auto"
+      shape="banner"
       strokeColor="var(--border)"
       strokeWidth={1.25}
       svgClassName="opacity-85"
-      variant="banner"
+      variant={0.3}
     >
       <div
         aria-label="Generation mode"
@@ -142,10 +143,11 @@ function MenuSelect({
     <DropdownMenu onOpenChange={handleOpenChange} open={open}>
       <HandDrawnFrame
         className="w-full bg-[color:var(--paper)] sm:w-auto"
+        shape="banner"
         strokeColor="var(--border)"
         strokeWidth={1.25}
         svgClassName="opacity-85"
-        variant="banner"
+        variant={0.3}
       >
         <DropdownMenuTrigger asChild>
           <Button className="w-full bg-transparent hover:bg-white/20 sm:w-auto" variant="ghost">
@@ -196,11 +198,15 @@ function MenuSelect({
                     <DropdownMenuRadioItem
                       className={cn(
                         "group/aspect-ruler relative flex min-w-0 cursor-pointer justify-center rounded-none bg-transparent px-0 py-0 text-[color:var(--paper-soft)] focus:bg-transparent focus:text-[color:var(--paper-soft)]",
+                        "[&_[data-slot=dropdown-menu-radio-item-indicator]]:hidden",
                         option.disabled && "pointer-events-none opacity-40"
                       )}
                       disabled={option.disabled}
                       key={option.value}
-                      onClick={() => handleAspectRulerSelect(option.value)}
+                      onSelect={(event) => {
+                        event.preventDefault();
+                        handleAspectRulerSelect(option.value);
+                      }}
                       value={option.value}
                     >
                       <span className="relative flex h-[4.75rem] w-full items-start justify-center">

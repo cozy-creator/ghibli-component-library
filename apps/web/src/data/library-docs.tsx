@@ -15,7 +15,6 @@ import {
   CardTitle,
   CommunityImageCard,
   CommunityVideoCard,
-  CommunityXPostCard,
   DocsFaqAccordion,
   DropdownMenu,
   DropdownMenuContent,
@@ -79,7 +78,6 @@ import {
   sampleJobs,
   socialItems,
   subscriptionOffers,
-  xPostDemo
 } from "@/apps/web/src/data/demo-fixtures";
 import {
   AppleAuthIcon,
@@ -1208,25 +1206,33 @@ export const patternDocs: DocItem[] = [
         preview: (
           <div className="grid gap-4">
             <div className="grid gap-4 md:grid-cols-2">
-              <CommunityImageCard
-                imageUrl={communityImageItems[0]?.imageUrl ?? ""}
-                meta={communityImageItems[0]?.meta ?? ""}
-                title={communityImageItems[0]?.title ?? ""}
-              />
-              <CommunityVideoCard
-                posterUrl={communityVideoItems[0]?.posterUrl ?? ""}
-                title={communityVideoItems[0]?.title ?? ""}
-              />
+              {communityImageItems.slice(0, 2).map((item) => (
+                <CommunityImageCard
+                  imageUrl={item.imageUrl}
+                  key={item.id}
+                  meta={item.meta}
+                  title={item.title}
+                />
+              ))}
             </div>
-            <CommunityXPostCard {...xPostDemo} />
+            <div className="grid gap-4 md:grid-cols-2">
+              {communityVideoItems.slice(0, 2).map((item) => (
+                <CommunityVideoCard
+                  key={item.id}
+                  posterUrl={item.posterUrl ?? ""}
+                  title={item.title}
+                  videoUrl={item.videoUrl}
+                />
+              ))}
+            </div>
           </div>
         ),
         snippet: snippet(
           "Usage",
           "tsx",
-          `import { CommunityImageCard, CommunityVideoCard, CommunityXPostCard } from "@/components/blocks/community/cards";`
+          `import { CommunityImageCard, CommunityVideoCard } from "@/components/blocks/community/cards";`
         ),
-        title: "Mixed gallery cards"
+        title: "Image and video cards"
       }
     ],
     exports: ["CommunityImageCard", "CommunityVideoCard", "CommunityXPostCard"],
@@ -1247,24 +1253,37 @@ export const patternDocs: DocItem[] = [
     preview: (
       <div className="grid gap-4">
         <div className="grid gap-4 md:grid-cols-2">
-          <CommunityImageCard
-            imageUrl={communityImageItems[0]?.imageUrl ?? ""}
-            meta={communityImageItems[0]?.meta ?? ""}
-            title={communityImageItems[0]?.title ?? ""}
-          />
-          <CommunityVideoCard
-            posterUrl={communityVideoItems[0]?.posterUrl ?? ""}
-            title={communityVideoItems[0]?.title ?? ""}
-          />
+          {communityImageItems.slice(0, 2).map((item) => (
+            <CommunityImageCard
+              imageUrl={item.imageUrl}
+              key={item.id}
+              meta={item.meta}
+              title={item.title}
+            />
+          ))}
         </div>
-        <CommunityXPostCard {...xPostDemo} />
+        <div className="grid gap-4 md:grid-cols-2">
+          {communityVideoItems.slice(0, 2).map((item) => (
+            <CommunityVideoCard
+              key={item.id}
+              posterUrl={item.posterUrl ?? ""}
+              title={item.title}
+              videoUrl={item.videoUrl}
+            />
+          ))}
+        </div>
       </div>
     ),
     related: ["community-modals", "card", "tabs"],
     storybookTitle: "Patterns/Community/Cards",
-    summary: "Gallery-style content cards for mixed media and editorial surfaces.",
+    summary: "Gallery-style image and video cards for media-heavy editorial surfaces.",
     title: "Cards",
-    usageSnippet: snippet("Basic usage", "tsx", `<CommunityImageCard title="Forest lantern walk" imageUrl={imageUrl} />`)
+    usageSnippet: snippet(
+      "Basic usage",
+      "tsx",
+      `<CommunityImageCard title="Forest lantern walk" imageUrl={imageUrl} />
+<CommunityVideoCard title="Lantern ferry glide" posterUrl={posterUrl} videoUrl={videoUrl} />`
+    )
   },
   {
     description: "Image and video modal viewers for larger media browsing flows.",
@@ -1395,6 +1414,7 @@ export const patternDocs: DocItem[] = [
             aspectRatio="3:4"
             aspectRatioOptions={aspectRatioOptions}
             attachments={sampleAttachments}
+            defaultExpanded
             estimateLabel="~18s / image"
             mode="image"
             modeOptions={modeOptions}
@@ -1440,6 +1460,7 @@ export const patternDocs: DocItem[] = [
         aspectRatio="3:4"
         aspectRatioOptions={aspectRatioOptions}
         attachments={sampleAttachments}
+        defaultExpanded
         estimateLabel="~18s / image"
         mode="image"
         modeOptions={modeOptions}

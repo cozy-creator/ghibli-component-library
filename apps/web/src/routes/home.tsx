@@ -18,18 +18,15 @@ import {
   AccountLinkedAccountsSection,
   AccountProfileSection,
   AccountSubscriptionSection,
-  AccountUserDisplayBox,
   AuthDialog,
   Badge,
   Button,
   CartoonButton,
-  CommunityEmbedCard,
   CommunityImageCard,
   CommunityImageModal,
   CommunityTabsList,
   CommunityVideoCard,
   CommunityVideoModal,
-  CommunityXPostCard,
   DocsArticle,
   DocsCallout,
   DocsCodeBlock,
@@ -49,12 +46,9 @@ import {
   GenerateAspectRatioSelect,
   GenerateButton,
   GenerateEditorBar,
-  GenerateJobCard,
-  GenerateModeToggle,
   GenerateModelSelect,
   GenerateNegativePromptMenu,
   GenerateNumImagesControl,
-  GeneratePromptComposer,
   GenerateQuickPicks,
   GenerateUploadDialog,
   HandDrawnFrame,
@@ -65,7 +59,6 @@ import {
   PageSection,
   PageShell,
   RegisterForm,
-  Separator,
   ShellFooter,
   ShellHeader,
   Tabs,
@@ -100,9 +93,7 @@ import {
   modeOptions,
   modelOptions,
   sampleAttachments,
-  sampleJobs,
   subscriptionOffers,
-  xPostDemo,
 } from "@/apps/web/src/data/demo-fixtures";
 
 const installCommand = "pnpm dlx shadcn@latest add @ghibli/components";
@@ -112,6 +103,70 @@ const registrySnippet = `{
     "@ghibli": "https://<your-domain>/r/{name}.json"
   }
 }`;
+
+const handDrawnFrameShapes = [
+  "organic",
+  "steady",
+  "pill",
+  "panel",
+  "surface",
+  "card",
+  "banner",
+] as const;
+
+type ShowcaseHandDrawnFrameShape = (typeof handDrawnFrameShapes)[number];
+
+function isShowcaseHandDrawnFrameShape(
+  value: string,
+): value is ShowcaseHandDrawnFrameShape {
+  return handDrawnFrameShapes.includes(value as ShowcaseHandDrawnFrameShape);
+}
+
+function clampNumber(value: number, min: number, max: number) {
+  return Math.min(max, Math.max(min, value));
+}
+
+function resolveFrameNumberInput(
+  value: string,
+  fallback: number,
+  {
+    max,
+    min,
+    precision = 2,
+  }: {
+    max: number;
+    min: number;
+    precision?: number;
+  },
+) {
+  const parsed = Number.parseFloat(value);
+
+  if (!Number.isFinite(parsed)) {
+    return fallback;
+  }
+
+  return Number.parseFloat(clampNumber(parsed, min, max).toFixed(precision));
+}
+
+function resolveFrameIntegerInput(
+  value: string,
+  fallback: number,
+  {
+    max,
+    min,
+  }: {
+    max: number;
+    min: number;
+  },
+) {
+  const parsed = Number.parseInt(value, 10);
+
+  if (!Number.isFinite(parsed)) {
+    return fallback;
+  }
+
+  return Math.round(clampNumber(parsed, min, max));
+}
 
 function CodeBlock({ children }: { children: string }) {
   return (
@@ -212,12 +267,16 @@ export function HomePage() {
   const [authTab, setAuthTab] = useState<"login" | "register">("login");
   const [emailDialogOpen, setEmailDialogOpen] = useState(false);
   const [passwordDialogOpen, setPasswordDialogOpen] = useState(false);
-  const [communityImageOpen, setCommunityImageOpen] = useState(false);
-  const [communityVideoOpen, setCommunityVideoOpen] = useState(false);
+  const [communityImageIndex, setCommunityImageIndex] = useState<number | null>(null);
+  const [communityVideoIndex, setCommunityVideoIndex] = useState<number | null>(null);
   const [newEmail, setNewEmail] = useState("new-address@ghibli-ui.test");
   const [currentPassword, setCurrentPassword] = useState("");
   const [newPassword, setNewPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
+  const [frameShapeInput, setFrameShapeInput] = useState("organic");
+  const [frameVariantInput, setFrameVariantInput] = useState("0.7");
+  const [frameVariationInput, setFrameVariationInput] = useState("0");
+  const [frameStrokeWidthInput, setFrameStrokeWidthInput] = useState("2.4");
   const authProviderActions = [
     {
       icon: <GoogleAuthIcon />,
@@ -244,6 +303,29 @@ export function HomePage() {
       onSelect: () => undefined,
     },
   ];
+  const trimmedFrameShapeInput = frameShapeInput.trim();
+  const resolvedFrameShape: ShowcaseHandDrawnFrameShape =
+    isShowcaseHandDrawnFrameShape(trimmedFrameShapeInput)
+      ? trimmedFrameShapeInput
+      : "organic";
+  const resolvedFrameVariant = resolveFrameNumberInput(
+    frameVariantInput,
+    0.7,
+    { max: 1, min: 0 },
+  );
+  const resolvedFrameVariation = resolveFrameIntegerInput(
+    frameVariationInput,
+    0,
+    { max: 24, min: 0 },
+  );
+  const resolvedFrameStrokeWidth = resolveFrameNumberInput(
+    frameStrokeWidthInput,
+    2.4,
+    { max: 4, min: 0.5 },
+  );
+  const usesFrameShapeFallback = resolvedFrameShape !== trimmedFrameShapeInput;
+  const featuredCommunityImages = communityImageItems.slice(0, 2);
+  const featuredCommunityVideos = communityVideoItems.slice(0, 2);
 
   return (
     <div
@@ -346,6 +428,79 @@ export function HomePage() {
           title="Hand Drawn Frame"
         >
           <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
+            <div className="grid gap-4 md:col-span-2 xl:col-span-3 lg:grid-cols-[minmax(0,18rem)_minmax(0,1fr)]">
+              <DemoSurface>
+                <div className="grid gap-3">
+                  <FormField
+                    description="organic, steady, pill, panel, surface, card, banner"
+                    label="Shape"
+                  >
+                    <Input
+                      onChange={(event) => setFrameShapeInput(event.target.value)}
+                      placeholder="organic"
+                      value={frameShapeInput}
+                    />
+                  </FormField>
+                  <FormField action={<span className="text-xs text-muted-foreground">0-1</span>} label="Variant">
+                    <Input
+                      max="1"
+                      min="0"
+                      onChange={(event) => setFrameVariantInput(event.target.value)}
+                      step="0.05"
+                      type="number"
+                      value={frameVariantInput}
+                    />
+                  </FormField>
+                  <FormField action={<span className="text-xs text-muted-foreground">0-24</span>} label="Variation">
+                    <Input
+                      max="24"
+                      min="0"
+                      onChange={(event) => setFrameVariationInput(event.target.value)}
+                      step="1"
+                      type="number"
+                      value={frameVariationInput}
+                    />
+                  </FormField>
+                  <FormField action={<span className="text-xs text-muted-foreground">0.5-4</span>} label="Stroke Width">
+                    <Input
+                      max="4"
+                      min="0.5"
+                      onChange={(event) => setFrameStrokeWidthInput(event.target.value)}
+                      step="0.05"
+                      type="number"
+                      value={frameStrokeWidthInput}
+                    />
+                  </FormField>
+                </div>
+              </DemoSurface>
+              <HandDrawnFrame
+                className="bg-[color:var(--card)] px-5 py-5"
+                shape={resolvedFrameShape}
+                strokeWidth={resolvedFrameStrokeWidth}
+                variant={resolvedFrameVariant}
+                variation={resolvedFrameVariation}
+              >
+                <p className="font-[var(--font-heading)] text-xl text-[color:var(--ink-strong)]">
+                  Interactive playground
+                </p>
+                <p className="mt-2 text-sm leading-7 text-muted-foreground">
+                  Type values on the left to preview different frame combinations live.
+                </p>
+                <p className="mt-3 text-xs leading-6 text-muted-foreground">
+                  <code>
+                    shape="{resolvedFrameShape}" variant=&#123;{resolvedFrameVariant}
+                    &#125; variation=&#123;{resolvedFrameVariation}
+                    &#125; strokeWidth=&#123;{resolvedFrameStrokeWidth}
+                    &#125;
+                  </code>
+                </p>
+                {usesFrameShapeFallback ? (
+                  <p className="mt-2 text-xs leading-6 text-muted-foreground">
+                    Invalid shape fallback: using <code>organic</code>.
+                  </p>
+                ) : null}
+              </HandDrawnFrame>
+            </div>
             <HandDrawnFrame
               className="bg-[color:var(--card)] px-5 py-5"
               shape="organic"
@@ -487,24 +642,6 @@ export function HomePage() {
         </Specimen>
 
         <Specimen
-          id="component-separator"
-          note="The paper divider used between compact menu, modal, and form groupings."
-          title="Separator"
-        >
-          <DemoSurface>
-            <div className="grid gap-4">
-              <p className="font-medium text-[color:var(--ink-strong)]">
-                Separator
-              </p>
-              <Separator />
-              <p className="text-sm leading-7 text-muted-foreground">
-                Used between compact menu and form sections.
-              </p>
-            </div>
-          </DemoSurface>
-        </Specimen>
-
-        <Specimen
           id="component-forms"
           note="The field primitives and form wrapper used by auth and generate surfaces."
           title="Input, Textarea, Form Field"
@@ -609,92 +746,88 @@ export function HomePage() {
       <ShowcaseGroup id="community-flows">
         <Specimen
           id="pattern-community-cards"
-          note="Image, video, embed, and x-post cards from the community feed."
-          title="Cards"
+          note="Two Cozy-style image cards with the same click-through gallery viewer."
+          title="Image Card"
         >
-          <div className="grid gap-5">
-            <DemoGrid>
-              {communityImageItems.map((item) => (
-                <CommunityImageCard
-                  imageUrl={item.imageUrl}
-                  key={item.id}
-                  meta={item.meta}
-                  onClick={() => setCommunityImageOpen(true)}
-                  summary={item.description}
-                  title={item.title}
-                />
-              ))}
-            </DemoGrid>
-            <div className="grid gap-4 lg:grid-cols-2">
-              <CommunityVideoCard
-                {...(communityVideoItems[0]?.meta
-                  ? { duration: communityVideoItems[0].meta }
-                  : {})}
-                onPlay={() => setCommunityVideoOpen(true)}
-                posterUrl={communityVideoItems[0]?.posterUrl ?? ""}
-                title={communityVideoItems[0]?.title ?? "Video preview"}
+          <div className="ghibli-showcase-image-card-grid">
+            {featuredCommunityImages.map((item, index) => (
+              <CommunityImageCard
+                imageUrl={item.imageUrl}
+                key={item.id}
+                meta={item.meta}
+                onClick={() => setCommunityImageIndex(index)}
+                summary={item.description}
+                title={item.title}
               />
-              <CommunityXPostCard {...xPostDemo} />
-            </div>
-            <CommunityEmbedCard
-              author="Ghibli UI"
-              embed={
-                <NoticeBanner
-                  description="A compact embed wrapper for custom community content."
-                  title="Embed content lives here."
-                  tone="river"
-                />
-              }
-              footer={<span>Reusable feed shell</span>}
-              handle="@ghibliui"
-            />
+            ))}
           </div>
+          <CommunityImageModal
+            currentIndex={communityImageIndex ?? 0}
+            images={featuredCommunityImages}
+            onNext={() =>
+              setCommunityImageIndex((current) =>
+                current === null
+                  ? current
+                  : Math.min(featuredCommunityImages.length - 1, current + 1),
+              )
+            }
+            onOpenChange={(open) => {
+              if (!open) {
+                setCommunityImageIndex(null);
+              }
+            }}
+            onPrev={() =>
+              setCommunityImageIndex((current) =>
+                current === null ? current : Math.max(0, current - 1),
+              )
+            }
+            open={communityImageIndex !== null}
+          />
         </Specimen>
 
         <Specimen
-          id="pattern-community-modals"
-          note="Large image and video feed modals stay trigger-based on this page."
-          title="Community Modals"
+          id="pattern-community-video-card"
+          note="Two Cozy-style video cards using the same full-screen viewer and chrome."
+          title="Video Card"
         >
-          <div className="flex flex-wrap gap-3">
-            <Button onClick={() => setCommunityImageOpen(true)}>
-              Open image modal
-            </Button>
-            <Button
-              onClick={() => setCommunityVideoOpen(true)}
-              variant="secondary"
-            >
-              Open video modal
-            </Button>
+          <div className="ghibli-showcase-video-card-grid">
+            {featuredCommunityVideos.map((item, index) => (
+              <CommunityVideoCard
+                isActive={index === 0}
+                key={item.id}
+                onClick={() => setCommunityVideoIndex(index)}
+                posterUrl={item.posterUrl}
+                title={item.title}
+                videoUrl={item.videoUrl}
+              />
+            ))}
           </div>
-          <CommunityImageModal
-            currentIndex={0}
-            images={communityImageItems}
-            onOpenChange={setCommunityImageOpen}
-            open={communityImageOpen}
-          />
           <CommunityVideoModal
-            currentIndex={0}
-            onOpenChange={setCommunityVideoOpen}
-            open={communityVideoOpen}
-            videos={communityVideoItems}
+            currentIndex={communityVideoIndex ?? 0}
+            onNext={() =>
+              setCommunityVideoIndex((current) =>
+                current === null
+                  ? current
+                  : Math.min(featuredCommunityVideos.length - 1, current + 1),
+              )
+            }
+            onOpenChange={(open) => {
+              if (!open) {
+                setCommunityVideoIndex(null);
+              }
+            }}
+            onPrev={() =>
+              setCommunityVideoIndex((current) =>
+                current === null ? current : Math.max(0, current - 1),
+              )
+            }
+            open={communityVideoIndex !== null}
+            videos={featuredCommunityVideos}
           />
         </Specimen>
       </ShowcaseGroup>
 
       <ShowcaseGroup id="generate-flows">
-        <Specimen
-          id="component-generate-mode-toggle"
-          note="The image and storyboard toggle from the generate controls."
-          title="Generate Mode Toggle"
-        >
-          <GenerateModeToggle
-            onValueChange={setMode}
-            options={modeOptions}
-            value={mode}
-          />
-        </Specimen>
-
         <Specimen
           id="component-generate-selects"
           note="Dropdown and ruler-style selectors from the generate page."
@@ -734,43 +867,60 @@ export function HomePage() {
         </Specimen>
 
         <Specimen
-          id="component-generate-prompt-composer"
-          note="The reusable prompt input surface extracted from the generate page."
-          title="Generate Prompt Composer"
-        >
-          <GeneratePromptComposer
-            attachments={sampleAttachments}
-            onPromptChange={setPrompt}
-            onRemoveAttachment={() => undefined}
-            prompt={prompt}
-          />
-        </Specimen>
-
-        <Specimen
           id="pattern-generate-editor-bar"
-          note="The full presentational editor bar composed from the generate controls."
+          note="The docked bottom composer from the Cozy generate page, shown in a page-like stage instead of as a detached toolbar."
           title="Generate Editor Bar"
         >
-          <GenerateEditorBar
-            aspectRatio={aspectRatio}
-            aspectRatioOptions={aspectRatioOptions}
-            attachments={sampleAttachments}
-            estimateLabel="~18s / image"
-            mode={mode}
-            modeOptions={modeOptions}
-            model={model}
-            modelOptions={modelOptions}
-            negativePrompt={negativePrompt}
-            numImages={numImages}
-            onAspectRatioChange={setAspectRatio}
-            onModeChange={setMode}
-            onModelChange={setModel}
-            onNegativePromptChange={setNegativePrompt}
-            onNumImagesChange={setNumImages}
-            onPromptChange={setPrompt}
-            onRemoveAttachment={() => undefined}
-            prompt={prompt}
-          />
+          <div className="ghibli-generate-editor-stage">
+            <div className="ghibli-generate-editor-stage-canvas">
+              <div className="ghibli-generate-editor-stage-grid">
+                {communityImageItems.slice(0, 3).map((item) => (
+                  <HandDrawnFrame
+                    className="overflow-hidden bg-[linear-gradient(180deg,rgba(249,243,226,0.92),rgba(239,227,193,0.92))]"
+                    clipContent
+                    key={item.id}
+                    shape="card"
+                    strokeColor="var(--border)"
+                    strokeWidth={1.55}
+                    variant={0.6}
+                    variation={1}
+                  >
+                    <img
+                      alt=""
+                      aria-hidden="true"
+                      className="aspect-[4/5] w-full object-cover"
+                      src={item.imageUrl}
+                    />
+                  </HandDrawnFrame>
+                ))}
+              </div>
+            </div>
+            <div className="ghibli-generate-editor-stage-dock">
+              <div className="ghibli-generate-editor-stage-inner">
+                <GenerateEditorBar
+                  aspectRatio={aspectRatio}
+                  aspectRatioOptions={aspectRatioOptions}
+                  attachments={sampleAttachments}
+                  defaultExpanded
+                  estimateLabel="~18s / image"
+                  mode={mode}
+                  modeOptions={modeOptions}
+                  model={model}
+                  modelOptions={modelOptions}
+                  negativePrompt={negativePrompt}
+                  numImages={numImages}
+                  onAspectRatioChange={setAspectRatio}
+                  onModeChange={setMode}
+                  onModelChange={setModel}
+                  onNegativePromptChange={setNegativePrompt}
+                  onNumImagesChange={setNumImages}
+                  onPromptChange={setPrompt}
+                  onRemoveAttachment={() => undefined}
+                  prompt={prompt}
+                />
+              </div>
+            </div>
+          </div>
         </Specimen>
 
         <Specimen
@@ -801,17 +951,6 @@ export function HomePage() {
           </div>
         </Specimen>
 
-        <Specimen
-          id="pattern-generate-job-card"
-          note="Generation history state with progress and finished outputs."
-          title="Generate Job Card"
-        >
-          <DemoGrid>
-            {sampleJobs.map((job) => (
-              <GenerateJobCard key={job.title} {...job} />
-            ))}
-          </DemoGrid>
-        </Specimen>
       </ShowcaseGroup>
 
       <ShowcaseGroup id="docs-screens">
@@ -907,23 +1046,6 @@ export function HomePage() {
       </ShowcaseGroup>
 
       <ShowcaseGroup id="account-flows">
-        <Specimen
-          id="component-user-display-box"
-          note="The profile display box extracted from the account page."
-          title="User Display Box"
-        >
-          <AccountUserDisplayBox
-            email="mei@ghibli-ui.test"
-            generatedCount={128}
-            hasCustomAvatar
-            name="User"
-            onEditName={() => setEmailDialogOpen(true)}
-            onPasswordAction={() => setPasswordDialogOpen(true)}
-            onRemoveAvatar={() => undefined}
-            onUploadAvatar={() => undefined}
-          />
-        </Specimen>
-
         <Specimen
           id="pattern-account-dialogs"
           note="Account dialogs are controlled and presentational."

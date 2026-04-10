@@ -1,6 +1,7 @@
 import * as React from "react";
-import { FileText, Film, ImageIcon, Loader2, Paperclip, Upload, X } from "lucide-react";
+import { ChevronDown, ChevronUp, FileText, Film, ImageIcon, Loader2, Paperclip, Sparkles, Upload, X } from "lucide-react";
 
+import { NoticeBanner } from "@/components/blocks/feedback/notice-banner";
 import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
@@ -15,10 +16,7 @@ import {
   GenerateAspectRatioSelect,
   GenerateButton,
   GenerateModeToggle,
-  GenerateModelSelect,
-  GenerateNegativePromptMenu,
-  GenerateNumImagesControl,
-  GenerateUploadDialog
+  GenerateModelSelect
 } from "@/components/blocks/generate/controls";
 
 const ACCEPTED_MIME_TYPES = new Set([
@@ -68,6 +66,7 @@ const ACCEPTED_EXTENSIONS = new Set([
 ]);
 
 const FILE_PICKER_ACCEPT_ATTR = Array.from(new Set([...ACCEPTED_MIME_TYPES, ...ACCEPTED_EXTENSIONS])).join(",");
+const DRAG_THRESHOLD = 40;
 const PROMPT_COMPOSER_MIN_HEIGHT = 104;
 const PROMPT_COMPOSER_MAX_HEIGHT = 196;
 const PROMPT_COMPOSER_MAX_HEIGHT_WITH_ATTACHMENTS = 288;
@@ -83,6 +82,7 @@ export interface GenerateEditorBarProps {
   aspectRatioOptions: SelectOption[];
   attachments: GenerateAttachment[];
   className?: string;
+  defaultExpanded?: boolean;
   disabled?: boolean;
   estimateLabel?: string;
   isAuthenticated?: boolean | undefined;
@@ -506,6 +506,7 @@ export function GenerateEditorBar({
   aspectRatioOptions,
   attachments,
   className,
+  defaultExpanded = false,
   disabled,
   estimateLabel,
   isAuthenticated,
@@ -527,65 +528,184 @@ export function GenerateEditorBar({
   onRemoveAttachment,
   prompt
 }: GenerateEditorBarProps) {
+  const [isExpanded, setIsExpanded] = React.useState(defaultExpanded);
+  const dragStartY = React.useRef<number | null>(null);
+
+  const handleGenerate = React.useCallback(() => {
+    onGenerate?.();
+  }, [onGenerate]);
+
+  const handlePromptKeyDown = React.useCallback(
+    (event: React.KeyboardEvent<HTMLTextAreaElement>) => {
+      if (event.key === "Enter" && !event.shiftKey) {
+        event.preventDefault();
+        handleGenerate();
+      }
+    },
+    [handleGenerate]
+  );
+
+  const handleDragStart = React.useCallback((clientY: number) => {
+    dragStartY.current = clientY;
+  }, []);
+
+  const handleDragEnd = React.useCallback((clientY: number) => {
+    if (dragStartY.current === null) return;
+
+    const delta = dragStartY.current - clientY;
+    dragStartY.current = null;
+
+    if (delta > DRAG_THRESHOLD) {
+      setIsExpanded(true);
+    } else if (delta < -DRAG_THRESHOLD) {
+      setIsExpanded(false);
+    }
+  }, []);
+
+  const handleTouchStart = React.useCallback(
+    (event: React.TouchEvent<HTMLButtonElement>) => {
+      const touch = event.touches[0];
+
+      if (!touch) return;
+
+      handleDragStart(touch.clientY);
+    },
+    [handleDragStart]
+  );
+  const handleTouchEnd = React.useCallback(
+    (event: React.TouchEvent<HTMLButtonElement>) => {
+      const touch = event.changedTouches[0];
+
+      if (!touch) return;
+
+      handleDragEnd(touch.clientY);
+    },
+    [handleDragEnd]
+  );
+  const handleMouseDown = React.useCallback(
+    (event: React.MouseEvent<HTMLButtonElement>) => handleDragStart(event.clientY),
+    [handleDragStart]
+  );
+  const handleMouseUp = React.useCallback(
+    (event: React.MouseEvent<HTMLButtonElement>) => handleDragEnd(event.clientY),
+    [handleDragEnd]
+  );
+
+  const generateDisabled = disabled || isGenerating || !prompt.trim();
+
   return (
-    <HandDrawnFrame
-      className={cn("bg-[color:var(--card)] px-4 py-4 md:px-5 md:py-5", className)}
-      shape="banner"
-      strokeColor="var(--border)"
-      strokeWidth={2.1}
-      variant={0.9}
+    <div
+      className={cn(
+        "border-t border-[color:var(--border)] bg-[color:rgba(247,241,229,0.95)] backdrop-blur-md",
+        className
+      )}
     >
-      <div className="grid gap-4">
-        <GeneratePromptComposer
-          attachments={attachments}
-          onAttachmentsSelected={onAttachmentsSelected}
-          onPromptChange={onPromptChange}
-          onRemoveAttachment={onRemoveAttachment}
-          prompt={prompt}
-        />
-        <div className="flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
-          <div className="grid flex-1 gap-3 sm:grid-cols-[auto_auto_auto_auto] sm:items-center sm:justify-start">
-            <div className="w-full sm:w-auto">
-              <GenerateModeToggle onValueChange={onModeChange} options={modeOptions} value={mode} />
-            </div>
-            <div className="w-full sm:w-auto">
-              <GenerateModelSelect onValueChange={onModelChange} options={modelOptions} value={model} />
-            </div>
-            <div className="w-full sm:w-auto">
-              <GenerateAspectRatioSelect
-                onValueChange={onAspectRatioChange}
-                options={aspectRatioOptions}
-                value={aspectRatio}
+      <button
+        aria-label={isExpanded ? "Collapse editor" : "Expand editor"}
+        className="flex w-full cursor-grab touch-none items-center justify-center gap-1 py-2 text-xs text-muted-foreground transition-colors hover:bg-[color:var(--paper-soft)] hover:text-[color:var(--foreground)] active:cursor-grabbing"
+        onClick={() => setIsExpanded((current) => !current)}
+        onMouseDown={handleMouseDown}
+        onMouseUp={handleMouseUp}
+        onTouchEnd={handleTouchEnd}
+        onTouchStart={handleTouchStart}
+        type="button"
+      >
+        <span className="h-1 w-8 bg-[color:var(--border)]" />
+        {isExpanded ? <ChevronDown className="size-3.5" /> : <ChevronUp className="size-3.5" />}
+      </button>
+
+      {!isExpanded ? (
+        <div className="pb-4">
+          <div className="flex min-w-0 items-center gap-2">
+            <HandDrawnFrame
+              className="min-w-0 flex-1 bg-[color:color-mix(in_oklab,var(--paper-soft)_90%,white)]"
+              shape="banner"
+              strokeColor="var(--border)"
+              strokeWidth={1.25}
+              svgClassName="opacity-85"
+              variant={0.3}
+            >
+              <button
+                className="flex min-h-11 w-full min-w-0 items-center gap-2 bg-transparent px-4 text-left text-sm text-muted-foreground transition-colors hover:bg-white/40"
+                onClick={() => setIsExpanded(true)}
+                type="button"
+              >
+                <Sparkles className="size-4 shrink-0" />
+                <span className="truncate">
+                  {prompt.trim() || "Describe what you want to create..."}
+                </span>
+              </button>
+            </HandDrawnFrame>
+            <div className="shrink-0">
+              <GenerateButton
+                disabled={generateDisabled}
+                isAuthenticated={isAuthenticated}
+                isGenerating={isGenerating}
+                onClick={handleGenerate}
               />
             </div>
-            <div className="flex flex-wrap gap-3">
-              <GenerateNumImagesControl onValueChange={onNumImagesChange} value={numImages} />
-              <GenerateNegativePromptMenu
-                onValueChange={onNegativePromptChange}
-                value={negativePrompt}
-              />
-              <GenerateUploadDialog
-                attachments={attachments}
-                onFilesSelected={onAttachmentsSelected}
-                onRemoveAttachment={onRemoveAttachment}
-              />
-            </div>
-          </div>
-          <div className="flex shrink-0 flex-col items-start gap-2 lg:items-end">
-            {estimateLabel ? (
-              <span className="hidden text-xs text-[color:var(--muted-foreground)] sm:inline">
-                {estimateLabel}
-              </span>
-            ) : null}
-            <GenerateButton
-              disabled={disabled || !prompt.trim()}
-              isAuthenticated={isAuthenticated}
-              isGenerating={isGenerating}
-              onClick={onGenerate}
-            />
           </div>
         </div>
-      </div>
-    </HandDrawnFrame>
+      ) : (
+        <div className="max-h-[70vh] overflow-y-auto overscroll-contain pb-2">
+          <HandDrawnFrame
+            className="bg-[color:var(--card)] px-4 py-4 md:px-5 md:py-5"
+            shape="banner"
+            strokeColor="var(--border)"
+            strokeWidth={2.1}
+            variant={0.9}
+          >
+            <div className="grid gap-4">
+              <GeneratePromptComposer
+                attachments={attachments}
+                onAttachmentsSelected={onAttachmentsSelected}
+                onKeyDown={handlePromptKeyDown}
+                onPromptChange={onPromptChange}
+                onRemoveAttachment={onRemoveAttachment}
+                prompt={prompt}
+              />
+              <div className="flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
+                <div className="grid flex-1 gap-3 sm:grid-cols-[auto_auto_auto] sm:items-center sm:justify-start">
+                  <div className="w-full sm:w-auto">
+                    <GenerateModeToggle onValueChange={onModeChange} options={modeOptions} value={mode} />
+                  </div>
+                  <div className="w-full sm:w-auto">
+                    <GenerateModelSelect onValueChange={onModelChange} options={modelOptions} value={model} />
+                  </div>
+                  <div className="w-full sm:w-auto">
+                    <GenerateAspectRatioSelect
+                      onValueChange={onAspectRatioChange}
+                      options={aspectRatioOptions}
+                      value={aspectRatio}
+                    />
+                  </div>
+                </div>
+                <div className="flex shrink-0 flex-col items-start gap-2 lg:items-end">
+                  {estimateLabel ? (
+                    <span className="hidden text-xs text-[color:var(--muted-foreground)] sm:inline">
+                      {estimateLabel}
+                    </span>
+                  ) : null}
+                  <GenerateButton
+                    disabled={generateDisabled}
+                    isAuthenticated={isAuthenticated}
+                    isGenerating={isGenerating}
+                    onClick={handleGenerate}
+                  />
+                </div>
+              </div>
+
+              {isAuthenticated === false ? (
+                <NoticeBanner
+                  description="You can explore the controls first, then sign in when you're ready to start a job."
+                  title="Sign in is required to generate."
+                  tone="river"
+                />
+              ) : null}
+            </div>
+          </HandDrawnFrame>
+        </div>
+      )}
+    </div>
   );
 }
