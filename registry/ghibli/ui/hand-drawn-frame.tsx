@@ -156,6 +156,16 @@ const HAND_DRAWN_BANNER_STRAIGHT_PATH = `M0.58 7.2
   C 0.72 49, 0.72 24.6, 0.58 7.2
   Z`;
 
+const HAND_DRAWN_DIVIDER_PATH = `M1.2 6
+  C 11.8 4.95, 22.5 7.15, 33.6 5.85
+  C 44.6 4.88, 55.3 7.12, 66.1 5.9
+  C 76.9 4.96, 87.4 6.86, 98.8 5.8`;
+
+const HAND_DRAWN_DIVIDER_STRAIGHT_PATH = `M1.2 6
+  C 11.8 6, 22.5 6, 33.6 6
+  C 44.6 6, 55.3 6, 66.1 6
+  C 76.9 6, 87.4 6, 98.8 6`;
+
 export type HandDrawnFrameShape =
   | "organic"
   | "steady"
@@ -163,7 +173,8 @@ export type HandDrawnFrameShape =
   | "panel"
   | "surface"
   | "card"
-  | "banner";
+  | "banner"
+  | "divider";
 
 type HandDrawnFrameJitterConfig = {
   anchor: number;
@@ -181,6 +192,16 @@ type HandDrawnFrameShapeConfig = {
   paths: HandDrawnFramePathConfig[];
   viewBox: string;
 };
+
+type HandDrawnFrameStrokeLayer = {
+  dasharray?: string;
+  dashoffset?: number;
+  opacity?: number;
+  pathLength?: number;
+  strokeWidth: number | string;
+};
+
+const HAND_DRAWN_THICKNESS_PATH_LENGTH = 100;
 
 function hashSeed(value: string) {
   let hash = 2166136261;
@@ -209,11 +230,14 @@ function createSeededRandom(seed: string) {
 }
 
 function parseViewBox(viewBox: string) {
-  const values = viewBox.trim().split(/\s+/).map(Number);
-  const minX = values[0] ?? 0;
-  const minY = values[1] ?? 0;
-  const width = values[2] ?? 100;
-  const height = values[3] ?? 100;
+  const [rawMinX = 0, rawMinY = 0, rawWidth = 0, rawHeight = 0] = viewBox
+    .trim()
+    .split(/\s+/)
+    .map(Number);
+  const minX = Number.isFinite(rawMinX) ? rawMinX : 0;
+  const minY = Number.isFinite(rawMinY) ? rawMinY : 0;
+  const width = Number.isFinite(rawWidth) ? rawWidth : 0;
+  const height = Number.isFinite(rawHeight) ? rawHeight : 0;
 
   return {
     height,
@@ -221,7 +245,7 @@ function parseViewBox(viewBox: string) {
     maxY: minY + height,
     minX,
     minY,
-    width
+    width,
   };
 }
 
@@ -234,10 +258,12 @@ function coordinateRole(command: string, coordinateIndex: number) {
     case "M":
     case "L":
     case "T":
+      return "anchor";
     case "H":
     case "V":
       return "anchor";
     case "Q":
+      return coordinateIndex % 4 < 2 ? "control" : "anchor";
     case "S":
       return coordinateIndex % 4 < 2 ? "control" : "anchor";
     case "C":
@@ -258,7 +284,7 @@ function perturbPath(
   path: string,
   viewBox: string,
   jitter: HandDrawnFrameJitterConfig,
-  seed: string
+  seed: string,
 ) {
   if (jitter.anchor <= 0 && jitter.control <= 0) {
     return path;
@@ -351,7 +377,7 @@ function interpolatePath(fromPath: string, toPath: string, intensity: number) {
       const toValue = Number(toToken);
 
       if (Number.isNaN(fromValue) || Number.isNaN(toValue)) {
-        return toToken ?? fromToken;
+        return toToken;
       }
 
       return (fromValue + (toValue - fromValue) * intensity).toFixed(3);
@@ -409,17 +435,101 @@ function normalizePathToObjectBoundingBox(path: string, viewBox: string) {
   return /[Zz]\s*$/.test(normalized) ? normalized : `${normalized} Z`;
 }
 
-const HAND_DRAWN_FRAME_SHAPES: Record<HandDrawnFrameShape, HandDrawnFrameShapeConfig> = {
+function resolveNumericStrokeWidth(strokeWidth: number | string) {
+  if (typeof strokeWidth === "number") {
+    return Number.isFinite(strokeWidth) ? strokeWidth : null;
+  }
+
+  const trimmedStrokeWidth = strokeWidth.trim();
+
+  if (!/^-?(?:\d+\.?\d*|\.\d+)$/.test(trimmedStrokeWidth)) {
+    return null;
+  }
+
+  const numericStrokeWidth = Number(trimmedStrokeWidth);
+
+  return Number.isFinite(numericStrokeWidth) ? numericStrokeWidth : null;
+}
+
+function formatSvgNumber(value: number) {
+  return Number(value.toFixed(3));
+}
+
+function createStrokeDashPattern(
+  random: () => number,
+  segmentCount: number,
+  length = HAND_DRAWN_THICKNESS_PATH_LENGTH,
+) {
+  const segments: number[] = [];
+
+  for (let index = 0; index < segmentCount; index += 1) {
+    segments.push(1.25 + random() * 1.35);
+    segments.push(0.85 + random() * 1.05);
+  }
+
+  const totalLength = segments.reduce((sum, segment) => sum + segment, 0);
+
+  return segments.map((segment) => (segment / totalLength) * length);
+}
+
+// SVG doesn't support varying stroke width along a single path, so we layer a
+// few deterministic dash-masked strokes to create a restrained hand-drawn drift.
+function createThicknessVariationStrokeLayers(
+  strokeWidth: number,
+  seed: string,
+) {
+  const random = createSeededRandom(seed);
+  const variationSpan = clamp(strokeWidth * 0.22, 0.16, 0.42);
+  const layers: HandDrawnFrameStrokeLayer[] = [
+    {
+      strokeWidth: formatSvgNumber(
+        clamp(
+          strokeWidth - variationSpan * (0.28 + random() * 0.12),
+          Math.max(strokeWidth * 0.82, strokeWidth - variationSpan * 0.5),
+          strokeWidth,
+        ),
+      ),
+    },
+  ];
+
+  for (let index = 0; index < 3; index += 1) {
+    const dashPattern = createStrokeDashPattern(random, 3 + index);
+    const thicknessFactor = clamp(
+      0.18 + index * 0.24 + (random() - 0.5) * 0.08,
+      0.12,
+      0.72,
+    );
+
+    layers.push({
+      dasharray: dashPattern.map((segment) => segment.toFixed(3)).join(" "),
+      dashoffset: formatSvgNumber(random() * HAND_DRAWN_THICKNESS_PATH_LENGTH),
+      opacity: formatSvgNumber(
+        clamp(0.42 - index * 0.08 + random() * 0.06, 0.2, 0.5),
+      ),
+      pathLength: HAND_DRAWN_THICKNESS_PATH_LENGTH,
+      strokeWidth: formatSvgNumber(
+        strokeWidth + variationSpan * thicknessFactor,
+      ),
+    });
+  }
+
+  return layers;
+}
+
+const HAND_DRAWN_FRAME_SHAPES: Record<
+  HandDrawnFrameShape,
+  HandDrawnFrameShapeConfig
+> = {
   organic: {
     defaultIntensity: 0.7,
     jitter: { anchor: 0.2, control: 0.82 },
     paths: [
       {
         crooked: HAND_DRAWN_RECT_PATH,
-        straight: HAND_DRAWN_RECT_STRAIGHT_PATH
-      }
+        straight: HAND_DRAWN_RECT_STRAIGHT_PATH,
+      },
     ],
-    viewBox: "0 0 100 100"
+    viewBox: "0 0 100 100",
   },
   steady: {
     defaultIntensity: 0.45,
@@ -427,10 +537,11 @@ const HAND_DRAWN_FRAME_SHAPES: Record<HandDrawnFrameShape, HandDrawnFrameShapeCo
     paths: [
       {
         crooked: HAND_DRAWN_STEADY_PATH,
-        straight: HAND_DRAWN_STEADY_STRAIGHT_PATH
-      }
+        straight: HAND_DRAWN_STEADY_STRAIGHT_PATH,
+      },
     ],
-    viewBox: "0.95 0 98.1 100"
+    // Active nav pills read better when the stroke hugs the container more tightly.
+    viewBox: "0.95 0 98.1 100",
   },
   pill: {
     defaultIntensity: 0.55,
@@ -438,10 +549,11 @@ const HAND_DRAWN_FRAME_SHAPES: Record<HandDrawnFrameShape, HandDrawnFrameShapeCo
     paths: [
       {
         crooked: HAND_DRAWN_PILL_PATH,
-        straight: HAND_DRAWN_PILL_STRAIGHT_PATH
-      }
+        straight: HAND_DRAWN_PILL_STRAIGHT_PATH,
+      },
     ],
-    viewBox: "0.95 3.8 98.1 92.8"
+    // Nav pills need a bit more wobble on the top and bottom while staying snug.
+    viewBox: "0.95 3.8 98.1 92.8",
   },
   panel: {
     defaultIntensity: 0.5,
@@ -449,10 +561,11 @@ const HAND_DRAWN_FRAME_SHAPES: Record<HandDrawnFrameShape, HandDrawnFrameShapeCo
     paths: [
       {
         crooked: HAND_DRAWN_PANEL_PATH,
-        straight: HAND_DRAWN_PANEL_STRAIGHT_PATH
-      }
+        straight: HAND_DRAWN_PANEL_STRAIGHT_PATH,
+      },
     ],
-    viewBox: "0.95 2.8 98.1 94.2"
+    // Compact panels benefit from a balanced wobble on all sides with tight padding.
+    viewBox: "0.95 2.8 98.1 94.2",
   },
   surface: {
     defaultIntensity: 0.35,
@@ -460,10 +573,12 @@ const HAND_DRAWN_FRAME_SHAPES: Record<HandDrawnFrameShape, HandDrawnFrameShapeCo
     paths: [
       {
         crooked: HAND_DRAWN_STEADY_PATH,
-        straight: HAND_DRAWN_STEADY_STRAIGHT_PATH
-      }
+        straight: HAND_DRAWN_STEADY_STRAIGHT_PATH,
+      },
     ],
-    viewBox: "1.24 4.15 97.52 91.5"
+    // Account surfaces read better with a calmer grade-2 wobble while staying
+    // tightly cropped against the real edges of the container.
+    viewBox: "1.24 4.15 97.52 91.5",
   },
   card: {
     defaultIntensity: 0.6,
@@ -471,10 +586,12 @@ const HAND_DRAWN_FRAME_SHAPES: Record<HandDrawnFrameShape, HandDrawnFrameShapeCo
     paths: [
       {
         crooked: HAND_DRAWN_STEADY_PATH,
-        straight: HAND_DRAWN_STEADY_STRAIGHT_PATH
-      }
+        straight: HAND_DRAWN_STEADY_STRAIGHT_PATH,
+      },
     ],
-    viewBox: "1.3 4.95 97.55 90.15"
+    // Portrait cards are tall, so we tighten the vertical crop more aggressively
+    // to keep the border visually glued to the real top and bottom edges.
+    viewBox: "1.3 4.95 97.55 90.15",
   },
   banner: {
     defaultIntensity: 0.3,
@@ -482,26 +599,40 @@ const HAND_DRAWN_FRAME_SHAPES: Record<HandDrawnFrameShape, HandDrawnFrameShapeCo
     paths: [
       {
         crooked: HAND_DRAWN_BANNER_PATH,
-        straight: HAND_DRAWN_BANNER_STRAIGHT_PATH
-      }
+        straight: HAND_DRAWN_BANNER_STRAIGHT_PATH,
+      },
     ],
-    viewBox: "0.45 0.4 99.1 99.2"
-  }
+    // Wide banners amplify tiny offsets, so we tighten the frame on both axes.
+    // This keeps the border close to the box while preserving a subtle wobble.
+    viewBox: "0.45 0.4 99.1 99.2",
+  },
+  divider: {
+    defaultIntensity: 0.5,
+    jitter: { anchor: 0.08, control: 0.26 },
+    paths: [
+      {
+        crooked: HAND_DRAWN_DIVIDER_PATH,
+        straight: HAND_DRAWN_DIVIDER_STRAIGHT_PATH,
+      },
+    ],
+    // Dividers should stay horizontal and calm, with only a light hand-drawn drift.
+    viewBox: "0 0 100 12",
+  },
 };
 
-type HandDrawnFrameVariant = HandDrawnFrameShape | number;
-
-export interface HandDrawnFrameProps extends React.HTMLAttributes<HTMLDivElement> {
+export interface HandDrawnFrameProps
+  extends React.HTMLAttributes<HTMLDivElement> {
   clipContent?: boolean;
   contentClassName?: string;
+  deformationIntensity?: number;
   pathClassName?: string;
   seed?: number | string;
   shape?: HandDrawnFrameShape;
   strokeColor?: string;
   strokeWidth?: number | string;
   svgClassName?: string;
-  variation?: number;
-  variant?: HandDrawnFrameVariant;
+  useDeformationVariation?: boolean;
+  useThicknessVariation?: boolean;
 }
 
 export function HandDrawnFrame({
@@ -509,29 +640,40 @@ export function HandDrawnFrame({
   className,
   clipContent = false,
   contentClassName,
+  deformationIntensity = 5,
   pathClassName,
+  useDeformationVariation = true,
+  useThicknessVariation = true,
   seed,
-  shape,
+  shape = "organic",
   strokeColor = "var(--border)",
   strokeWidth = 2.4,
   svgClassName,
-  variation = 0,
-  variant,
   ...props
 }: HandDrawnFrameProps) {
-  const resolvedShape = (shape ?? (typeof variant === "string" ? variant : undefined) ?? "organic") as HandDrawnFrameShape;
-  const { defaultIntensity, jitter, paths, viewBox } = HAND_DRAWN_FRAME_SHAPES[resolvedShape];
+  const { defaultIntensity, jitter, paths, viewBox } =
+    HAND_DRAWN_FRAME_SHAPES[shape];
   const frameId = React.useId();
-  const resolvedSeed = React.useMemo(() => String(seed ?? frameId), [frameId, seed]);
-  const resolvedIntensity = React.useMemo(
-    () => clamp(typeof variant === "number" ? variant : defaultIntensity, 0, 1),
-    [defaultIntensity, variant]
+  const resolvedSeed = React.useMemo(
+    () => String(seed ?? frameId),
+    [frameId, seed],
   );
-  const resolvedVariationKey = React.useMemo(() => String(variation), [variation]);
+  const resolvedIntensity = React.useMemo(
+    () => clamp(deformationIntensity ?? defaultIntensity, 0, 10),
+    [defaultIntensity, deformationIntensity],
+  );
+  const resolvedUseDeformationVariationKey = React.useMemo(
+    () => (useDeformationVariation ? "1" : "0"),
+    [useDeformationVariation],
+  );
+  const resolvedNumericStrokeWidth = React.useMemo(
+    () => resolveNumericStrokeWidth(strokeWidth),
+    [strokeWidth],
+  );
   const generatedPaths = React.useMemo(() => {
     const scaledJitter = {
       anchor: jitter.anchor * resolvedIntensity,
-      control: jitter.control * resolvedIntensity
+      control: jitter.control * resolvedIntensity,
     };
 
     return paths.map(({ crooked, straight }, index) =>
@@ -539,8 +681,8 @@ export function HandDrawnFrame({
         interpolatePath(straight, crooked, resolvedIntensity),
         viewBox,
         scaledJitter,
-        `${resolvedShape}:${resolvedSeed}:${resolvedVariationKey}:${index}`
-      )
+        `${shape}:${resolvedSeed}:${resolvedUseDeformationVariationKey}:${index}`,
+      ),
     );
   }, [
     jitter.anchor,
@@ -548,29 +690,59 @@ export function HandDrawnFrame({
     paths,
     resolvedIntensity,
     resolvedSeed,
-    resolvedShape,
-    resolvedVariationKey,
-    viewBox
+    resolvedUseDeformationVariationKey,
+    shape,
+    viewBox,
   ]);
+  const strokeLayersByPath = React.useMemo<HandDrawnFrameStrokeLayer[][]>(
+    () => {
+      if (
+        !useThicknessVariation ||
+        resolvedNumericStrokeWidth === null ||
+        resolvedNumericStrokeWidth <= 0
+      ) {
+        return generatedPaths.map(() => [{ strokeWidth }]);
+      }
+
+      return generatedPaths.map((_, index) =>
+        createThicknessVariationStrokeLayers(
+          resolvedNumericStrokeWidth,
+          `${shape}:${resolvedSeed}:thickness:${index}`,
+        ),
+      );
+    },
+    [
+      generatedPaths,
+      resolvedNumericStrokeWidth,
+      resolvedSeed,
+      shape,
+      strokeWidth,
+      useThicknessVariation,
+    ],
+  );
   const clipPathId = React.useMemo(
     () => `hand-drawn-frame-clip-${frameId.replace(/[^a-zA-Z0-9_-]/g, "")}`,
-    [frameId]
+    [frameId],
   );
   const clipPath = React.useMemo(
-    () => normalizePathToObjectBoundingBox(generatedPaths[0] ?? "", viewBox),
-    [generatedPaths, viewBox]
+    () => normalizePathToObjectBoundingBox(generatedPaths[0] ?? paths[0]!.crooked, viewBox),
+    [generatedPaths, paths, viewBox],
   );
   const contentStyle = clipContent
     ? ({
         WebkitClipPath: `url(#${clipPathId})`,
-        clipPath: `url(#${clipPathId})`
+        clipPath: `url(#${clipPathId})`,
       } as React.CSSProperties)
     : undefined;
 
   return (
     <div className={cn("relative", className)} {...props}>
       <div
-        className={cn("relative z-10", clipContent && "overflow-hidden", contentClassName)}
+        className={cn(
+          "relative z-10",
+          clipContent && "overflow-hidden",
+          contentClassName,
+        )}
         style={contentStyle}
       >
         {children}
@@ -579,7 +751,7 @@ export function HandDrawnFrame({
         aria-hidden="true"
         className={cn(
           "pointer-events-none absolute inset-0 z-20 block h-full w-full overflow-visible",
-          svgClassName
+          svgClassName,
         )}
         preserveAspectRatio="none"
         viewBox={viewBox}
@@ -591,20 +763,55 @@ export function HandDrawnFrame({
             </clipPath>
           </defs>
         ) : null}
-        {generatedPaths.map((path, index) => (
-          <path
-            className={pathClassName}
-            d={path}
-            fill="none"
-            key={`${resolvedShape}-${index}`}
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            strokeWidth={strokeWidth}
-            style={{ stroke: strokeColor }}
-            vectorEffect="non-scaling-stroke"
-          />
-        ))}
+        {generatedPaths.map((path, pathIndex) =>
+          strokeLayersByPath[pathIndex]!.map((layer, layerIndex) => (
+            <path
+              key={`${shape}-${pathIndex}-${layerIndex}`}
+              className={pathClassName}
+              d={path}
+              fill="none"
+              pathLength={layer.pathLength}
+              strokeDasharray={layer.dasharray}
+              strokeDashoffset={layer.dashoffset}
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              strokeWidth={layer.strokeWidth}
+              style={{
+                opacity: layer.opacity,
+                stroke: strokeColor,
+              }}
+              vectorEffect="non-scaling-stroke"
+            />
+          )),
+        )}
       </svg>
     </div>
+  );
+}
+
+export type HandDrawnRuleProps = Omit<
+  HandDrawnFrameProps,
+  "children" | "clipContent" | "contentClassName" | "shape"
+>;
+
+export function HandDrawnRule({
+  className,
+  deformationIntensity = 0.5,
+  strokeColor = "var(--border)",
+  strokeWidth = 1.1,
+  svgClassName = "opacity-90",
+  ...props
+}: HandDrawnRuleProps) {
+  return (
+    <HandDrawnFrame
+      {...props}
+      aria-hidden="true"
+      className={cn("pointer-events-none h-3 w-full", className)}
+      deformationIntensity={deformationIntensity}
+      shape="divider"
+      strokeColor={strokeColor}
+      strokeWidth={strokeWidth}
+      svgClassName={svgClassName}
+    />
   );
 }
