@@ -15,10 +15,11 @@ export function Input({
         "ghibli-input-frame w-full bg-[color:color-mix(in_oklab,var(--paper-soft)_90%,white)]",
         disabled && "opacity-60"
       )}
+      deformationIntensity={0.3}
+      shape="banner"
       strokeColor="var(--border)"
       strokeWidth={1.25}
       svgClassName="opacity-85"
-      variant="banner"
     >
       <input
         className={cn(

@@ -45,11 +45,11 @@ export function CommunityAssetDetailsPanel({
         detailsPanelFillClass,
         detailsPanelStrongTextClass
       )}
+      deformationIntensity={0.3}
       shape="surface"
       strokeColor={detailsPanelStrokeColor}
       strokeWidth={1.15}
       svgClassName="opacity-90"
-      variant={0.3}
     >
       {action ? (
         <div className={cn("absolute top-2 right-2 z-10", actionWrapperClassName)}>

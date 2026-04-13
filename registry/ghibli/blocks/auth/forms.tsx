@@ -384,11 +384,11 @@ function AuthProviderButton({ provider }: { provider: AuthProviderAction }) {
         "w-full bg-[color:var(--paper-soft)] transition-colors",
         disabled ? "opacity-60" : "hover:bg-white/50"
       )}
+      deformationIntensity={0.3}
       shape="banner"
       strokeColor="var(--border)"
       strokeWidth={1.05}
       svgClassName="opacity-80"
-      variant={0.3}
     >
       <button
         className={cn(

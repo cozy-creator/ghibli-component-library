@@ -58,11 +58,11 @@ export function AuthDialog({
       >
         <HandDrawnFrame
           className="overflow-hidden bg-[color:var(--card)] px-5 py-5"
+          deformationIntensity={0.6}
           shape="card"
           strokeColor="var(--border)"
           strokeWidth={1.45}
           svgClassName="opacity-70"
-          variant={0.6}
         >
           <DialogHeader style={{ paddingRight: "2.5rem" }}>
             <DialogTitle>{showForgotPassword ? "Recover your password" : title}</DialogTitle>
