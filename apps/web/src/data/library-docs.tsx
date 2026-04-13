@@ -29,6 +29,8 @@ import {
   GenerateNegativePromptMenu,
   GenerateNumImagesControl,
   GenerateJobCard,
+  HandDrawnFrame,
+  HandDrawnRule,
   Header,
   Input,
   Label,
@@ -471,6 +473,104 @@ export const componentDocs: DocItem[] = [
     summary: "Surface primitive for content sections, previews, and nested layouts.",
     title: "Card",
     usageSnippet: snippet("Basic usage", "tsx", `<Card><CardContent className="p-6">Hello</CardContent></Card>`)
+  },
+  {
+    description: "Hand-drawn frame primitive for paper surfaces, navigation pills, banners, and divider rules.",
+    examples: [
+      {
+        description: "Use the frame for boxed surfaces and the rule helper for lighter section breaks.",
+        id: "hand-drawn-frame-overview",
+        preview: (
+          <div className="grid gap-4">
+            <HandDrawnFrame
+              className="bg-[color:var(--paper)] px-5 py-4"
+              deformationIntensity={0.5}
+              seed="docs-frame-overview"
+              shape="panel"
+              strokeWidth={1.6}
+            >
+              <div className="grid gap-2">
+                <span className="font-medium text-[color:var(--ink-strong)]">
+                  Panel frame
+                </span>
+                <span className="text-sm text-[color:var(--muted-foreground)]">
+                  Shared geometry for the library shell and grouped surfaces.
+                </span>
+              </div>
+            </HandDrawnFrame>
+            <HandDrawnRule
+              deformationIntensity={0.5}
+              seed="docs-frame-rule"
+              strokeWidth={1.1}
+            />
+          </div>
+        ),
+        snippet: snippet(
+          "Usage",
+          "tsx",
+          `import { HandDrawnFrame, HandDrawnRule } from "@/components/ui/hand-drawn-frame";
+
+<HandDrawnFrame
+  shape="panel"
+  deformationIntensity={0.5}
+  strokeWidth={1.6}
+  seed="settings-panel"
+>
+  Content
+</HandDrawnFrame>
+
+<HandDrawnRule
+  deformationIntensity={0.5}
+  strokeWidth={1.1}
+  seed="section-rule"
+/>`
+        ),
+        title: "Frame + divider"
+      }
+    ],
+    exports: ["HandDrawnFrame", "HandDrawnRule"],
+    family: "Display",
+    importSnippet: snippet(
+      "Import",
+      "tsx",
+      `import { HandDrawnFrame, HandDrawnRule } from "@/components/ui/hand-drawn-frame";`
+    ),
+    installSnippet: installSnippet("hand-drawn-frame"),
+    kind: "component",
+    name: "hand-drawn-frame",
+    notes: [
+      "Use explicit seeds when you want a stable wobble across renders or matching examples.",
+      "Keep `Separator` for quiet straight dividers. `HandDrawnRule` is the decorative hand-drawn option."
+    ],
+    preview: (
+      <div className="grid gap-4">
+        <HandDrawnFrame
+          className="bg-[color:var(--paper)] px-5 py-4"
+          deformationIntensity={0.5}
+          seed="docs-frame-preview"
+          shape="panel"
+          strokeWidth={1.6}
+        >
+          <div className="text-sm text-[color:var(--ink-strong)]">
+            Framed surface
+          </div>
+        </HandDrawnFrame>
+        <HandDrawnRule
+          deformationIntensity={0.5}
+          seed="docs-frame-preview-rule"
+          strokeWidth={1.1}
+        />
+      </div>
+    ),
+    related: ["separator", "card", "layout-shell"],
+    storybookTitle: "Components/Display/Hand Drawn Frame",
+    summary: "Shared hand-drawn border primitive with divider-rule support and seeded deformation controls.",
+    title: "Hand Drawn Frame",
+    usageSnippet: snippet(
+      "Basic usage",
+      "tsx",
+      `<HandDrawnFrame shape="banner" deformationIntensity={0.3} strokeWidth={1.25}>Toolbar</HandDrawnFrame>`
+    )
   },
   {
     description: "Single-line paper field for form input, search, and lightweight filtering.",
