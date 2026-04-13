@@ -7,10 +7,11 @@ export function Textarea({ className, ...props }: React.ComponentProps<"textarea
   return (
     <HandDrawnFrame
       className="w-full bg-[color:color-mix(in_oklab,var(--paper-soft)_90%,white)]"
+      deformationIntensity={0.3}
+      shape="banner"
       strokeColor="var(--border)"
       strokeWidth={1.25}
       svgClassName="opacity-85"
-      variant="banner"
     >
       <textarea
         className={cn(

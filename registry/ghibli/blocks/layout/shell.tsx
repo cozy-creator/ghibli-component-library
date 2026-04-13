@@ -116,10 +116,10 @@ function HeaderLink({
             ? "flex items-center gap-2.5 text-[0.95rem] leading-none"
             : "inline-flex items-center gap-2"
         )}
+        deformationIntensity={0.69}
         shape="pill"
         strokeColor="var(--border)"
         strokeWidth={1.1}
-        variant={0.69}
       >
         {inlineContent}
       </HandDrawnFrame>
@@ -181,10 +181,10 @@ export function ShellHeader({
     <header className="sticky top-4 z-40">
       <HandDrawnFrame
         className={cn("bg-[#f4e5c3] px-4 py-3 backdrop-blur-md", className)}
+        deformationIntensity={0.8}
         shape="banner"
         strokeColor="var(--border)"
         strokeWidth={2.1}
-        variant={0.8}
       >
         <div
           className="shell-header-layout"
@@ -325,10 +325,10 @@ function ShellHeaderUser({ user }: { user: ShellUser }) {
           <HandDrawnFrame
             className="min-w-0 bg-white/45 px-3 py-2"
             contentClassName="shell-header-user-trigger"
+            deformationIntensity={0.45}
             shape="steady"
             strokeColor="var(--border)"
             strokeWidth={1.9}
-            variant={0.45}
           >
             <Avatar size="sm">
               {user.avatarUrl ? (
@@ -360,10 +360,10 @@ function ShellHeaderUser({ user }: { user: ShellUser }) {
         <HandDrawnFrame
           className="w-full bg-[color:var(--paper)] px-3 py-2"
           contentClassName="grid gap-1"
+          deformationIntensity={0.8}
           shape="panel"
           strokeColor="var(--border)"
           strokeWidth={1.6}
-          variant={0.8}
         >
           {user.menuItems?.map((item) => (
             <DropdownMenuItem

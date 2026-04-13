@@ -356,6 +356,7 @@ export function GeneratePromptComposer({
             ? "bg-[color:color-mix(in_oklab,var(--paper-soft)_72%,var(--primary)_28%)]"
             : ""
         )}
+        deformationIntensity={0.3}
         onDragEnter={handleDragEnter}
         onDragLeave={handleDragLeave}
         onDragOver={handleDragOver}
@@ -365,7 +366,6 @@ export function GeneratePromptComposer({
         strokeColor={isDraggingOver ? "var(--primary-edge)" : "var(--border)"}
         strokeWidth={1.25}
         svgClassName="opacity-85"
-        variant={0.3}
       >
         <div
           className="flex flex-col overflow-hidden"
@@ -414,10 +414,10 @@ export function GeneratePromptComposer({
               <DropdownMenu onOpenChange={setIsAttachmentMenuOpen} open={isAttachmentMenuOpen}>
                 <HandDrawnFrame
                   className="inline-flex shrink-0 bg-white/45 p-0.5"
+                  deformationIntensity={0.7}
                   shape="organic"
                   strokeColor="var(--border-strong)"
                   strokeWidth={1.85}
-                  variant={0.7}
                 >
                   <DropdownMenuTrigger asChild>
                     <Button
@@ -440,10 +440,10 @@ export function GeneratePromptComposer({
                   <HandDrawnFrame
                     className="w-full bg-popover px-1.5 py-1.5"
                     contentClassName="grid gap-0.5"
+                    deformationIntensity={0.9}
                     shape="surface"
                     strokeColor="var(--border)"
                     strokeWidth={1.6}
-                    variant={0.9}
                   >
                     <DropdownMenuItem
                       className="gap-3 px-3 py-2 focus:bg-[color:var(--ring)] focus:text-[color:var(--ink-strong)] data-[highlighted]:bg-[color:var(--ring)] data-[highlighted]:text-[color:var(--ink-strong)]"
@@ -619,11 +619,11 @@ export function GenerateEditorBar({
           <div className="flex min-w-0 items-center gap-2">
             <HandDrawnFrame
               className="min-w-0 flex-1 bg-[color:color-mix(in_oklab,var(--paper-soft)_90%,white)]"
+              deformationIntensity={0.3}
               shape="banner"
               strokeColor="var(--border)"
               strokeWidth={1.25}
               svgClassName="opacity-85"
-              variant={0.3}
             >
               <button
                 className="flex min-h-11 w-full min-w-0 items-center gap-2 bg-transparent px-4 text-left text-sm text-muted-foreground transition-colors hover:bg-white/40"
@@ -650,10 +650,10 @@ export function GenerateEditorBar({
         <div className="max-h-[70vh] overflow-y-auto overscroll-contain pb-2">
           <HandDrawnFrame
             className="bg-[color:var(--card)] px-4 py-4 md:px-5 md:py-5"
+            deformationIntensity={0.9}
             shape="banner"
             strokeColor="var(--border)"
             strokeWidth={2.1}
-            variant={0.9}
           >
             <div className="grid gap-4">
               <GeneratePromptComposer

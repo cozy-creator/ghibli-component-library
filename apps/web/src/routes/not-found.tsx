@@ -12,7 +12,11 @@ export function NotFoundPage() {
         description="The requested page does not exist in the showcase app."
         title="Page not found"
       />
-      <HandDrawnFrame className="w-fit bg-[color:rgba(255,255,255,0.55)] px-4 py-4" variant="card">
+      <HandDrawnFrame
+        className="w-fit bg-[color:rgba(255,255,255,0.55)] px-4 py-4"
+        deformationIntensity={0.6}
+        shape="card"
+      >
         <div className="flex flex-wrap gap-3">
           <Button asChild>
             <Link to="/">Return home</Link>

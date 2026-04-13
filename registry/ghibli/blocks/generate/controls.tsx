@@ -54,11 +54,11 @@ export function GenerateModeToggle({
   return (
     <HandDrawnFrame
       className="inline-block w-full bg-[color:var(--paper-soft)] sm:w-auto"
+      deformationIntensity={0.3}
       shape="banner"
       strokeColor="var(--border)"
       strokeWidth={1.25}
       svgClassName="opacity-85"
-      variant={0.3}
     >
       <div
         aria-label="Generation mode"
@@ -143,11 +143,11 @@ function MenuSelect({
     <DropdownMenu onOpenChange={handleOpenChange} open={open}>
       <HandDrawnFrame
         className="w-full bg-[color:var(--paper)] sm:w-auto"
+        deformationIntensity={0.3}
         shape="banner"
         strokeColor="var(--border)"
         strokeWidth={1.25}
         svgClassName="opacity-85"
-        variant={0.3}
       >
         <DropdownMenuTrigger asChild>
           <Button className="w-full bg-transparent hover:bg-white/20 sm:w-auto" variant="ghost">
@@ -329,10 +329,11 @@ export function GenerateNumImagesControl({
   return (
     <HandDrawnFrame
       className="w-full bg-[color:var(--paper)] sm:w-auto"
+      deformationIntensity={0.3}
+      shape="banner"
       strokeColor="var(--border)"
       strokeWidth={1.25}
       svgClassName="opacity-85"
-      variant="banner"
     >
       <div className="inline-flex h-11 items-center gap-1 px-1">
         <Button disabled={value <= min} onClick={() => onValueChange?.(value - 1)} size="sm" variant="ghost">
