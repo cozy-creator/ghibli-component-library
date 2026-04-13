@@ -107,4 +107,36 @@ describe("showcase interactions", () => {
 
     expect(screen.getByRole("heading", { name: "Change password" })).toBeInTheDocument();
   }, 10000);
+
+  it("updates the hand-drawn frame playground with the new Cozy frame controls", async () => {
+    const user = userEvent.setup();
+
+    window.history.pushState({}, "", "/");
+
+    const { container } = render(<App />);
+    const frameSection = container.querySelector("#component-hand-drawn-frame");
+
+    expect(frameSection).not.toBeNull();
+    expect(within(frameSection as HTMLElement).queryByText("Variant")).not.toBeInTheDocument();
+    expect(within(frameSection as HTMLElement).queryByText("Variation")).not.toBeInTheDocument();
+    expect(
+      within(frameSection as HTMLElement).getByText("Deformation Intensity")
+    ).toBeInTheDocument();
+    expect(
+      within(frameSection as HTMLElement).getByText("Use Thickness Variation")
+    ).toBeInTheDocument();
+
+    await user.click(
+      within(frameSection as HTMLElement).getByRole("button", { name: "Shape" })
+    );
+
+    await user.click(screen.getByRole("button", { name: "Divider" }));
+
+    expect(
+      within(frameSection as HTMLElement).getByText("Section one")
+    ).toBeInTheDocument();
+    expect(
+      within(frameSection as HTMLElement).getAllByText(/deformationIntensity/).length
+    ).toBeGreaterThan(0);
+  }, 10000);
 });
