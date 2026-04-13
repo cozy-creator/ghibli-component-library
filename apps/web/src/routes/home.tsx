@@ -2,6 +2,8 @@ import { useState, type ReactNode } from "react";
 import {
   BookOpen,
   ChevronDown,
+  Eye,
+  EyeOff,
   FileText,
   Flower2,
   LogIn,
@@ -267,6 +269,40 @@ function FrameBooleanField({
   );
 }
 
+function ShowcasePasswordInput({
+  defaultValue = "lantern-light",
+  label = "Password",
+}: {
+  defaultValue?: string;
+  label?: string;
+}) {
+  const [showPassword, setShowPassword] = useState(false);
+
+  return (
+    <FormField
+      description="Uses the same reveal affordance as the auth flows."
+      label={label}
+    >
+      <div className="relative">
+        <Input
+          className="pr-10"
+          defaultValue={defaultValue}
+          placeholder="••••••••"
+          type={showPassword ? "text" : "password"}
+        />
+        <button
+          aria-label={showPassword ? "Hide password" : "Show password"}
+          className="absolute right-3 top-1/2 z-30 -translate-y-1/2 text-muted-foreground hover:text-foreground"
+          onClick={() => setShowPassword((previous) => !previous)}
+          type="button"
+        >
+          {showPassword ? <EyeOff size={14} /> : <Eye size={14} />}
+        </button>
+      </div>
+    </FormField>
+  );
+}
+
 export function HomePage() {
   const [activeTab, setActiveTab] = useState("live-feed");
   const [mode, setMode] = useState("image");
@@ -288,7 +324,7 @@ export function HomePage() {
   const [newPassword, setNewPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [frameShape, setFrameShape] =
-    useState<ShowcaseHandDrawnFrameShape>("organic");
+    useState<ShowcaseHandDrawnFrameShape>("card");
   const [frameDeformationIntensityInput, setFrameDeformationIntensityInput] =
     useState("0.7");
   const [frameStrokeWidthInput, setFrameStrokeWidthInput] = useState("2.4");
@@ -619,100 +655,109 @@ ${resolvedFrameSeed ? `  seed="${resolvedFrameSeed}"\n` : ""}  useDeformationVar
               </DemoSurface>
             </div>
             <HandDrawnFrame
-              className="bg-[color:var(--card)] px-5 py-5"
+              className="flex h-32 flex-col justify-between bg-[color:var(--card)] px-5 py-4"
               deformationIntensity={0.7}
               seed="frame-example-organic"
               shape="organic"
               strokeWidth={2.4}
             >
-              <p className="font-[var(--font-heading)] text-xl text-[color:var(--ink-strong)]">
+              <p className="font-[var(--font-heading)] text-lg leading-tight text-[color:var(--ink-strong)]">
                 Organic callout
               </p>
-              <p className="mt-2 text-xs leading-6 text-muted-foreground">
+              <p className="text-xs leading-5 text-muted-foreground">
                 <code>shape="organic" deformationIntensity=&#123;0.7&#125; strokeWidth=&#123;2.4&#125;</code>
               </p>
             </HandDrawnFrame>
             <HandDrawnFrame
-              className="bg-[color:rgba(255,255,255,0.55)] px-5 py-4"
+              className="flex h-32 flex-col justify-between bg-[color:rgba(255,255,255,0.55)] px-5 py-4"
               deformationIntensity={0.45}
               seed="frame-example-steady"
               shape="steady"
               strokeWidth={1.4}
             >
-              <p className="font-[var(--font-heading)] text-xl text-[color:var(--ink-strong)]">
+              <p className="font-[var(--font-heading)] text-lg leading-tight text-[color:var(--ink-strong)]">
                 Steady shell chip
               </p>
-              <p className="mt-2 text-xs leading-6 text-muted-foreground">
+              <p className="text-xs leading-5 text-muted-foreground">
                 <code>shape="steady" deformationIntensity=&#123;0.45&#125; seed="frame-example-steady"</code>
               </p>
             </HandDrawnFrame>
             <HandDrawnFrame
-              className="w-fit bg-[color:color-mix(in_oklab,var(--ring)_22%,white)] px-5 py-2 text-[color:var(--primary)]"
+              className="flex h-32 flex-col justify-between bg-[color:color-mix(in_oklab,var(--ring)_22%,white)] px-5 py-4 text-[color:var(--primary)]"
               deformationIntensity={0.9}
               seed="frame-example-pill"
               shape="pill"
               strokeWidth={1.35}
             >
               <div className="grid gap-1">
-                <span className="font-medium">Pill navigation</span>
-                <span className="text-[11px] text-[color:var(--ink-soft)]">
+                <span className="font-[var(--font-heading)] text-lg leading-tight">
+                  Pill navigation
+                </span>
+                <span className="text-xs leading-5 text-[color:var(--ink-soft)]">
                   <code>shape="pill" deformationIntensity=&#123;0.9&#125;</code>
                 </span>
               </div>
             </HandDrawnFrame>
             <HandDrawnFrame
-              className="bg-[color:rgba(255,255,255,0.52)] px-5 py-5"
+              className="flex h-32 flex-col justify-between bg-[color:rgba(255,255,255,0.52)] px-5 py-4"
               deformationIntensity={0.5}
               seed="frame-example-panel"
               shape="panel"
               strokeWidth={1.6}
             >
-              <p className="font-[var(--font-heading)] text-xl text-[color:var(--ink-strong)]">
+              <p className="font-[var(--font-heading)] text-lg leading-tight text-[color:var(--ink-strong)]">
                 Panel grouping
               </p>
-              <p className="mt-2 text-xs leading-6 text-muted-foreground">
+              <p className="text-xs leading-5 text-muted-foreground">
                 <code>shape="panel" deformationIntensity=&#123;0.5&#125;</code>
               </p>
             </HandDrawnFrame>
             <HandDrawnFrame
-              className="bg-[color:rgba(255,255,255,0.58)] px-5 py-5"
+              className="flex h-32 flex-col justify-between bg-[color:rgba(255,255,255,0.58)] px-5 py-4"
               deformationIntensity={0.35}
               seed="frame-example-surface"
               shape="surface"
               strokeWidth={1.4}
               useThicknessVariation={false}
             >
-              <p className="font-[var(--font-heading)] text-xl text-[color:var(--ink-strong)]">
+              <p className="font-[var(--font-heading)] text-lg leading-tight text-[color:var(--ink-strong)]">
                 Quiet surface
               </p>
-              <p className="mt-2 text-xs leading-6 text-muted-foreground">
+              <p className="text-xs leading-5 text-muted-foreground">
                 <code>useThicknessVariation=&#123;false&#125;</code>
               </p>
             </HandDrawnFrame>
             <HandDrawnFrame
-              className="overflow-hidden bg-[linear-gradient(180deg,rgba(249,243,226,0.98),rgba(239,227,193,0.98))]"
+              className="h-32 overflow-hidden bg-[linear-gradient(180deg,rgba(249,243,226,0.98),rgba(239,227,193,0.98))]"
               clipContent
               deformationIntensity={0.6}
               seed="frame-example-card"
               shape="card"
               strokeWidth={1.55}
             >
-              <div className="aspect-[4/5] bg-[linear-gradient(180deg,rgba(255,255,255,0.16),rgba(63,43,19,0.18))]" />
-              <div className="px-4 py-3 text-center font-[var(--font-heading)] text-[1.05rem] text-[color:var(--ink-strong)]">
-                Card clip content
+              <div className="grid h-full content-between gap-2 px-5 py-4">
+                <div className="h-8 rounded-[0.95rem] bg-[linear-gradient(180deg,rgba(255,255,255,0.24),rgba(63,43,19,0.16))]" />
+                <div className="grid gap-0.5">
+                  <p className="font-[var(--font-heading)] text-base leading-tight text-[color:var(--ink-strong)]">
+                    Card clip content
+                  </p>
+                  <p className="text-[11px] leading-4 text-muted-foreground">
+                    <code>clipContent</code> keeps the inner wash trimmed to the frame.
+                  </p>
+                </div>
               </div>
             </HandDrawnFrame>
             <HandDrawnFrame
-              className="bg-[color:var(--paper)] px-5 py-4"
+              className="flex h-32 flex-col justify-between bg-[color:var(--paper)] px-5 py-4"
               deformationIntensity={0.3}
               seed="frame-example-banner"
               shape="banner"
               strokeWidth={1.25}
             >
-              <p className="font-[var(--font-heading)] text-xl text-[color:var(--ink-strong)]">
+              <p className="font-[var(--font-heading)] text-lg leading-tight text-[color:var(--ink-strong)]">
                 Calm banner
               </p>
-              <p className="mt-2 text-xs leading-6 text-muted-foreground">
+              <p className="text-xs leading-5 text-muted-foreground">
                 <code>shape="banner" deformationIntensity=&#123;0.3&#125;</code>
               </p>
             </HandDrawnFrame>
@@ -776,27 +821,88 @@ ${resolvedFrameSeed ? `  seed="${resolvedFrameSeed}"\n` : ""}  useDeformationVar
 
         <Specimen
           id="component-forms"
-          note="The field primitives and form wrapper used by auth and generate surfaces."
+          note="Presented as real form rows so users can see the primitive inputs and the full field wrapper in the same place."
           title="Input, Textarea, Form Field"
         >
-          <div className="grid gap-4 md:grid-cols-2">
-            <FormField
-              description="A reusable label/action/error wrapper."
-              error="Example validation message."
-              label="Prompt title"
-            >
-              <Input placeholder="Tea shop by the river" />
-            </FormField>
-            <FormField
-              action={
-                <button className="text-xs text-muted-foreground">
-                  Optional
-                </button>
-              }
-              label="Long prompt"
-            >
-              <Textarea placeholder="Describe the scene, mood, light, and style..." />
-            </FormField>
+          <div className="grid gap-4 xl:grid-cols-[minmax(0,1.1fr)_minmax(0,0.9fr)]">
+            <DemoSurface>
+              <div className="grid gap-4">
+                <div className="grid gap-1">
+                  <p className="font-[var(--font-heading)] text-xl text-[color:var(--ink-strong)]">
+                    Input Types
+                  </p>
+                  <p className="text-sm leading-7 text-muted-foreground">
+                    Text, email, search, and password are shown as editable rows instead of isolated screenshots.
+                  </p>
+                </div>
+                <div className="grid gap-3">
+                  <FormField label="Text input">
+                    <Input defaultValue="Tea shop by the river" type="text" />
+                  </FormField>
+                  <FormField label="Email input">
+                    <Input defaultValue="user@ghibli-ui.test" type="email" />
+                  </FormField>
+                  <FormField label="Search input">
+                    <Input defaultValue="Lantern ferry" type="search" />
+                  </FormField>
+                  <ShowcasePasswordInput />
+                </div>
+              </div>
+            </DemoSurface>
+            <div className="grid gap-4">
+              <DemoSurface>
+                <div className="grid gap-4">
+                  <div className="grid gap-1">
+                    <p className="font-[var(--font-heading)] text-xl text-[color:var(--ink-strong)]">
+                      Form Field States
+                    </p>
+                    <p className="text-sm leading-7 text-muted-foreground">
+                      Description, action, and error states are part of the wrapper, not the input primitive.
+                    </p>
+                  </div>
+                  <FormField
+                    description="A reusable label and helper wrapper."
+                    label="Prompt title"
+                  >
+                    <Input defaultValue="Tea shop by the river" />
+                  </FormField>
+                  <FormField
+                    action={
+                      <Button size="xs" type="button" variant="ghost">
+                        Check
+                      </Button>
+                    }
+                    error="Example validation message."
+                    label="Slug"
+                  >
+                    <Input defaultValue="tea-shop-by-the-river" />
+                  </FormField>
+                </div>
+              </DemoSurface>
+              <DemoSurface>
+                <div className="grid gap-4">
+                  <div className="grid gap-1">
+                    <p className="font-[var(--font-heading)] text-xl text-[color:var(--ink-strong)]">
+                      Textarea
+                    </p>
+                    <p className="text-sm leading-7 text-muted-foreground">
+                      The longer prompt surface keeps the same hand-drawn shell and fits naturally inside `FormField`.
+                    </p>
+                  </div>
+                  <FormField
+                    action={
+                      <Button size="xs" type="button" variant="ghost">
+                        Optional
+                      </Button>
+                    }
+                    description="Good for prompt writing, notes, and larger text entry."
+                    label="Long prompt"
+                  >
+                    <Textarea defaultValue="Describe the scene, mood, light, and style with enough detail for a painterly result." />
+                  </FormField>
+                </div>
+              </DemoSurface>
+            </div>
           </div>
         </Specimen>
 
