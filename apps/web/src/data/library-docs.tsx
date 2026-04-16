@@ -23,11 +23,10 @@ import {
   EmptyState,
   Footer,
   GenerateAspectRatioSelect,
+  GenerateButton,
   GenerateEditorBar,
   GenerateModeToggle,
   GenerateModelSelect,
-  GenerateNegativePromptMenu,
-  GenerateNumImagesControl,
   GenerateJobCard,
   HandDrawnFrame,
   HandDrawnRule,
@@ -68,13 +67,14 @@ import {
   featureVisualItems,
   footerColumns,
   formVisual,
+  generateModelItems,
+  generateModelsByBase,
   headerBrand,
   headerUser,
   libraryNavItems,
   linkedAccounts,
   marketingVisual,
   modeOptions,
-  modelOptions,
   navigationVisual,
   sampleAttachments,
   sampleJobs,
@@ -152,6 +152,10 @@ function snippet(title: string, language: SourceSnippet["language"], code: strin
 function installSnippet(name: string): SourceSnippet {
   return snippet("Install", "bash", `pnpm dlx shadcn@latest add @ghibli/${name}`);
 }
+
+const defaultGenerateModel =
+  generateModelItems.find((item) => item.name === "flux-dev") ??
+  generateModelItems[0];
 
 export const guides: GuidePage[] = [
   {
@@ -483,11 +487,10 @@ export const componentDocs: DocItem[] = [
         preview: (
           <div className="grid gap-4">
             <HandDrawnFrame
-              className="bg-[color:var(--paper)] px-5 py-4"
-              deformationIntensity={0.5}
-              seed="docs-frame-overview"
-              shape="panel"
+              contentClassName="px-5 py-4"
+              surfaceClassName="bg-[color:var(--paper)]"
               strokeWidth={1.6}
+              crookednessIntensity={0.5}
             >
               <div className="grid gap-2">
                 <span className="font-medium text-[color:var(--ink-strong)]">
@@ -499,8 +502,7 @@ export const componentDocs: DocItem[] = [
               </div>
             </HandDrawnFrame>
             <HandDrawnRule
-              deformationIntensity={0.5}
-              seed="docs-frame-rule"
+              crookednessIntensity={0.5}
               strokeWidth={1.1}
             />
           </div>
@@ -511,18 +513,17 @@ export const componentDocs: DocItem[] = [
           `import { HandDrawnFrame, HandDrawnRule } from "@/components/ui/hand-drawn-frame";
 
 <HandDrawnFrame
-  shape="panel"
-  deformationIntensity={0.5}
+  surfaceClassName="bg-[color:var(--paper)]"
+  contentClassName="px-5 py-4"
+  crookednessIntensity={0.5}
   strokeWidth={1.6}
-  seed="settings-panel"
 >
   Content
 </HandDrawnFrame>
 
 <HandDrawnRule
-  deformationIntensity={0.5}
+  crookednessIntensity={0.5}
   strokeWidth={1.1}
-  seed="section-rule"
 />`
         ),
         title: "Frame + divider"
@@ -539,25 +540,23 @@ export const componentDocs: DocItem[] = [
     kind: "component",
     name: "hand-drawn-frame",
     notes: [
-      "Use explicit seeds when you want a stable wobble across renders or matching examples.",
+      "Use `surfaceClassName` for the framed fill and `contentClassName` for interior spacing.",
       "Keep `Separator` for quiet straight dividers. `HandDrawnRule` is the decorative hand-drawn option."
     ],
     preview: (
       <div className="grid gap-4">
         <HandDrawnFrame
-          className="bg-[color:var(--paper)] px-5 py-4"
-          deformationIntensity={0.5}
-          seed="docs-frame-preview"
-          shape="panel"
+          contentClassName="px-5 py-4"
+          surfaceClassName="bg-[color:var(--paper)]"
           strokeWidth={1.6}
+          crookednessIntensity={0.5}
         >
           <div className="text-sm text-[color:var(--ink-strong)]">
             Framed surface
           </div>
         </HandDrawnFrame>
         <HandDrawnRule
-          deformationIntensity={0.5}
-          seed="docs-frame-preview-rule"
+          crookednessIntensity={0.5}
           strokeWidth={1.1}
         />
       </div>
@@ -569,7 +568,7 @@ export const componentDocs: DocItem[] = [
     usageSnippet: snippet(
       "Basic usage",
       "tsx",
-      `<HandDrawnFrame shape="banner" deformationIntensity={0.3} strokeWidth={1.25}>Toolbar</HandDrawnFrame>`
+      `<HandDrawnFrame surfaceClassName="bg-[color:var(--paper)]" contentClassName="px-4 py-3" crookednessIntensity={0.3} strokeWidth={1.25}>Toolbar</HandDrawnFrame>`
     )
   },
   {
@@ -1437,29 +1436,32 @@ export const patternDocs: DocItem[] = [
     usageSnippet: snippet("Basic usage", "tsx", `<CommunityImageModal open={open} onOpenChange={setOpen} images={items} currentIndex={index} />`)
   },
   {
-    description: "Mode, model, ratio, upload, and negative-prompt controls bundled for generator toolbars.",
+    description: "Cozy-style mode, grouped model, ratio, and CTA controls for the bottom generate workflow.",
     examples: [
       {
-        description: "Use individual controls together or independently, depending on how dense the toolbar should be.",
+        description: "Use the same grouped row from the Cozy generate page when you need the full core control set.",
         id: "generate-controls-overview",
         preview: (
           <div className="flex flex-wrap gap-3">
             <GenerateModeToggle onValueChange={() => undefined} options={modeOptions} value="image" />
-            <GenerateModelSelect onValueChange={() => undefined} options={modelOptions} value="riverlight-v3" />
-            <GenerateAspectRatioSelect onValueChange={() => undefined} options={aspectRatioOptions} value="3:4" />
-            <GenerateNumImagesControl onValueChange={() => undefined} value={2} />
-            <GenerateNegativePromptMenu onValueChange={() => undefined} value="" />
+            <GenerateModelSelect
+              model="flux-dev"
+              modelsByBase={generateModelsByBase}
+              onChange={() => undefined}
+              selectedModel={defaultGenerateModel}
+            />
+            <GenerateAspectRatioSelect onValueChange={() => undefined} options={aspectRatioOptions} value="9/16" />
+            <GenerateButton isAuthenticated onClick={() => undefined} />
           </div>
         ),
         snippet: snippet(
           "Usage",
           "tsx",
           `import {
+  GenerateButton,
   GenerateAspectRatioSelect,
   GenerateModeToggle,
-  GenerateModelSelect,
-  GenerateNegativePromptMenu,
-  GenerateNumImagesControl
+  GenerateModelSelect
 } from "@/components/blocks/generate/controls";`
         ),
         title: "Control set"
@@ -1469,9 +1471,6 @@ export const patternDocs: DocItem[] = [
       "GenerateModeToggle",
       "GenerateModelSelect",
       "GenerateAspectRatioSelect",
-      "GenerateNumImagesControl",
-      "GenerateNegativePromptMenu",
-      "GenerateUploadDialog",
       "GenerateButton"
     ],
     family: "Generate",
@@ -1481,20 +1480,24 @@ export const patternDocs: DocItem[] = [
       `import { GenerateModeToggle, GenerateModelSelect } from "@/components/blocks/generate/controls";`
     ),
     installSnippet: installSnippet("generate-controls"),
-    inventory: ["Mode toggle", "Model select", "Aspect ratio select", "Upload dialog", "Generate button"],
+    inventory: ["Mode toggle", "Grouped model select", "Aspect ratio ruler", "Generate button"],
     kind: "pattern",
     name: "generate-controls",
     notes: [
-      "The controls are props-first so you can wire them to any generation or upload flow.",
-      "Use only the controls your tool actually needs. The grouped install does not require full-toolbar adoption."
+      "The grouped model selector expects Cozy-shaped model data split by base model.",
+      "This surface intentionally stays limited to the Cozy core row instead of bundling secondary dialogs or prompt helpers."
     ],
     preview: (
       <div className="flex flex-wrap gap-3">
         <GenerateModeToggle onValueChange={() => undefined} options={modeOptions} value="image" />
-        <GenerateModelSelect onValueChange={() => undefined} options={modelOptions} value="riverlight-v3" />
-        <GenerateAspectRatioSelect onValueChange={() => undefined} options={aspectRatioOptions} value="3:4" />
-        <GenerateNumImagesControl onValueChange={() => undefined} value={2} />
-        <GenerateNegativePromptMenu onValueChange={() => undefined} value="" />
+        <GenerateModelSelect
+          model="flux-dev"
+          modelsByBase={generateModelsByBase}
+          onChange={() => undefined}
+          selectedModel={defaultGenerateModel}
+        />
+        <GenerateAspectRatioSelect onValueChange={() => undefined} options={aspectRatioOptions} value="9/16" />
+        <GenerateButton isAuthenticated onClick={() => undefined} />
       </div>
     ),
     related: ["generate-editor-bar", "button", "dropdown-menu"],
@@ -1511,18 +1514,17 @@ export const patternDocs: DocItem[] = [
         id: "generate-editor-bar-overview",
         preview: (
           <GenerateEditorBar
-            aspectRatio="3:4"
+            aspectRatio="9/16"
             aspectRatioOptions={aspectRatioOptions}
             attachments={sampleAttachments}
             defaultExpanded
             estimateLabel="~18s / image"
             mode="image"
             modeOptions={modeOptions}
-            model="riverlight-v3"
-            modelOptions={modelOptions}
-            negativePrompt=""
-            numImages={2}
+            model="flux-dev"
+            modelsByBase={generateModelsByBase}
             prompt="Lakeside breakfast room, warm steam, watercolor background."
+            selectedModel={defaultGenerateModel}
           />
         ),
         snippet: snippet(
@@ -1535,9 +1537,8 @@ export const patternDocs: DocItem[] = [
   mode={mode}
   model={model}
   aspectRatio={aspectRatio}
-  numImages={numImages}
   modeOptions={modeOptions}
-  modelOptions={modelOptions}
+  modelsByBase={modelsByBase}
   aspectRatioOptions={aspectRatioOptions}
 />`
         ),
@@ -1557,18 +1558,17 @@ export const patternDocs: DocItem[] = [
     ],
     preview: (
       <GenerateEditorBar
-        aspectRatio="3:4"
+        aspectRatio="9/16"
         aspectRatioOptions={aspectRatioOptions}
         attachments={sampleAttachments}
         defaultExpanded
         estimateLabel="~18s / image"
         mode="image"
         modeOptions={modeOptions}
-        model="riverlight-v3"
-        modelOptions={modelOptions}
-        negativePrompt=""
-        numImages={2}
+        model="flux-dev"
+        modelsByBase={generateModelsByBase}
         prompt="Lakeside breakfast room, warm steam, watercolor background."
+        selectedModel={defaultGenerateModel}
       />
     ),
     related: ["generate-controls", "generate-job-card", "textarea"],
