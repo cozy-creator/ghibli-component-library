@@ -6,12 +6,12 @@ import { cn } from "@/lib/utils";
 export function Textarea({ className, ...props }: React.ComponentProps<"textarea">) {
   return (
     <HandDrawnFrame
-      className="w-full bg-[color:color-mix(in_oklab,var(--paper-soft)_90%,white)]"
-      deformationIntensity={0.3}
-      shape="banner"
+      className="w-full"
+      surfaceClassName="bg-[color:color-mix(in_oklab,var(--paper-soft)_90%,white)]"
       strokeColor="var(--border)"
       strokeWidth={1.25}
       svgClassName="opacity-85"
+      crookednessIntensity={0.3}
     >
       <textarea
         className={cn(

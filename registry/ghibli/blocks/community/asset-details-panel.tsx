@@ -38,18 +38,16 @@ export function CommunityAssetDetailsPanel({
 }: CommunityAssetDetailsPanelProps) {
   return (
     <HandDrawnFrame
-      clipContent
       className={cn("relative mt-4 sm:mt-5", className)}
+      surfaceClassName={detailsPanelFillClass}
       contentClassName={cn(
         "relative h-full px-4 py-4 backdrop-blur-sm sm:px-5",
-        detailsPanelFillClass,
         detailsPanelStrongTextClass
       )}
-      deformationIntensity={0.3}
-      shape="surface"
       strokeColor={detailsPanelStrokeColor}
       strokeWidth={1.15}
       svgClassName="opacity-90"
+      crookednessIntensity={0.3}
     >
       {action ? (
         <div className={cn("absolute top-2 right-2 z-10", actionWrapperClassName)}>

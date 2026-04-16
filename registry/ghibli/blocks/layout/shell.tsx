@@ -107,19 +107,16 @@ function HeaderLink({
   const content =
     item.active && !item.iconOnly ? (
       <HandDrawnFrame
-        className={cn(
-          "bg-[color:var(--paper)]",
-          isSheet ? "w-full px-3 py-3" : "px-3 py-2"
-        )}
+        className={cn(isSheet ? "w-full" : undefined)}
         contentClassName={cn(
           isSheet
-            ? "flex items-center gap-2.5 text-[0.95rem] leading-none"
-            : "inline-flex items-center gap-2"
+            ? "flex items-center gap-2.5 px-3 py-3 text-[0.95rem] leading-none"
+            : "inline-flex items-center gap-2 px-3 py-2"
         )}
-        deformationIntensity={0.69}
-        shape="pill"
+        surfaceClassName="bg-[color:var(--paper)]"
         strokeColor="var(--border)"
         strokeWidth={1.1}
+        crookednessIntensity={0.69}
       >
         {inlineContent}
       </HandDrawnFrame>
@@ -180,11 +177,13 @@ export function ShellHeader({
   return (
     <header className="sticky top-4 z-40">
       <HandDrawnFrame
-        className={cn("bg-[#f4e5c3] px-4 py-3 backdrop-blur-md", className)}
-        deformationIntensity={0.8}
-        shape="banner"
+        className={className}
+        contentClassName="px-4 py-3"
+        surfaceClassName="bg-[color:var(--surface-shell)] backdrop-blur-md"
         strokeColor="var(--border)"
         strokeWidth={2.1}
+        crookednessIntensity={0.5}
+        thicknessIntensity={4}
       >
         <div
           className="shell-header-layout"
@@ -323,12 +322,12 @@ function ShellHeaderUser({ user }: { user: ShellUser }) {
           )}
         >
           <HandDrawnFrame
-            className="min-w-0 bg-white/45 px-3 py-2"
-            contentClassName="shell-header-user-trigger"
-            deformationIntensity={0.45}
-            shape="steady"
+            className="min-w-0"
+            contentClassName="shell-header-user-trigger px-3 py-2"
+            surfaceClassName="bg-white/45"
             strokeColor="var(--border)"
             strokeWidth={1.9}
+            crookednessIntensity={0.45}
           >
             <Avatar size="sm">
               {user.avatarUrl ? (
@@ -358,12 +357,12 @@ function ShellHeaderUser({ user }: { user: ShellUser }) {
         }}
       >
         <HandDrawnFrame
-          className="w-full bg-[color:var(--paper)] px-3 py-2"
-          contentClassName="grid gap-1"
-          deformationIntensity={0.8}
-          shape="panel"
+          className="w-full"
+          contentClassName="grid gap-1 px-3 py-2"
+          surfaceClassName="bg-[color:var(--paper)]"
           strokeColor="var(--border)"
           strokeWidth={1.6}
+          crookednessIntensity={0.8}
         >
           {user.menuItems?.map((item) => (
             <DropdownMenuItem

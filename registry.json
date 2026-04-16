@@ -271,7 +271,7 @@
       "name": "hand-drawn-frame",
       "title": "Hand Drawn Frame",
       "type": "registry:ui",
-      "description": "Reusable irregular frame wrapper for cards, pills, banners, and scenic panels.",
+      "description": "Reusable Cozy-style hand-drawn frame for surfaces and decorative divider rules.",
       "registryDependencies": [
         "@ghibli/style"
       ],
@@ -280,6 +280,16 @@
           "path": "registry/ghibli/ui/hand-drawn-frame.tsx",
           "type": "registry:ui",
           "target": "components/ui/hand-drawn-frame.tsx"
+        },
+        {
+          "path": "registry/ghibli/ui/hand-drawn-frame.geometry.ts",
+          "type": "registry:ui",
+          "target": "components/ui/hand-drawn-frame.geometry.ts"
+        },
+        {
+          "path": "registry/ghibli/ui/hand-drawn-frame.thickness.ts",
+          "type": "registry:ui",
+          "target": "components/ui/hand-drawn-frame.thickness.ts"
         }
       ]
     },
@@ -640,15 +650,13 @@
       "name": "generate-controls",
       "title": "Generate Controls",
       "type": "registry:block",
-      "description": "Mode toggles, menu selects, negative prompt, uploads, and CTA controls.",
+      "description": "Cozy-style mode toggle, grouped model select, aspect ratio ruler, and generate CTA.",
       "registryDependencies": [
         "@ghibli/style",
         "@ghibli/button",
         "@ghibli/cartoon-button",
-        "@ghibli/dialog",
         "@ghibli/dropdown-menu",
-        "@ghibli/hand-drawn-frame",
-        "@ghibli/textarea"
+        "@ghibli/hand-drawn-frame"
       ],
       "files": [
         {
@@ -669,7 +677,7 @@
         "@ghibli/button",
         "@ghibli/dropdown-menu",
         "@ghibli/hand-drawn-frame",
-        "@ghibli/textarea"
+        "@ghibli/notice-banner"
       ],
       "files": [
         {

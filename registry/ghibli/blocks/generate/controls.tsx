@@ -1,20 +1,12 @@
 import * as React from "react";
-import { ChevronDown, ImagePlus, Minus, Plus, Sparkles, Wand2, X } from "lucide-react";
+import { ChevronDown, Sparkles, Wand2, X } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import { CartoonButton } from "@/components/ui/cartoon-button";
 import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger
-} from "@/components/ui/dialog";
-import {
   DropdownMenu,
   DropdownMenuContent,
+  DropdownMenuGroup,
   DropdownMenuItem,
   DropdownMenuLabel,
   DropdownMenuRadioGroup,
@@ -23,8 +15,19 @@ import {
   DropdownMenuTrigger
 } from "@/components/ui/dropdown-menu";
 import { HandDrawnFrame } from "@/components/ui/hand-drawn-frame";
-import { Textarea } from "@/components/ui/textarea";
-import { cn, type SelectOption, useControllableState } from "@/lib/utils";
+import { cn, type SelectOption } from "@/lib/utils";
+
+const EXPERTISE_COLORS: Record<string, string> = {
+  "3d-game": "#FF4500",
+  anime: "#FFC0CB",
+  cartoon: "#FFD700",
+  "classical-art": "#8B4513",
+  "hyper-real": "#6A5ACD",
+  "physical-art": "#2F4F4F",
+  photo: "#3EB489",
+  pixar: "#00BFFF",
+  videogame: "#FF1493"
+};
 
 export interface GenerateAttachment {
   id: string;
@@ -32,6 +35,22 @@ export interface GenerateAttachment {
   name: string;
   previewUrl?: string;
   sizeLabel?: string;
+}
+
+export interface GenerateModelItem {
+  baseModel: string;
+  description: string;
+  displayName: string;
+  expectedTimeSec: number;
+  expertise: string[];
+  name: string;
+  supportsVideo?: boolean;
+}
+
+export type GenerateModelsByBase = Record<string, GenerateModelItem[]>;
+
+export interface GenerateAspectRatioOption extends SelectOption {
+  description: string;
 }
 
 export interface GenerateModeToggleProps {
@@ -53,12 +72,12 @@ export function GenerateModeToggle({
 
   return (
     <HandDrawnFrame
-      className="inline-block w-full bg-[color:var(--paper-soft)] sm:w-auto"
-      deformationIntensity={0.3}
-      shape="banner"
+      className="inline-block w-full sm:w-auto"
+      surfaceClassName="bg-[color:var(--paper-soft)]"
       strokeColor="var(--border)"
       strokeWidth={1.25}
       svgClassName="opacity-85"
+      crookednessIntensity={0.3}
     >
       <div
         aria-label="Generation mode"
@@ -98,39 +117,27 @@ export function GenerateModeToggle({
   );
 }
 
-interface MenuSelectProps {
-  contentClassName?: string;
-  icon?: React.ReactNode;
-  label: string;
-  onValueChange?: ((value: string) => void) | undefined;
-  optionVariant?: "default" | "radio-list" | "aspect-ruler";
-  options: SelectOption[];
-  value: string;
-}
-
-function MenuSelect({
-  contentClassName,
-  icon,
+function GenerateAspectMenuSelect({
   label,
   onValueChange,
-  optionVariant = "default",
   options,
   value
-}: MenuSelectProps) {
+}: {
+  label: string;
+  onValueChange?: ((value: string) => void) | undefined;
+  options: GenerateAspectRatioOption[];
+  value: string;
+}) {
   const [open, setOpen] = React.useState(false);
-  const isAspectRuler = optionVariant === "aspect-ruler";
   const [aspectRulerValue, setAspectRulerValue] = React.useState<string | null>(null);
   const [showAspectCallout, setShowAspectCallout] = React.useState(false);
   const activeOption = options.find((option) => option.value === value);
-  const displayedAspectValue = isAspectRuler ? aspectRulerValue ?? value : value;
+  const displayedAspectValue = aspectRulerValue ?? value;
 
   const handleOpenChange = (nextOpen: boolean) => {
     setOpen(nextOpen);
-
-    if (isAspectRuler) {
-      setAspectRulerValue(nextOpen ? value : null);
-      setShowAspectCallout(false);
-    }
+    setAspectRulerValue(nextOpen ? value : null);
+    setShowAspectCallout(false);
   };
 
   const handleAspectRulerSelect = (nextValue: string) => {
@@ -142,335 +149,197 @@ function MenuSelect({
   return (
     <DropdownMenu onOpenChange={handleOpenChange} open={open}>
       <HandDrawnFrame
-        className="w-full bg-[color:var(--paper)] sm:w-auto"
-        deformationIntensity={0.3}
-        shape="banner"
+        className="w-full sm:w-auto"
+        surfaceClassName="bg-[color:var(--paper)]"
         strokeColor="var(--border)"
         strokeWidth={1.25}
         svgClassName="opacity-85"
+        crookednessIntensity={0.3}
       >
         <DropdownMenuTrigger asChild>
           <Button className="w-full bg-transparent hover:bg-white/20 sm:w-auto" variant="ghost">
-            {icon}
+            <Wand2 className="size-4" />
             <span>{activeOption?.label ?? label}</span>
             <ChevronDown className="size-4" />
           </Button>
         </DropdownMenuTrigger>
       </HandDrawnFrame>
-      <DropdownMenuContent
-        className={cn(
-          isAspectRuler &&
-            "w-[min(28.5rem,calc(100vw-1.5rem))] min-w-0 overflow-visible border-[color:var(--border)] bg-[color:var(--foreground)] p-0 text-[color:var(--paper-soft)] ring-0",
-          optionVariant === "radio-list" && "min-w-0 p-1.5",
-          contentClassName
-        )}
-      >
-        {isAspectRuler ? (
-          <div className="grid gap-3 bg-[color:var(--foreground)] px-3 pt-4 pb-3">
-            <div className="mx-auto flex w-[97.5%] items-center justify-between gap-3">
-              <p className="text-sm font-medium tracking-[0.04em] text-[color:var(--paper-soft)]">
-                {label}
-              </p>
-
-              <Button
-                aria-label={`Close ${label.toLowerCase()} options`}
-                className="h-8 w-8 shrink-0 p-0 text-[color:var(--paper-soft)] hover:bg-white/10 hover:text-white"
-                onClick={() => handleOpenChange(false)}
-                size="sm"
-                type="button"
-                variant="ghost"
-              >
-                <X className="size-4" />
-              </Button>
-            </div>
-
-            <div className="relative mx-auto w-[97.5%] pb-2">
-              <div
-                aria-hidden="true"
-                className="pointer-events-none absolute top-[3.5rem] left-[7.143%] right-[7.143%] h-px bg-[color:var(--paper)]"
-              />
-
-              <DropdownMenuRadioGroup className="relative grid grid-cols-7 items-start" value={displayedAspectValue}>
-                {options.map((option) => {
-                  const isSelected = option.value === displayedAspectValue;
-
-                  return (
-                    <DropdownMenuRadioItem
-                      className={cn(
-                        "group/aspect-ruler relative flex min-w-0 cursor-pointer justify-center rounded-none bg-transparent px-0 py-0 text-[color:var(--paper-soft)] focus:bg-transparent focus:text-[color:var(--paper-soft)]",
-                        "[&_[data-slot=dropdown-menu-radio-item-indicator]]:hidden",
-                        option.disabled && "pointer-events-none opacity-40"
-                      )}
-                      disabled={option.disabled}
-                      key={option.value}
-                      onSelect={(event) => {
-                        event.preventDefault();
-                        handleAspectRulerSelect(option.value);
-                      }}
-                      value={option.value}
-                    >
-                      <span className="relative flex h-[4.75rem] w-full items-start justify-center">
-                        {showAspectCallout && isSelected ? (
-                          <span className="absolute top-0 inline-grid min-w-[6.9rem] max-w-[7.4rem] items-center justify-center border border-[color:var(--border)] bg-[color:var(--paper-soft)] px-2 py-1 text-center text-[11px] font-medium leading-tight text-[color:var(--foreground)] shadow-[0_8px_18px_rgba(0,0,0,0.18)]">
-                            <span>{option.label}</span>
-                            {option.description ? <span>({option.description})</span> : null}
-                          </span>
-                        ) : null}
-
-                        <span
-                          aria-hidden="true"
-                          className={cn(
-                            "absolute top-[2.8rem] h-4 w-px bg-[color:var(--paper)] transition-opacity",
-                            isSelected ? "opacity-100" : "opacity-80"
-                          )}
-                        />
-                        <span
-                          aria-hidden="true"
-                          className={cn(
-                            "absolute top-[3.3rem] rounded-full border border-[color:var(--paper)] transition-all",
-                            isSelected
-                              ? "size-4 bg-[color:var(--paper)] shadow-[0_0_0_2px_color-mix(in_oklab,var(--foreground)_82%,transparent)]"
-                              : "size-2 bg-[color:var(--foreground)] group-hover/aspect-ruler:bg-[color:var(--paper)]"
-                          )}
-                        />
-                      </span>
-                    </DropdownMenuRadioItem>
-                  );
-                })}
-              </DropdownMenuRadioGroup>
-            </div>
-          </div>
-        ) : (
-          <>
-            <DropdownMenuLabel
-              className={cn(
-                optionVariant === "radio-list" &&
-                  "px-2 pb-1 text-center text-[13px] font-medium leading-tight whitespace-nowrap text-[color:var(--foreground)] sm:text-sm"
-              )}
-            >
+      <DropdownMenuContent className="w-[min(28.5rem,calc(100vw-1.5rem))] min-w-0 overflow-visible border-[color:var(--border)] bg-[color:var(--foreground)] p-0 text-[color:var(--paper-soft)] ring-0">
+        <div className="grid gap-3 bg-[color:var(--foreground)] px-3 pt-4 pb-3">
+          <div className="mx-auto flex w-[97.5%] items-center justify-between gap-3">
+            <p className="text-sm font-medium tracking-[0.04em] text-[color:var(--paper-soft)]">
               {label}
-            </DropdownMenuLabel>
-            <DropdownMenuSeparator />
-            <DropdownMenuRadioGroup onValueChange={onValueChange} value={value}>
-              {options.map((option) => (
-                <DropdownMenuRadioItem
-                  className={cn(
-                    optionVariant === "radio-list" &&
-                      "group/aspect-option gap-3 rounded-none px-2.5 py-2 pr-2 text-base text-[color:var(--foreground)] focus:bg-[color:var(--paper-soft)] focus:text-[color:var(--foreground)]"
-                  )}
-                  key={option.value}
-                  value={option.value}
-                >
-                  {optionVariant === "radio-list" ? (
-                    <>
-                      <span className="flex size-4 shrink-0 items-center justify-center rounded-full border border-[color:var(--border)] transition-colors group-data-[state=checked]/aspect-option:border-[color:var(--foreground)]">
-                        <span className="size-2 rounded-full bg-[color:var(--foreground)] opacity-0 transition-opacity group-data-[state=checked]/aspect-option:opacity-100" />
-                      </span>
-                      <span>{option.label}</span>
-                    </>
-                  ) : (
-                    <div className="grid gap-0.5">
-                      <span>{option.label}</span>
-                      {option.description ? (
-                        <span className="text-xs text-muted-foreground">{option.description}</span>
+            </p>
+
+            <Button
+              aria-label={`Close ${label.toLowerCase()} options`}
+              className="h-8 w-8 shrink-0 p-0 text-[color:var(--paper-soft)] hover:bg-white/10 hover:text-white"
+              onClick={() => handleOpenChange(false)}
+              size="sm"
+              type="button"
+              variant="ghost"
+            >
+              <X className="size-4" />
+            </Button>
+          </div>
+
+          <div className="relative mx-auto w-[97.5%] pb-2">
+            <div
+              aria-hidden="true"
+              className="pointer-events-none absolute top-[3.5rem] left-[7.143%] right-[7.143%] h-px bg-[color:var(--paper)]"
+            />
+
+            <DropdownMenuRadioGroup className="relative grid grid-cols-7 items-start" value={displayedAspectValue}>
+              {options.map((option) => {
+                const isSelected = option.value === displayedAspectValue;
+
+                return (
+                  <DropdownMenuRadioItem
+                    aria-label={`${option.label} ${option.description}`}
+                    className={cn(
+                      "group/aspect-ruler relative flex min-w-0 cursor-pointer justify-center rounded-none bg-transparent px-0 py-0 text-[color:var(--paper-soft)] focus:bg-transparent focus:text-[color:var(--paper-soft)] [&_[data-slot=dropdown-menu-radio-item-indicator]]:hidden",
+                      option.disabled && "pointer-events-none opacity-40"
+                    )}
+                    disabled={option.disabled}
+                    key={option.value}
+                    onSelect={(event) => {
+                      event.preventDefault();
+                      handleAspectRulerSelect(option.value);
+                    }}
+                    value={option.value}
+                  >
+                    <span className="relative flex h-[4.75rem] w-full items-start justify-center">
+                      {showAspectCallout && isSelected ? (
+                        <span className="absolute top-0 inline-grid min-w-[6.9rem] max-w-[7.4rem] items-center justify-center border border-[color:var(--border)] bg-[color:var(--paper-soft)] px-2 py-1 text-center text-[11px] font-medium leading-tight text-[color:var(--foreground)] shadow-[0_8px_18px_rgba(0,0,0,0.18)]">
+                          <span>{option.label}</span>
+                          <span>({option.description})</span>
+                        </span>
                       ) : null}
-                    </div>
-                  )}
-                </DropdownMenuRadioItem>
-              ))}
+
+                      <span
+                        aria-hidden="true"
+                        className={cn(
+                          "absolute top-[2.8rem] h-4 w-px bg-[color:var(--paper)] transition-opacity",
+                          isSelected ? "opacity-100" : "opacity-80"
+                        )}
+                      />
+                      <span
+                        aria-hidden="true"
+                        className={cn(
+                          "absolute top-[3.3rem] rounded-full border border-[color:var(--paper)] transition-all",
+                          isSelected
+                            ? "size-4 bg-[color:var(--paper)] shadow-[0_0_0_2px_color-mix(in_oklab,var(--foreground)_82%,transparent)]"
+                            : "size-2 bg-[color:var(--foreground)] group-hover/aspect-ruler:bg-[color:var(--paper)]"
+                        )}
+                      />
+                    </span>
+                  </DropdownMenuRadioItem>
+                );
+              })}
             </DropdownMenuRadioGroup>
-          </>
-        )}
+          </div>
+        </div>
       </DropdownMenuContent>
     </DropdownMenu>
   );
 }
 
 export interface GenerateModelSelectProps {
-  onValueChange?: ((value: string) => void) | undefined;
-  options: SelectOption[];
-  value: string;
+  model: string;
+  modelsByBase: GenerateModelsByBase;
+  onChange?: ((modelName: GenerateModelItem["name"]) => void) | undefined;
+  selectedModel?: GenerateModelItem | undefined;
 }
 
-export function GenerateModelSelect(props: GenerateModelSelectProps) {
-  return <MenuSelect icon={<Sparkles className="size-4" />} label="Model" {...props} />;
+export function GenerateModelSelect({
+  model,
+  modelsByBase,
+  onChange,
+  selectedModel
+}: GenerateModelSelectProps) {
+  return (
+    <DropdownMenu>
+      <HandDrawnFrame
+        className="w-full sm:w-56"
+        surfaceClassName="bg-[color:var(--paper-soft)]"
+        strokeColor="var(--border)"
+        strokeWidth={1.25}
+        svgClassName="opacity-85"
+        crookednessIntensity={0.3}
+      >
+        <DropdownMenuTrigger asChild>
+          <button className="flex h-11 w-full items-center gap-1.5 overflow-hidden bg-transparent px-3 text-sm transition-colors hover:bg-white/40">
+            <span className="shrink-0 font-medium">{selectedModel?.displayName ?? "Model"}</span>
+            <span className="flex min-w-0 flex-1 items-center gap-1 overflow-hidden">
+              {selectedModel?.expertise.slice(0, 2).map((tag) => (
+                <span
+                  className="shrink-0 px-1.5 py-0.5 text-[10px] font-semibold leading-none text-white"
+                  key={tag}
+                  style={{ backgroundColor: EXPERTISE_COLORS[tag] ?? "#7a6857" }}
+                >
+                  {tag}
+                </span>
+              ))}
+            </span>
+            <ChevronDown className="shrink-0 text-muted-foreground" size={14} />
+          </button>
+        </DropdownMenuTrigger>
+      </HandDrawnFrame>
+      <DropdownMenuContent align="start" className="w-96">
+        {Object.entries(modelsByBase).map(([baseModel, models], index) => (
+          <DropdownMenuGroup key={baseModel}>
+            {index > 0 ? <DropdownMenuSeparator /> : null}
+            <DropdownMenuLabel className="text-[10px] uppercase tracking-wider text-muted-foreground">
+              {baseModel}
+            </DropdownMenuLabel>
+            {models.map((item) => (
+              <DropdownMenuItem
+                className={cn("flex flex-col items-start gap-1 py-2", model === item.name && "text-primary")}
+                key={item.name}
+                onClick={() => onChange?.(item.name)}
+              >
+                <div className="flex items-center gap-2">
+                  <span className="font-medium">{item.displayName}</span>
+                  <span className="text-[10px] text-muted-foreground">~{item.expectedTimeSec}s</span>
+                </div>
+                <div className="flex flex-wrap gap-1">
+                  {item.expertise.map((tag) => (
+                    <span
+                      className="px-1.5 py-0.5 text-[10px] font-semibold leading-none text-white"
+                      key={tag}
+                      style={{ backgroundColor: EXPERTISE_COLORS[tag] ?? "#7a6857" }}
+                    >
+                      {tag}
+                    </span>
+                  ))}
+                </div>
+              </DropdownMenuItem>
+            ))}
+          </DropdownMenuGroup>
+        ))}
+      </DropdownMenuContent>
+    </DropdownMenu>
+  );
 }
 
 export interface GenerateAspectRatioSelectProps {
   onValueChange?: ((value: string) => void) | undefined;
-  options: SelectOption[];
+  options: GenerateAspectRatioOption[];
   value: string;
 }
 
-export function GenerateAspectRatioSelect(props: GenerateAspectRatioSelectProps) {
+export function GenerateAspectRatioSelect({
+  onValueChange,
+  options,
+  value
+}: GenerateAspectRatioSelectProps) {
   return (
-    <MenuSelect
-      icon={<Wand2 className="size-4" />}
+    <GenerateAspectMenuSelect
       label="Aspect ratio"
-      optionVariant="aspect-ruler"
-      {...props}
+      onValueChange={onValueChange}
+      options={options}
+      value={value}
     />
-  );
-}
-
-export interface GenerateNumImagesControlProps {
-  max?: number;
-  min?: number;
-  onValueChange?: ((value: number) => void) | undefined;
-  value: number;
-}
-
-export function GenerateNumImagesControl({
-  max = 8,
-  min = 1,
-  onValueChange,
-  value
-}: GenerateNumImagesControlProps) {
-  return (
-    <HandDrawnFrame
-      className="w-full bg-[color:var(--paper)] sm:w-auto"
-      deformationIntensity={0.3}
-      shape="banner"
-      strokeColor="var(--border)"
-      strokeWidth={1.25}
-      svgClassName="opacity-85"
-    >
-      <div className="inline-flex h-11 items-center gap-1 px-1">
-        <Button disabled={value <= min} onClick={() => onValueChange?.(value - 1)} size="sm" variant="ghost">
-          <Minus className="size-4" />
-        </Button>
-        <span className="min-w-10 text-center text-sm font-medium">{value} imgs</span>
-        <Button disabled={value >= max} onClick={() => onValueChange?.(value + 1)} size="sm" variant="ghost">
-          <Plus className="size-4" />
-        </Button>
-      </div>
-    </HandDrawnFrame>
-  );
-}
-
-export interface GenerateNegativePromptMenuProps {
-  label?: string;
-  onOpenChange?: ((open: boolean) => void) | undefined;
-  onValueChange?: ((value: string) => void) | undefined;
-  open?: boolean | undefined;
-  value: string;
-}
-
-export function GenerateNegativePromptMenu({
-  label = "Negative prompt",
-  onOpenChange,
-  onValueChange,
-  open,
-  value
-}: GenerateNegativePromptMenuProps) {
-  const [isOpen, setIsOpen] = useControllableState({
-    defaultValue: false,
-    onChange: onOpenChange,
-    value: open
-  });
-
-  return (
-    <Dialog onOpenChange={setIsOpen} open={isOpen}>
-      <DialogTrigger asChild>
-        <Button variant="secondary">{label}</Button>
-      </DialogTrigger>
-      <DialogContent>
-        <DialogHeader>
-          <DialogTitle>Negative prompt</DialogTitle>
-          <DialogDescription>
-            Keep this optional and lightweight so it fits smaller editor surfaces.
-          </DialogDescription>
-        </DialogHeader>
-        <Textarea
-          onChange={(event) => onValueChange?.(event.target.value)}
-          placeholder="Things to avoid in the render..."
-          value={value}
-        />
-        <DialogFooter>
-          <Button onClick={() => setIsOpen(false)} variant="secondary">
-            Done
-          </Button>
-        </DialogFooter>
-      </DialogContent>
-    </Dialog>
-  );
-}
-
-export interface GenerateUploadDialogProps {
-  attachments: GenerateAttachment[];
-  onFilesSelected?: ((files: FileList) => void) | undefined;
-  onOpenChange?: ((open: boolean) => void) | undefined;
-  onRemoveAttachment?: ((attachmentId: string) => void) | undefined;
-  open?: boolean | undefined;
-}
-
-export function GenerateUploadDialog({
-  attachments,
-  onFilesSelected,
-  onOpenChange,
-  onRemoveAttachment,
-  open
-}: GenerateUploadDialogProps) {
-  const [isOpen, setIsOpen] = useControllableState({
-    defaultValue: false,
-    onChange: onOpenChange,
-    value: open
-  });
-
-  return (
-    <Dialog onOpenChange={setIsOpen} open={isOpen}>
-      <DialogTrigger asChild>
-        <Button variant="secondary">
-          <ImagePlus className="size-4" />
-          Attachments
-          {attachments.length ? ` (${attachments.length})` : ""}
-        </Button>
-      </DialogTrigger>
-      <DialogContent>
-        <DialogHeader>
-          <DialogTitle>Attach reference media</DialogTitle>
-          <DialogDescription>
-            Accept files from the host app while keeping the surface fully presentational.
-          </DialogDescription>
-        </DialogHeader>
-        <label className="grid cursor-pointer gap-2 border border-dashed border-[color:var(--border-strong)] bg-[color:var(--paper-soft)] p-4 text-sm text-[color:var(--muted-foreground)]">
-          <span>Choose images or videos</span>
-          <input
-            className="sr-only"
-            multiple
-            onChange={(event) => {
-              if (event.target.files) {
-                onFilesSelected?.(event.target.files);
-              }
-            }}
-            type="file"
-          />
-        </label>
-        <div className="grid gap-2">
-          {attachments.length === 0 ? (
-            <p className="text-sm text-[color:var(--muted-foreground)]">No files attached yet.</p>
-          ) : (
-            attachments.map((attachment) => (
-              <div
-                className="flex items-center justify-between gap-3 border border-[color:var(--border)] bg-white/40 px-3 py-2"
-                key={attachment.id}
-              >
-                <div className="grid">
-                  <span className="text-sm font-medium">{attachment.name}</span>
-                  <span className="text-xs text-[color:var(--muted-foreground)]">
-                    {attachment.kind ?? "file"}
-                    {attachment.sizeLabel ? ` • ${attachment.sizeLabel}` : ""}
-                  </span>
-                </div>
-                <Button onClick={() => onRemoveAttachment?.(attachment.id)} size="sm" variant="ghost">
-                  Remove
-                </Button>
-              </div>
-            ))
-          )}
-        </div>
-      </DialogContent>
-    </Dialog>
   );
 }
 
@@ -500,29 +369,5 @@ export function GenerateButton({
       onClick={onClick ?? null}
       text={isAuthenticated ? label : "Sign in to generate"}
     />
-  );
-}
-
-export interface GenerateQuickPickProps {
-  items: SelectOption[];
-  onSelect?: ((value: string) => void) | undefined;
-}
-
-export function GenerateQuickPicks({ items, onSelect }: GenerateQuickPickProps) {
-  return (
-    <DropdownMenu>
-      <DropdownMenuTrigger asChild>
-        <Button variant="ghost">Quick picks</Button>
-      </DropdownMenuTrigger>
-      <DropdownMenuContent>
-        <DropdownMenuLabel>Prompt starters</DropdownMenuLabel>
-        <DropdownMenuSeparator />
-        {items.map((item) => (
-          <DropdownMenuItem key={item.value} onClick={() => onSelect?.(item.value)}>
-            {item.label}
-          </DropdownMenuItem>
-        ))}
-      </DropdownMenuContent>
-    </DropdownMenu>
   );
 }
