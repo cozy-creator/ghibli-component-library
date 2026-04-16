@@ -1,7 +1,6 @@
 import { useState, type ReactNode } from "react";
 import {
   BookOpen,
-  ChevronDown,
   Eye,
   EyeOff,
   FileText,
@@ -36,12 +35,6 @@ import {
   DocsFaqAccordion,
   DocsH2,
   DocsParagraph,
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuLabel,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
   EmptyState,
   EmptyStateAction,
   FloatingAction,
@@ -49,13 +42,9 @@ import {
   GenerateAspectRatioSelect,
   GenerateButton,
   GenerateEditorBar,
+  GenerateModeToggle,
   GenerateModelSelect,
-  GenerateNegativePromptMenu,
-  GenerateNumImagesControl,
-  GenerateQuickPicks,
-  GenerateUploadDialog,
   HandDrawnFrame,
-  HandDrawnRule,
   Input,
   LoginForm,
   NoticeBanner,
@@ -67,10 +56,6 @@ import {
   ShellHeader,
   Tabs,
   Textarea,
-  Tooltip,
-  TooltipContent,
-  TooltipProvider,
-  TooltipTrigger,
 } from "@ghibli/ui";
 
 import {
@@ -93,9 +78,9 @@ import {
   creditOffers,
   faqItems,
   footerColumns,
+  generateModelItems,
   linkedAccounts,
   modeOptions,
-  modelOptions,
   sampleAttachments,
   subscriptionOffers,
 } from "@/apps/web/src/data/demo-fixtures";
@@ -108,44 +93,47 @@ const registrySnippet = `{
   }
 }`;
 
-const handDrawnFrameShapes = [
-  "organic",
-  "steady",
-  "pill",
-  "panel",
-  "surface",
-  "card",
-  "banner",
-  "divider",
-] as const;
-
-type ShowcaseHandDrawnFrameShape = (typeof handDrawnFrameShapes)[number];
-
-function clampNumber(value: number, min: number, max: number) {
-  return Math.min(max, Math.max(min, value));
+function groupGenerateModelsByBase(items: typeof generateModelItems) {
+  return items.reduce<Record<string, typeof generateModelItems>>((accumulator, item) => {
+    (accumulator[item.baseModel] ??= []).push(item);
+    return accumulator;
+  }, {});
 }
 
-function resolveFrameNumberInput(
-  value: string,
-  fallback: number,
-  {
-    max,
-    min,
-    precision = 2,
-  }: {
-    max: number;
-    min: number;
-    precision?: number;
-  },
-) {
-  const parsed = Number.parseFloat(value);
+type FrameRulerOption = {
+  label: string;
+  value: number;
+};
 
-  if (!Number.isFinite(parsed)) {
-    return fallback;
-  }
+const frameCrookednessOptions: FrameRulerOption[] = [
+  { label: "0", value: 0 },
+  { label: "0.5", value: 0.5 },
+  { label: "1", value: 1 },
+  { label: "2", value: 2 },
+  { label: "4", value: 4 },
+  { label: "7", value: 7 },
+  { label: "10", value: 10 },
+];
 
-  return Number.parseFloat(clampNumber(parsed, min, max).toFixed(precision));
-}
+const frameThicknessOptions: FrameRulerOption[] = [
+  { label: "0", value: 0 },
+  { label: "1", value: 1 },
+  { label: "2", value: 2 },
+  { label: "4", value: 4 },
+  { label: "6", value: 6 },
+  { label: "8", value: 8 },
+  { label: "10", value: 10 },
+];
+
+const frameStrokeWidthOptions: FrameRulerOption[] = [
+  { label: "0.5", value: 0.5 },
+  { label: "1", value: 1 },
+  { label: "1.25", value: 1.25 },
+  { label: "1.6", value: 1.6 },
+  { label: "2", value: 2 },
+  { label: "3", value: 3 },
+  { label: "4", value: 4 },
+];
 
 function CodeBlock({ children }: { children: string }) {
   return (
@@ -160,11 +148,12 @@ const repoUrl = "https://github.com/rodrigoluz/ghibli-component-library";
 function LibraryMark({ className }: { className?: string }) {
   return (
     <HandDrawnFrame
-      className={className ?? "size-12 shrink-0 bg-white/45 p-2.5"}
-      deformationIntensity={0.7}
-      shape="organic"
+      className={className ?? "size-12 shrink-0"}
+      contentClassName="p-2.5"
+      surfaceClassName="bg-white/45"
       strokeColor="var(--border-strong)"
       strokeWidth={1.85}
+      crookednessIntensity={0.7}
     >
       <Flower2
         aria-hidden="true"
@@ -187,6 +176,89 @@ function DemoSurface({ children }: { children: ReactNode }) {
     <div className="min-w-0 border border-[color:var(--border-soft)] bg-[color:rgba(255,255,255,0.35)] p-4">
       {children}
     </div>
+  );
+}
+
+function FrameRulerField({
+  description,
+  label,
+  onValueChange,
+  options,
+  value,
+}: {
+  description?: string;
+  label: string;
+  onValueChange: (value: number) => void;
+  options: FrameRulerOption[];
+  value: number;
+}) {
+  const activeOption = options.find((option) => option.value === value) ?? options[0]!;
+
+  return (
+    <FormField
+      action={<span className="text-xs text-muted-foreground">{activeOption.label}</span>}
+      description={description}
+      label={label}
+    >
+      <div className="relative mx-auto w-[97.5%] pb-1">
+        <div
+          aria-hidden="true"
+          className="pointer-events-none absolute top-[3rem] left-[7.143%] right-[7.143%] h-px bg-[color:var(--border-strong)]"
+        />
+
+        <div
+          aria-label={label}
+          className="grid items-start"
+          role="radiogroup"
+          style={{ gridTemplateColumns: `repeat(${options.length}, minmax(0, 1fr))` }}
+        >
+          {options.map((option) => {
+            const isSelected = option.value === value;
+
+            return (
+              <button
+                aria-checked={isSelected}
+                aria-label={`${label} ${option.label}`}
+                className="group/frame-ruler relative flex min-w-0 justify-center rounded-none bg-transparent px-0 py-0 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[color:var(--ring)] focus-visible:ring-offset-2 focus-visible:ring-offset-[color:var(--paper)]"
+                key={`${label}-${option.label}`}
+                onClick={() => onValueChange(option.value)}
+                role="radio"
+                type="button"
+              >
+                <span className="relative flex h-[4.8rem] w-full items-start justify-center">
+                  {isSelected ? (
+                    <span className="absolute top-0 inline-grid min-w-[3.6rem] items-center justify-center border border-[color:var(--border)] bg-[color:var(--paper-soft)] px-2 py-1 text-center text-[11px] font-medium leading-none text-[color:var(--ink-strong)] shadow-[0_8px_18px_rgba(0,0,0,0.14)]">
+                      {option.label}
+                    </span>
+                  ) : null}
+                  <span
+                    aria-hidden="true"
+                    className={`absolute top-[2.35rem] h-4 w-px transition-opacity ${
+                      isSelected
+                        ? "bg-[color:var(--ink-strong)] opacity-100"
+                        : "bg-[color:var(--border-strong)] opacity-80"
+                    }`}
+                  />
+                  <span
+                    aria-hidden="true"
+                    className={`absolute top-[2.9rem] rounded-full border transition-all ${
+                      isSelected
+                        ? "size-4 border-[color:var(--ink-strong)] bg-[color:var(--paper-soft)] shadow-[0_0_0_2px_color-mix(in_oklab,var(--paper)_80%,transparent)]"
+                        : "size-2 border-[color:var(--border-strong)] bg-[color:var(--ink-strong)]/75 group-hover/frame-ruler:bg-[color:var(--ink-strong)]"
+                    }`}
+                  />
+                </span>
+              </button>
+            );
+          })}
+        </div>
+
+        <div className="mt-1 flex items-center justify-between text-[11px] text-[color:var(--muted-foreground)]">
+          <span>{options[0]!.label}</span>
+          <span>{options[options.length - 1]!.label}</span>
+        </div>
+      </div>
+    </FormField>
   );
 }
 
@@ -234,41 +306,6 @@ function Specimen({
   );
 }
 
-function FrameBooleanField({
-  description,
-  label,
-  onChange,
-  value,
-}: {
-  description: string;
-  label: string;
-  onChange: (nextValue: boolean) => void;
-  value: boolean;
-}) {
-  return (
-    <FormField description={description} label={label}>
-      <div className="flex flex-wrap gap-2">
-        <Button
-          onClick={() => onChange(true)}
-          size="sm"
-          type="button"
-          variant={value ? "secondary" : "ghost"}
-        >
-          On
-        </Button>
-        <Button
-          onClick={() => onChange(false)}
-          size="sm"
-          type="button"
-          variant={value ? "ghost" : "secondary"}
-        >
-          Off
-        </Button>
-      </div>
-    </FormField>
-  );
-}
-
 function ShowcasePasswordInput({
   defaultValue = "lantern-light",
   label = "Password",
@@ -306,13 +343,11 @@ function ShowcasePasswordInput({
 export function HomePage() {
   const [activeTab, setActiveTab] = useState("live-feed");
   const [mode, setMode] = useState("image");
-  const [model, setModel] = useState("riverlight-v3");
-  const [aspectRatio, setAspectRatio] = useState("3:4");
-  const [numImages, setNumImages] = useState(2);
+  const [model, setModel] = useState("flux-dev");
+  const [aspectRatio, setAspectRatio] = useState("9/16");
   const [prompt, setPrompt] = useState(
     "A quiet ferry deck at dusk, paper lantern reflections across the water, soft watercolor lighting.",
   );
-  const [negativePrompt, setNegativePrompt] = useState("");
   const [authOpen, setAuthOpen] = useState(false);
   const [authTab, setAuthTab] = useState<"login" | "register">("login");
   const [emailDialogOpen, setEmailDialogOpen] = useState(false);
@@ -323,16 +358,19 @@ export function HomePage() {
   const [currentPassword, setCurrentPassword] = useState("");
   const [newPassword, setNewPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
-  const [frameShape, setFrameShape] =
-    useState<ShowcaseHandDrawnFrameShape>("card");
-  const [frameDeformationIntensityInput, setFrameDeformationIntensityInput] =
-    useState("0.7");
-  const [frameStrokeWidthInput, setFrameStrokeWidthInput] = useState("2.4");
-  const [frameSeedInput, setFrameSeedInput] = useState("frame-playground");
-  const [frameUseDeformationVariation, setFrameUseDeformationVariation] =
-    useState(true);
-  const [frameUseThicknessVariation, setFrameUseThicknessVariation] =
-    useState(true);
+  const [frameCrookednessIntensity, setFrameCrookednessIntensity] = useState(0.5);
+  const [frameThicknessIntensity, setFrameThicknessIntensity] = useState(4);
+  const [frameStrokeWidth, setFrameStrokeWidth] = useState(1.6);
+  const availableGenerateModelItems =
+    mode === "video"
+      ? generateModelItems.filter((item) => item.supportsVideo)
+      : generateModelItems;
+  const availableGenerateModelsByBase = groupGenerateModelsByBase(
+    availableGenerateModelItems,
+  );
+  const selectedGenerateModel =
+    availableGenerateModelItems.find((item) => item.name === model) ??
+    availableGenerateModelItems[0];
   const authProviderActions = [
     {
       icon: <GoogleAuthIcon />,
@@ -359,36 +397,20 @@ export function HomePage() {
       onSelect: () => undefined,
     },
   ];
-  const resolvedFrameDeformationIntensity = resolveFrameNumberInput(
-    frameDeformationIntensityInput,
-    0.7,
-    { max: 10, min: 0 },
-  );
-  const resolvedFrameStrokeWidth = resolveFrameNumberInput(
-    frameStrokeWidthInput,
-    2.4,
-    { max: 4, min: 0.5 },
-  );
-  const resolvedFrameSeed = frameSeedInput.trim() || undefined;
-  const framePreviewSeedProps = resolvedFrameSeed
-    ? { seed: resolvedFrameSeed }
-    : {};
-  const frameShapeLabel = frameShape === "divider"
-    ? "Divider"
-    : frameShape.charAt(0).toUpperCase() + frameShape.slice(1);
-  const framePreviewSnippet = frameShape === "divider"
-    ? `<HandDrawnRule
-  deformationIntensity={${resolvedFrameDeformationIntensity}}
-  strokeWidth={${resolvedFrameStrokeWidth}}
-${resolvedFrameSeed ? `  seed="${resolvedFrameSeed}"\n` : ""}  useDeformationVariation={${frameUseDeformationVariation}}
-  useThicknessVariation={${frameUseThicknessVariation}}
-/>`
-    : `<HandDrawnFrame
-  shape="${frameShape}"
-  deformationIntensity={${resolvedFrameDeformationIntensity}}
-  strokeWidth={${resolvedFrameStrokeWidth}}
-${resolvedFrameSeed ? `  seed="${resolvedFrameSeed}"\n` : ""}  useDeformationVariation={${frameUseDeformationVariation}}
-  useThicknessVariation={${frameUseThicknessVariation}}
+  const handleGenerateModeChange = (nextMode: string) => {
+    setMode(nextMode);
+
+    if (
+      nextMode === "video" &&
+      !generateModelItems.find((item) => item.name === model)?.supportsVideo
+    ) {
+      setModel("flux-dev");
+    }
+  };
+  const framePreviewSnippet = `<HandDrawnFrame
+  crookednessIntensity={${frameCrookednessIntensity}}
+  thicknessIntensity={${frameThicknessIntensity}}
+  strokeWidth={${frameStrokeWidth}}
 >
   ...
 </HandDrawnFrame>`;
@@ -492,288 +514,60 @@ ${resolvedFrameSeed ? `  seed="${resolvedFrameSeed}"\n` : ""}  useDeformationVar
 
         <Specimen
           id="component-hand-drawn-frame"
-          note="The frame primitive now uses the Cozy deformation API directly, including divider rules, seeded wobble, and layered stroke variation."
+          note="The frame primitive now mirrors Cozy.art's surface and divider API with crookedness compensation and thickness intensity controls."
           title="Hand Drawn Frame"
         >
-          <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
-            <div className="grid gap-4 md:col-span-2 xl:col-span-3 lg:grid-cols-[minmax(0,18rem)_minmax(0,1fr)]">
-              <DemoSurface>
-                <div className="grid gap-3">
-                  <FormField
-                    description="Select from the current Cozy frame shapes."
-                    label="Shape"
-                  >
-                    <DropdownMenu>
-                      <DropdownMenuTrigger asChild>
-                        <button
-                          aria-label="Shape"
-                          className="w-full rounded-[inherit] text-left focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[color:var(--ring)] focus-visible:ring-offset-2 focus-visible:ring-offset-[color:var(--paper)]"
-                          type="button"
-                        >
-                          <HandDrawnFrame
-                            className="bg-[color:var(--card)] px-3 py-2.5"
-                            contentClassName="flex items-center justify-between gap-3"
-                            deformationIntensity={0.3}
-                            shape="banner"
-                            strokeWidth={1.25}
-                          >
-                            <span className="text-sm font-medium text-[color:var(--ink-strong)]">
-                              {frameShapeLabel}
-                            </span>
-                            <ChevronDown
-                              aria-hidden="true"
-                              className="size-4 shrink-0 text-[color:var(--muted-foreground)]"
-                            />
-                          </HandDrawnFrame>
-                        </button>
-                      </DropdownMenuTrigger>
-                      <DropdownMenuContent
-                        align="start"
-                        className="shell-header-user-menu overflow-visible border-0 bg-transparent p-0 ring-0"
-                        sideOffset={10}
-                      >
-                        <HandDrawnFrame
-                          className="w-56 bg-[color:var(--paper)] px-3 py-2"
-                          contentClassName="grid gap-1"
-                          deformationIntensity={0.8}
-                          shape="panel"
-                          strokeWidth={1.6}
-                        >
-                          {handDrawnFrameShapes.map((shapeOption) => (
-                            <DropdownMenuItem
-                              className="gap-1.5 px-0 py-1.5 whitespace-nowrap focus:bg-[color:var(--ring)] focus:text-[color:var(--ink-strong)] data-[highlighted]:bg-[color:var(--ring)] data-[highlighted]:text-[color:var(--ink-strong)]"
-                              key={shapeOption}
-                              onClick={() => setFrameShape(shapeOption)}
-                            >
-                              {shapeOption === "divider"
-                                ? "Divider"
-                                : shapeOption.charAt(0).toUpperCase() +
-                                  shapeOption.slice(1)}
-                            </DropdownMenuItem>
-                          ))}
-                        </HandDrawnFrame>
-                      </DropdownMenuContent>
-                    </DropdownMenu>
-                  </FormField>
-                  <FormField
-                    action={<span className="text-xs text-muted-foreground">0-10</span>}
-                    label="Deformation Intensity"
-                  >
-                    <Input
-                      max="10"
-                      min="0"
-                      onChange={(event) =>
-                        setFrameDeformationIntensityInput(event.target.value)
-                      }
-                      step="0.05"
-                      type="number"
-                      value={frameDeformationIntensityInput}
-                    />
-                  </FormField>
-                  <FormField label="Seed">
-                    <Input
-                      onChange={(event) => setFrameSeedInput(event.target.value)}
-                      placeholder="frame-playground"
-                      value={frameSeedInput}
-                    />
-                  </FormField>
-                  <FormField
-                    action={
-                      <span className="text-xs text-muted-foreground">0.5-4</span>
-                    }
-                    label="Stroke Width"
-                  >
-                    <Input
-                      max="4"
-                      min="0.5"
-                      onChange={(event) => setFrameStrokeWidthInput(event.target.value)}
-                      step="0.05"
-                      type="number"
-                      value={frameStrokeWidthInput}
-                    />
-                  </FormField>
-                  <FrameBooleanField
-                    description="Toggles the seeded deformation key used by the Cozy frame generator."
-                    label="Use Deformation Variation"
-                    onChange={setFrameUseDeformationVariation}
-                    value={frameUseDeformationVariation}
-                  />
-                  <FrameBooleanField
-                    description="Layers several dash-masked strokes to vary thickness like the Cozy source."
-                    label="Use Thickness Variation"
-                    onChange={setFrameUseThicknessVariation}
-                    value={frameUseThicknessVariation}
-                  />
-                </div>
-              </DemoSurface>
-              <DemoSurface>
-                <div className="grid gap-4">
-                  <div className="grid gap-1">
-                    <p className="font-[var(--font-heading)] text-xl text-[color:var(--ink-strong)]">
-                      Interactive playground
-                    </p>
-                    <p className="text-sm leading-7 text-muted-foreground">
-                      Change the current Cozy frame props and preview the result live.
-                    </p>
-                  </div>
-                  {frameShape === "divider" ? (
-                    <div className="grid gap-3">
-                      <span className="text-sm text-[color:var(--ink-strong)]">
-                        Section one
-                      </span>
-                      <HandDrawnRule
-                        deformationIntensity={resolvedFrameDeformationIntensity}
-                        strokeWidth={resolvedFrameStrokeWidth}
-                        useDeformationVariation={frameUseDeformationVariation}
-                        useThicknessVariation={frameUseThicknessVariation}
-                        {...framePreviewSeedProps}
-                      />
-                      <span className="text-sm text-[color:var(--ink-strong)]">
-                        Section two
-                      </span>
-                    </div>
-                  ) : (
-                    <HandDrawnFrame
-                      className="bg-[color:var(--card)] px-5 py-5"
-                      deformationIntensity={resolvedFrameDeformationIntensity}
-                      shape={frameShape}
-                      strokeWidth={resolvedFrameStrokeWidth}
-                      useDeformationVariation={frameUseDeformationVariation}
-                      useThicknessVariation={frameUseThicknessVariation}
-                      {...framePreviewSeedProps}
-                    >
-                      <p className="font-[var(--font-heading)] text-xl text-[color:var(--ink-strong)]">
-                        Frame preview
-                      </p>
-                      <p className="mt-2 text-sm leading-7 text-muted-foreground">
-                        Shapes, seeds, and layered thickness drift all come from the shared primitive.
-                      </p>
-                    </HandDrawnFrame>
-                  )}
-                  <CodeBlock>{framePreviewSnippet}</CodeBlock>
-                </div>
-              </DemoSurface>
-            </div>
-            <HandDrawnFrame
-              className="flex h-32 flex-col justify-between bg-[color:var(--card)] px-5 py-4"
-              deformationIntensity={0.7}
-              seed="frame-example-organic"
-              shape="organic"
-              strokeWidth={2.4}
-            >
-              <p className="font-[var(--font-heading)] text-lg leading-tight text-[color:var(--ink-strong)]">
-                Organic callout
-              </p>
-              <p className="text-xs leading-5 text-muted-foreground">
-                <code>shape="organic" deformationIntensity=&#123;0.7&#125; strokeWidth=&#123;2.4&#125;</code>
-              </p>
-            </HandDrawnFrame>
-            <HandDrawnFrame
-              className="flex h-32 flex-col justify-between bg-[color:rgba(255,255,255,0.55)] px-5 py-4"
-              deformationIntensity={0.45}
-              seed="frame-example-steady"
-              shape="steady"
-              strokeWidth={1.4}
-            >
-              <p className="font-[var(--font-heading)] text-lg leading-tight text-[color:var(--ink-strong)]">
-                Steady shell chip
-              </p>
-              <p className="text-xs leading-5 text-muted-foreground">
-                <code>shape="steady" deformationIntensity=&#123;0.45&#125; seed="frame-example-steady"</code>
-              </p>
-            </HandDrawnFrame>
-            <HandDrawnFrame
-              className="flex h-32 flex-col justify-between bg-[color:color-mix(in_oklab,var(--ring)_22%,white)] px-5 py-4 text-[color:var(--primary)]"
-              deformationIntensity={0.9}
-              seed="frame-example-pill"
-              shape="pill"
-              strokeWidth={1.35}
-            >
-              <div className="grid gap-1">
-                <span className="font-[var(--font-heading)] text-lg leading-tight">
-                  Pill navigation
-                </span>
-                <span className="text-xs leading-5 text-[color:var(--ink-soft)]">
-                  <code>shape="pill" deformationIntensity=&#123;0.9&#125;</code>
-                </span>
-              </div>
-            </HandDrawnFrame>
-            <HandDrawnFrame
-              className="flex h-32 flex-col justify-between bg-[color:rgba(255,255,255,0.52)] px-5 py-4"
-              deformationIntensity={0.5}
-              seed="frame-example-panel"
-              shape="panel"
-              strokeWidth={1.6}
-            >
-              <p className="font-[var(--font-heading)] text-lg leading-tight text-[color:var(--ink-strong)]">
-                Panel grouping
-              </p>
-              <p className="text-xs leading-5 text-muted-foreground">
-                <code>shape="panel" deformationIntensity=&#123;0.5&#125;</code>
-              </p>
-            </HandDrawnFrame>
-            <HandDrawnFrame
-              className="flex h-32 flex-col justify-between bg-[color:rgba(255,255,255,0.58)] px-5 py-4"
-              deformationIntensity={0.35}
-              seed="frame-example-surface"
-              shape="surface"
-              strokeWidth={1.4}
-              useThicknessVariation={false}
-            >
-              <p className="font-[var(--font-heading)] text-lg leading-tight text-[color:var(--ink-strong)]">
-                Quiet surface
-              </p>
-              <p className="text-xs leading-5 text-muted-foreground">
-                <code>useThicknessVariation=&#123;false&#125;</code>
-              </p>
-            </HandDrawnFrame>
-            <HandDrawnFrame
-              className="h-32 overflow-hidden bg-[linear-gradient(180deg,rgba(249,243,226,0.98),rgba(239,227,193,0.98))]"
-              clipContent
-              deformationIntensity={0.6}
-              seed="frame-example-card"
-              shape="card"
-              strokeWidth={1.55}
-            >
-              <div className="grid h-full content-between gap-2 px-5 py-4">
-                <div className="h-8 rounded-[0.95rem] bg-[linear-gradient(180deg,rgba(255,255,255,0.24),rgba(63,43,19,0.16))]" />
-                <div className="grid gap-0.5">
-                  <p className="font-[var(--font-heading)] text-base leading-tight text-[color:var(--ink-strong)]">
-                    Card clip content
-                  </p>
-                  <p className="text-[11px] leading-4 text-muted-foreground">
-                    <code>clipContent</code> keeps the inner wash trimmed to the frame.
-                  </p>
-                </div>
-              </div>
-            </HandDrawnFrame>
-            <HandDrawnFrame
-              className="flex h-32 flex-col justify-between bg-[color:var(--paper)] px-5 py-4"
-              deformationIntensity={0.3}
-              seed="frame-example-banner"
-              shape="banner"
-              strokeWidth={1.25}
-            >
-              <p className="font-[var(--font-heading)] text-lg leading-tight text-[color:var(--ink-strong)]">
-                Calm banner
-              </p>
-              <p className="text-xs leading-5 text-muted-foreground">
-                <code>shape="banner" deformationIntensity=&#123;0.3&#125;</code>
-              </p>
-            </HandDrawnFrame>
+          <div className="grid gap-4 lg:grid-cols-[minmax(0,18rem)_minmax(0,1fr)]">
             <DemoSurface>
               <div className="grid gap-3">
-                <p className="font-[var(--font-heading)] text-xl text-[color:var(--ink-strong)]">
-                  Divider rule
-                </p>
-                <HandDrawnRule
-                  deformationIntensity={0.5}
-                  seed="frame-example-divider"
-                  strokeWidth={1.1}
+                <FrameRulerField
+                  description="Lower values keep the frame closer to a steady surface."
+                  label="Crookedness Intensity"
+                  onValueChange={setFrameCrookednessIntensity}
+                  options={frameCrookednessOptions}
+                  value={frameCrookednessIntensity}
                 />
-                <p className="text-xs leading-6 text-muted-foreground">
-                  <code>HandDrawnRule deformationIntensity=&#123;0.5&#125; strokeWidth=&#123;1.1&#125;</code>
-                </p>
+                <FrameRulerField
+                  description="Higher values add more layered stroke drift."
+                  label="Thickness Intensity"
+                  onValueChange={setFrameThicknessIntensity}
+                  options={frameThicknessOptions}
+                  value={frameThicknessIntensity}
+                />
+                <FrameRulerField
+                  description="Use the ruler to push the base line from fine to bold."
+                  label="Stroke Width"
+                  onValueChange={setFrameStrokeWidth}
+                  options={frameStrokeWidthOptions}
+                  value={frameStrokeWidth}
+                />
+              </div>
+            </DemoSurface>
+            <DemoSurface>
+              <div className="grid gap-4">
+                <div className="grid gap-1">
+                  <p className="font-[var(--font-heading)] text-xl text-[color:var(--ink-strong)]">
+                    Interactive playground
+                  </p>
+                  <p className="text-sm leading-7 text-muted-foreground">
+                    Adjust the Cozy-style surface controls and preview the result live.
+                  </p>
+                </div>
+                <HandDrawnFrame
+                  contentClassName="px-5 py-5"
+                  surfaceClassName="bg-[color:var(--card)]"
+                  strokeWidth={frameStrokeWidth}
+                  thicknessIntensity={frameThicknessIntensity}
+                  crookednessIntensity={frameCrookednessIntensity}
+                >
+                  <p className="font-[var(--font-heading)] text-xl text-[color:var(--ink-strong)]">
+                    Frame preview
+                  </p>
+                  <p className="mt-2 text-sm leading-7 text-muted-foreground">
+                    The showcase focuses on the primary Cozy surface treatment instead of exposing every frame mode here.
+                  </p>
+                </HandDrawnFrame>
+                <CodeBlock>{framePreviewSnippet}</CodeBlock>
               </div>
             </DemoSurface>
           </div>
@@ -1073,35 +867,17 @@ ${resolvedFrameSeed ? `  seed="${resolvedFrameSeed}"\n` : ""}  useDeformationVar
           title="Dropdown, Model, Aspect Controls"
         >
           <div className="flex flex-wrap items-center gap-3">
-            <DropdownMenu>
-              <DropdownMenuTrigger asChild>
-                <Button variant="secondary">Open menu</Button>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent>
-                <DropdownMenuLabel>Library menu</DropdownMenuLabel>
-                <DropdownMenuSeparator />
-                <DropdownMenuItem>Copy install command</DropdownMenuItem>
-                <DropdownMenuItem>Open Storybook</DropdownMenuItem>
-              </DropdownMenuContent>
-            </DropdownMenu>
             <GenerateModelSelect
-              onValueChange={setModel}
-              options={modelOptions}
-              value={model}
+              model={selectedGenerateModel?.name ?? model}
+              modelsByBase={availableGenerateModelsByBase}
+              onChange={setModel}
+              selectedModel={selectedGenerateModel}
             />
             <GenerateAspectRatioSelect
               onValueChange={setAspectRatio}
               options={aspectRatioOptions}
               value={aspectRatio}
             />
-            <TooltipProvider>
-              <Tooltip>
-                <TooltipTrigger asChild>
-                  <Button variant="ghost">Tooltip</Button>
-                </TooltipTrigger>
-                <TooltipContent>Small hover and focus helper.</TooltipContent>
-              </Tooltip>
-            </TooltipProvider>
           </div>
         </Specimen>
 
@@ -1115,14 +891,12 @@ ${resolvedFrameSeed ? `  seed="${resolvedFrameSeed}"\n` : ""}  useDeformationVar
               <div className="ghibli-generate-editor-stage-grid">
                 {communityImageItems.slice(0, 3).map((item) => (
                   <HandDrawnFrame
-                    className="overflow-hidden bg-[linear-gradient(180deg,rgba(249,243,226,0.92),rgba(239,227,193,0.92))]"
-                    clipContent
-                    deformationIntensity={0.6}
                     key={item.id}
-                    seed={`generate-stage-${item.id}`}
-                    shape="card"
+                    className="overflow-hidden"
+                    surfaceClassName="bg-[linear-gradient(180deg,rgba(249,243,226,0.92),rgba(239,227,193,0.92))]"
                     strokeColor="var(--border)"
                     strokeWidth={1.55}
+                    crookednessIntensity={0.6}
                   >
                     <img
                       alt=""
@@ -1144,18 +918,15 @@ ${resolvedFrameSeed ? `  seed="${resolvedFrameSeed}"\n` : ""}  useDeformationVar
                   estimateLabel="~18s / image"
                   mode={mode}
                   modeOptions={modeOptions}
-                  model={model}
-                  modelOptions={modelOptions}
-                  negativePrompt={negativePrompt}
-                  numImages={numImages}
+                  model={selectedGenerateModel?.name ?? model}
+                  modelsByBase={availableGenerateModelsByBase}
                   onAspectRatioChange={setAspectRatio}
-                  onModeChange={setMode}
+                  onModeChange={handleGenerateModeChange}
                   onModelChange={setModel}
-                  onNegativePromptChange={setNegativePrompt}
-                  onNumImagesChange={setNumImages}
                   onPromptChange={setPrompt}
                   onRemoveAttachment={() => undefined}
                   prompt={prompt}
+                  selectedModel={selectedGenerateModel}
                 />
               </div>
             </div>
@@ -1168,23 +939,21 @@ ${resolvedFrameSeed ? `  seed="${resolvedFrameSeed}"\n` : ""}  useDeformationVar
           title="Generate Controls"
         >
           <div className="flex flex-wrap items-center gap-3">
-            <GenerateNumImagesControl
-              onValueChange={setNumImages}
-              value={numImages}
+            <GenerateModeToggle
+              onValueChange={handleGenerateModeChange}
+              options={modeOptions}
+              value={mode}
             />
-            <GenerateNegativePromptMenu
-              onValueChange={setNegativePrompt}
-              value={negativePrompt}
+            <GenerateModelSelect
+              model={selectedGenerateModel?.name ?? model}
+              modelsByBase={availableGenerateModelsByBase}
+              onChange={setModel}
+              selectedModel={selectedGenerateModel}
             />
-            <GenerateUploadDialog
-              attachments={sampleAttachments}
-              onRemoveAttachment={() => undefined}
-            />
-            <GenerateQuickPicks
-              items={[
-                { label: "Rainy tea house", value: "rainy-tea-house" },
-                { label: "Lantern ferry", value: "lantern-ferry" },
-              ]}
+            <GenerateAspectRatioSelect
+              onValueChange={setAspectRatio}
+              options={aspectRatioOptions}
+              value={aspectRatio}
             />
             <GenerateButton isAuthenticated onClick={() => undefined} />
           </div>

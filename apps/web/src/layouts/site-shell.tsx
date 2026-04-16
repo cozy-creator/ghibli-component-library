@@ -18,11 +18,12 @@ function jumpToAnchor(anchorId: string) {
 function BrandMark({ className }: { className?: string }) {
   return (
     <HandDrawnFrame
-      className={className ?? "size-12 shrink-0 bg-white/45 p-2.5"}
-      deformationIntensity={0.7}
-      shape="organic"
+      className={className ?? "size-12 shrink-0"}
+      contentClassName="p-2.5"
+      surfaceClassName="bg-white/45"
       strokeColor="var(--border-strong)"
       strokeWidth={1.85}
+      crookednessIntensity={0.7}
     >
       <Flower2
         aria-hidden="true"

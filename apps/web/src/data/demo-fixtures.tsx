@@ -9,7 +9,12 @@ import {
   Wand2
 } from "lucide-react";
 
-import { type FaqItem } from "@ghibli/ui";
+import type {
+  FaqItem,
+  GenerateAspectRatioOption,
+  GenerateModelItem,
+  GenerateModelsByBase
+} from "@ghibli/ui";
 
 import {
   DocsHeaderIcon,
@@ -298,20 +303,64 @@ export const xPostDemo = {
 
 export const modeOptions = [
   { label: "Image", value: "image" },
-  { label: "Variation", value: "variation" },
-  { label: "Storyboard", value: "storyboard" }
+  { label: "Video", value: "video" }
 ];
 
-export const modelOptions = [
-  { description: "Painterly everyday scenes", label: "Riverlight v3", value: "riverlight-v3" },
-  { description: "Sharper linework and posters", label: "Lantern Mix", value: "lantern-mix" },
-  { description: "Background-rich travel frames", label: "Cloud Journal", value: "cloud-journal" }
+export const generateModelItems: GenerateModelItem[] = [
+  {
+    baseModel: "Flux",
+    description: "Highest quality. Best for detailed, photorealistic images.",
+    displayName: "Flux Dev",
+    expectedTimeSec: 30,
+    expertise: ["photo", "hyper-real", "classical-art"],
+    name: "flux-dev",
+    supportsVideo: true
+  },
+  {
+    baseModel: "Flux",
+    description: "Ultra fast. Great for quick iterations and exploration.",
+    displayName: "Flux Schnell",
+    expectedTimeSec: 10,
+    expertise: ["photo", "cartoon"],
+    name: "flux-schnell",
+    supportsVideo: false
+  },
+  {
+    baseModel: "SDXL",
+    description: "Artistic and creative styles with vibrant colors.",
+    displayName: "Playground V2",
+    expectedTimeSec: 20,
+    expertise: ["pixar", "3d-game", "cartoon"],
+    name: "playground-v2",
+    supportsVideo: false
+  },
+  {
+    baseModel: "SDXL",
+    description: "Specialized for anime and illustration styles.",
+    displayName: "Pony V6",
+    expectedTimeSec: 25,
+    expertise: ["anime", "videogame", "physical-art"],
+    name: "pony-v6",
+    supportsVideo: false
+  }
 ];
 
-export const aspectRatioOptions = [
-  { label: "Square", value: "1:1" },
-  { label: "Portrait", value: "3:4" },
-  { label: "Landscape", value: "16:9" }
+export const generateModelsByBase: GenerateModelsByBase = generateModelItems.reduce<GenerateModelsByBase>(
+  (accumulator, item) => {
+    (accumulator[item.baseModel] ??= []).push(item);
+    return accumulator;
+  },
+  {}
+);
+
+export const aspectRatioOptions: GenerateAspectRatioOption[] = [
+  { description: "Ultra wide", label: "21:9", value: "21/9" },
+  { description: "Landscape", label: "16:9", value: "16/9" },
+  { description: "Wide", label: "4:3", value: "4/3" },
+  { description: "Square", label: "1:1", value: "1/1" },
+  { description: "Tall", label: "3:4", value: "3/4" },
+  { description: "Portrait", label: "9:16", value: "9/16" },
+  { description: "Ultra Tall", label: "9:21", value: "9/21" }
 ];
 
 export const sampleAttachments = [
