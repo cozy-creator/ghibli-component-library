@@ -381,14 +381,17 @@ function AuthProviderButton({ provider }: { provider: AuthProviderAction }) {
   return (
     <HandDrawnFrame
       className={cn(
-        "w-full bg-[color:var(--paper-soft)] transition-colors",
-        disabled ? "opacity-60" : "hover:bg-white/50"
+        "group/auth-provider-frame w-full transition-colors",
+        disabled && "opacity-60"
       )}
-      deformationIntensity={0.3}
-      shape="banner"
+      surfaceClassName={cn(
+        "bg-[color:var(--paper-soft)]",
+        !disabled && "group-hover/auth-provider-frame:bg-white/50"
+      )}
       strokeColor="var(--border)"
       strokeWidth={1.05}
       svgClassName="opacity-80"
+      crookednessIntensity={0.3}
     >
       <button
         className={cn(

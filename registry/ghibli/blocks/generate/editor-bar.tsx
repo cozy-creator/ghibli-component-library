@@ -13,9 +13,12 @@ import { HandDrawnFrame } from "@/components/ui/hand-drawn-frame";
 import { cn, type SelectOption } from "@/lib/utils";
 import {
   type GenerateAttachment,
+  type GenerateAspectRatioOption,
   GenerateAspectRatioSelect,
   GenerateButton,
   GenerateModeToggle,
+  type GenerateModelItem,
+  type GenerateModelsByBase,
   GenerateModelSelect
 } from "@/components/blocks/generate/controls";
 
@@ -79,7 +82,7 @@ const PROMPT_TEXTAREA_MIN_HEIGHT_WITH_ATTACHMENTS = 52;
 
 export interface GenerateEditorBarProps {
   aspectRatio: string;
-  aspectRatioOptions: SelectOption[];
+  aspectRatioOptions: GenerateAspectRatioOption[];
   attachments: GenerateAttachment[];
   className?: string;
   defaultExpanded?: boolean;
@@ -90,19 +93,16 @@ export interface GenerateEditorBarProps {
   mode: string;
   modeOptions: SelectOption[];
   model: string;
-  modelOptions: SelectOption[];
-  negativePrompt: string;
-  numImages: number;
+  modelsByBase: GenerateModelsByBase;
   onAspectRatioChange?: ((value: string) => void) | undefined;
   onAttachmentsSelected?: ((files: FileList) => void) | undefined;
   onGenerate?: (() => void) | undefined;
   onModeChange?: ((value: string) => void) | undefined;
-  onModelChange?: ((value: string) => void) | undefined;
-  onNegativePromptChange?: ((value: string) => void) | undefined;
-  onNumImagesChange?: ((value: number) => void) | undefined;
+  onModelChange?: ((value: GenerateModelItem["name"]) => void) | undefined;
   onPromptChange?: ((value: string) => void) | undefined;
   onRemoveAttachment?: ((attachmentId: string) => void) | undefined;
   prompt: string;
+  selectedModel?: GenerateModelItem | undefined;
 }
 
 export interface GeneratePromptComposerProps {
@@ -351,21 +351,22 @@ export function GeneratePromptComposer({
     <div className={cn("grid gap-2", className)}>
       <HandDrawnFrame
         className={cn(
-          "overflow-hidden bg-[color:color-mix(in_oklab,var(--paper-soft)_90%,white)] transition-colors",
-          isDraggingOver
-            ? "bg-[color:color-mix(in_oklab,var(--paper-soft)_72%,var(--primary)_28%)]"
-            : ""
+          "overflow-hidden transition-colors"
         )}
-        deformationIntensity={0.3}
         onDragEnter={handleDragEnter}
         onDragLeave={handleDragLeave}
         onDragOver={handleDragOver}
         onDrop={handleDrop}
         pathClassName={cn(isDraggingOver && "[stroke-dasharray:6_5]")}
-        shape="card"
+        surfaceClassName={cn(
+          "bg-[color:color-mix(in_oklab,var(--paper-soft)_90%,white)]",
+          isDraggingOver &&
+            "bg-[color:color-mix(in_oklab,var(--paper-soft)_72%,var(--primary)_28%)]"
+        )}
         strokeColor={isDraggingOver ? "var(--primary-edge)" : "var(--border)"}
         strokeWidth={1.25}
         svgClassName="opacity-85"
+        crookednessIntensity={0.3}
       >
         <div
           className="flex flex-col overflow-hidden"
@@ -413,11 +414,12 @@ export function GeneratePromptComposer({
             <div>
               <DropdownMenu onOpenChange={setIsAttachmentMenuOpen} open={isAttachmentMenuOpen}>
                 <HandDrawnFrame
-                  className="inline-flex shrink-0 bg-white/45 p-0.5"
-                  deformationIntensity={0.7}
-                  shape="organic"
+                  className="inline-flex shrink-0"
+                  contentClassName="p-0.5"
+                  surfaceClassName="bg-white/45"
                   strokeColor="var(--border-strong)"
                   strokeWidth={1.85}
+                  crookednessIntensity={0.7}
                 >
                   <DropdownMenuTrigger asChild>
                     <Button
@@ -438,12 +440,12 @@ export function GeneratePromptComposer({
                   side="top"
                 >
                   <HandDrawnFrame
-                    className="w-full bg-popover px-1.5 py-1.5"
-                    contentClassName="grid gap-0.5"
-                    deformationIntensity={0.9}
-                    shape="surface"
+                    className="w-full"
+                    contentClassName="grid gap-0.5 px-1.5 py-1.5"
+                    surfaceClassName="bg-popover"
                     strokeColor="var(--border)"
                     strokeWidth={1.6}
+                    crookednessIntensity={0.9}
                   >
                     <DropdownMenuItem
                       className="gap-3 px-3 py-2 focus:bg-[color:var(--ring)] focus:text-[color:var(--ink-strong)] data-[highlighted]:bg-[color:var(--ring)] data-[highlighted]:text-[color:var(--ink-strong)]"
@@ -514,19 +516,16 @@ export function GenerateEditorBar({
   mode,
   modeOptions,
   model,
-  modelOptions,
-  negativePrompt,
-  numImages,
+  modelsByBase,
   onAspectRatioChange,
   onAttachmentsSelected,
   onGenerate,
   onModeChange,
   onModelChange,
-  onNegativePromptChange,
-  onNumImagesChange,
   onPromptChange,
   onRemoveAttachment,
-  prompt
+  prompt,
+  selectedModel
 }: GenerateEditorBarProps) {
   const [isExpanded, setIsExpanded] = React.useState(defaultExpanded);
   const dragStartY = React.useRef<number | null>(null);
@@ -618,12 +617,12 @@ export function GenerateEditorBar({
         <div className="pb-4">
           <div className="flex min-w-0 items-center gap-2">
             <HandDrawnFrame
-              className="min-w-0 flex-1 bg-[color:color-mix(in_oklab,var(--paper-soft)_90%,white)]"
-              deformationIntensity={0.3}
-              shape="banner"
+              className="min-w-0 flex-1"
+              surfaceClassName="bg-[color:color-mix(in_oklab,var(--paper-soft)_90%,white)]"
               strokeColor="var(--border)"
               strokeWidth={1.25}
               svgClassName="opacity-85"
+              crookednessIntensity={0.3}
             >
               <button
                 className="flex min-h-11 w-full min-w-0 items-center gap-2 bg-transparent px-4 text-left text-sm text-muted-foreground transition-colors hover:bg-white/40"
@@ -649,11 +648,11 @@ export function GenerateEditorBar({
       ) : (
         <div className="max-h-[70vh] overflow-y-auto overscroll-contain pb-2">
           <HandDrawnFrame
-            className="bg-[color:var(--card)] px-4 py-4 md:px-5 md:py-5"
-            deformationIntensity={0.9}
-            shape="banner"
+            contentClassName="px-4 py-4 md:px-5 md:py-5"
+            surfaceClassName="bg-[color:var(--card)]"
             strokeColor="var(--border)"
             strokeWidth={2.1}
+            crookednessIntensity={0.9}
           >
             <div className="grid gap-4">
               <GeneratePromptComposer
@@ -670,7 +669,12 @@ export function GenerateEditorBar({
                     <GenerateModeToggle onValueChange={onModeChange} options={modeOptions} value={mode} />
                   </div>
                   <div className="w-full sm:w-auto">
-                    <GenerateModelSelect onValueChange={onModelChange} options={modelOptions} value={model} />
+                    <GenerateModelSelect
+                      model={model}
+                      modelsByBase={modelsByBase}
+                      onChange={onModelChange}
+                      selectedModel={selectedModel}
+                    />
                   </div>
                   <div className="w-full sm:w-auto">
                     <GenerateAspectRatioSelect

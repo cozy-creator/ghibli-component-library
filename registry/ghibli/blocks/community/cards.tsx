@@ -36,13 +36,14 @@ export function CommunityTabsList({
   return (
     <HandDrawnFrame
       className={cn(
-        "ghibli-community-tabs-frame mx-auto w-fit max-w-full bg-[color:color-mix(in_oklab,var(--card)_84%,white)] px-1.5 py-1.5 max-[424px]:w-full",
+        "ghibli-community-tabs-frame mx-auto w-fit max-w-full max-[424px]:w-full",
         className
       )}
-      deformationIntensity={0.45}
-      shape="surface"
+      contentClassName="px-1.5 py-1.5"
+      surfaceClassName="bg-[color:color-mix(in_oklab,var(--card)_84%,white)]"
       strokeColor="var(--border)"
       strokeWidth={1.5}
+      crookednessIntensity={0.45}
     >
       <TabsList className="ghibli-community-tabs-list gap-1 border-0 bg-transparent p-0 shadow-none max-[424px]:grid max-[424px]:w-full max-[424px]:grid-cols-3 max-[424px]:gap-1">
         {tabs.map((tab) => {
@@ -57,13 +58,13 @@ export function CommunityTabsList({
             >
               {isActive ? (
                 <HandDrawnFrame
-                  className="ghibli-community-tabs-pill inline-flex max-w-full bg-[color:color-mix(in_oklab,var(--ring)_22%,white)] px-4 py-2 text-[color:var(--primary)] max-[424px]:px-2"
-                  contentClassName="ghibli-community-tabs-pill-content flex min-w-0 items-center justify-center text-center leading-none"
-                  deformationIntensity={0.9}
-                  shape="pill"
+                  className="ghibli-community-tabs-pill inline-flex max-w-full text-[color:var(--primary)]"
+                  contentClassName="ghibli-community-tabs-pill-content flex min-w-0 items-center justify-center px-4 py-2 text-center leading-none max-[424px]:px-2"
+                  surfaceClassName="bg-[color:color-mix(in_oklab,var(--ring)_22%,white)]"
                   strokeColor="var(--border)"
                   strokeWidth={1.35}
                   svgClassName="size-full"
+                  crookednessIntensity={0.9}
                 >
                   <span className="ghibli-community-tabs-text whitespace-nowrap">{tab.label}</span>
                 </HandDrawnFrame>
@@ -197,14 +198,12 @@ export function CommunityImageCard({
         type="button"
       >
         <HandDrawnFrame
-          className="overflow-hidden bg-[linear-gradient(180deg,rgba(249,243,226,0.98),rgba(239,227,193,0.98))] transition-transform duration-300 group-hover:-translate-y-1 max-[402px]:h-full"
-          clipContent
+          className="transition-transform duration-300 group-hover:-translate-y-1 max-[402px]:h-full"
           contentClassName="max-[402px]:h-full"
-          deformationIntensity={0.6}
-          seed={`${modelLabel}-image-card`}
-          shape="card"
+          surfaceClassName="bg-[linear-gradient(180deg,rgba(249,243,226,0.98),rgba(239,227,193,0.98))]"
           strokeColor="var(--border)"
           strokeWidth={1.55}
+          crookednessIntensity={1.5}
         >
           <Card className="gap-0 overflow-hidden border-0 bg-transparent py-0 shadow-none max-[402px]:flex max-[402px]:h-full max-[402px]:flex-col">
             <div className="relative aspect-[4/5] overflow-hidden border-b-2 border-[color:var(--surface-highlight-border)] bg-[color:var(--surface-highlight)] max-[402px]:shrink-0">
@@ -292,13 +291,11 @@ export function CommunityVideoCard({
       }}
     >
       <HandDrawnFrame
-        className="overflow-hidden bg-[linear-gradient(180deg,rgba(249,243,226,0.98),rgba(239,227,193,0.98))] transition-transform duration-300 group-hover:-translate-y-1"
-        clipContent
-        deformationIntensity={0.6}
-        seed={`${title}-video-card`}
-        shape="card"
+        className="transition-transform duration-300 group-hover:-translate-y-1"
+        surfaceClassName="bg-[linear-gradient(180deg,rgba(249,243,226,0.98),rgba(239,227,193,0.98))]"
         strokeColor="var(--border)"
         strokeWidth={1.55}
+        crookednessIntensity={0.8}
       >
         <Card className="gap-0 overflow-hidden border-0 bg-transparent py-0 shadow-none">
           <div className="border-b-2 border-[color:var(--surface-highlight-border)] bg-[color:var(--surface-highlight)]">
@@ -420,11 +417,11 @@ export function CommunityEmbedCard({
 }: CommunityEmbedCardProps) {
   return (
     <HandDrawnFrame
-      className="overflow-hidden bg-[color:var(--card)]"
-      deformationIntensity={0.6}
-      shape="card"
+      className="overflow-hidden"
+      surfaceClassName="bg-[color:var(--card)]"
       strokeColor="var(--border)"
       strokeWidth={1.55}
+      crookednessIntensity={0.6}
     >
       <Card className="border-0 bg-transparent shadow-none">
         <CardHeader className="grid grid-cols-[auto_1fr_auto] items-start gap-3">

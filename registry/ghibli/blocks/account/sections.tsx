@@ -90,11 +90,11 @@ export function AccountUserDisplayBox({
   return (
     <section className={cn("w-full", className)}>
       <HandDrawnFrame
-        className="overflow-hidden bg-[linear-gradient(180deg,rgba(255,255,255,0.5),rgba(250,244,232,0.96))]"
-        deformationIntensity={0.35}
-        shape="surface"
+        className="overflow-hidden"
+        surfaceClassName="bg-[linear-gradient(180deg,rgba(255,255,255,0.5),rgba(250,244,232,0.96))]"
         strokeColor="var(--border)"
         strokeWidth={1.65}
+        crookednessIntensity={0.35}
       >
         <Card className="border-0 bg-transparent shadow-none">
           <CardContent className="space-y-4">

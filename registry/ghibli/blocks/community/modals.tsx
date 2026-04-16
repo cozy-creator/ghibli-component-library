@@ -109,28 +109,26 @@ function ModalCloseButton({
   className,
   label,
   onClick,
-  shape = "banner"
+  offsetOnDesktop = true
 }: {
   className?: string;
   label: string;
   onClick: () => void;
-  shape?: "banner" | "organic";
+  offsetOnDesktop?: boolean;
 }) {
   return (
     <HandDrawnFrame
-      clipContent
       className={className}
       contentClassName={cn(
-        shape === "banner"
+        offsetOnDesktop
           ? "[@media(min-width:1024px)]:mt-2 text-[color:var(--primary-foreground)] backdrop-blur-sm"
           : "text-[color:var(--primary-foreground)] backdrop-blur-sm",
         modalSurfaceClass
       )}
-      deformationIntensity={0.55}
-      shape={shape}
       strokeColor={modalFrameStrokeColor}
       strokeWidth={1.05}
       svgClassName="opacity-95"
+      crookednessIntensity={0.55}
     >
       <Button
         aria-label={label}
@@ -175,27 +173,23 @@ function ExpandedImagePane({
 
   return (
     <HandDrawnFrame
-      clipContent
       className="ghibli-community-image-viewer"
       contentClassName="h-full"
-      deformationIntensity={0.32}
-      shape="surface"
       strokeColor={modalFrameSoftStrokeColor}
       strokeWidth={1.2}
       svgClassName="opacity-95"
+      crookednessIntensity={0.32}
     >
       <section className="ghibli-community-viewer-surface size-full" style={stageTextureStyle}>
         <div className="ghibli-community-image-viewer-scroll scrollbar-hidden">
           <div className="ghibli-community-image-viewer-grid">
             <HandDrawnFrame
-              clipContent
               className="ghibli-community-image-viewer-stage"
               contentClassName="h-full"
-              deformationIntensity={0.9}
-              shape="surface"
               strokeColor="transparent"
               strokeWidth={1.15}
               svgClassName="opacity-95"
+              crookednessIntensity={0.9}
             >
               <div className="relative h-full">
                 <ModalCloseButton
@@ -225,17 +219,15 @@ function ExpandedImagePane({
                     )}
                   >
                     <HandDrawnFrame
-                      clipContent
                       contentClassName={cn(
                         "p-4 backdrop-blur-md",
                         modalCalloutFillClass,
                         modalCalloutTextClass
                       )}
-                      deformationIntensity={0.45}
-                      shape="panel"
                       strokeColor={modalFrameBrightStrokeColor}
                       strokeWidth={1}
                       svgClassName="opacity-90"
+                      crookednessIntensity={0.45}
                     >
                       <Loader2 className="size-7 animate-spin" />
                     </HandDrawnFrame>
@@ -250,18 +242,16 @@ function ExpandedImagePane({
                     )}
                   >
                     <HandDrawnFrame
-                      clipContent
                       className="max-w-md"
                       contentClassName={cn(
                         "flex flex-col items-center gap-3 px-5 py-6 text-center backdrop-blur-xl",
                         modalErrorCardFillClass,
                         modalErrorTextClass
                       )}
-                      deformationIntensity={0.5}
-                      shape="panel"
                       strokeColor={modalFrameRaisedStrokeColor}
                       strokeWidth={1.1}
                       svgClassName="opacity-90"
+                      crookednessIntensity={0.5}
                     >
                       <ImageIcon className="size-8" />
                       <p className="text-lg font-medium">Image unavailable</p>
@@ -336,34 +326,30 @@ function ExpandedVideoPane({
 
   return (
     <HandDrawnFrame
-      clipContent
       className="ghibli-community-video-viewer"
       contentClassName="h-full"
-      deformationIntensity={0.32}
-      shape="surface"
       strokeColor={modalFrameSoftStrokeColor}
       strokeWidth={1.2}
       svgClassName="opacity-95"
+      crookednessIntensity={0.32}
     >
       <section className="ghibli-community-viewer-surface size-full" style={stageTextureStyle}>
         <ModalCloseButton
           className="ghibli-community-video-viewer-close"
           label="Close expanded video viewer"
           onClick={onClose}
-          shape="organic"
+          offsetOnDesktop={false}
         />
 
         <div className="ghibli-community-video-viewer-scroll scrollbar-hidden">
           <div className="ghibli-community-video-viewer-inner">
             <HandDrawnFrame
-              clipContent
               className="ghibli-community-video-viewer-stage"
               contentClassName="bg-black"
-              deformationIntensity={0.42}
-              shape="surface"
               strokeColor={modalFrameStrokeColor}
               strokeWidth={1.15}
               svgClassName="opacity-95"
+              crookednessIntensity={0.42}
             >
               {video.videoUrl ? (
                 <video
@@ -408,17 +394,15 @@ function ExpandedVideoPane({
             )}
           >
             <HandDrawnFrame
-              clipContent
               contentClassName={cn(
                 "p-4 backdrop-blur-md",
                 modalCalloutFillClass,
                 modalCalloutTextClass
               )}
-              deformationIntensity={0.45}
-              shape="panel"
               strokeColor={modalFrameBrightStrokeColor}
               strokeWidth={1}
               svgClassName="opacity-90"
+              crookednessIntensity={0.45}
             >
               <Loader2 className="size-7 animate-spin" />
             </HandDrawnFrame>
@@ -433,18 +417,16 @@ function ExpandedVideoPane({
             )}
           >
             <HandDrawnFrame
-              clipContent
               className="max-w-md"
               contentClassName={cn(
                 "flex flex-col items-center gap-3 px-5 py-6 text-center backdrop-blur-xl",
                 modalErrorCardFillClass,
                 modalErrorTextClass
               )}
-              deformationIntensity={0.5}
-              shape="panel"
               strokeColor={modalFrameRaisedStrokeColor}
               strokeWidth={1.1}
               svgClassName="opacity-90"
+              crookednessIntensity={0.5}
             >
               <Play className="size-8 fill-current" />
               <p className="text-lg font-medium">Video unavailable</p>

@@ -53,12 +53,13 @@ export function AccountChangeEmailDialog({
         }
       >
         <HandDrawnFrame
-          className="overflow-hidden bg-[color:var(--card)] px-5 py-5"
-          deformationIntensity={0.6}
-          shape="card"
+          className="overflow-hidden"
+          contentClassName="px-5 py-5"
+          surfaceClassName="bg-[color:var(--card)]"
           strokeColor="var(--border)"
           strokeWidth={1.45}
           svgClassName="opacity-70"
+          crookednessIntensity={0.6}
         >
           <DialogHeader className="pr-10">
             <DialogTitle>Change email</DialogTitle>
@@ -140,12 +141,13 @@ export function AccountChangePasswordDialog({
         }
       >
         <HandDrawnFrame
-          className="overflow-hidden bg-[color:var(--card)] px-5 py-5"
-          deformationIntensity={0.6}
-          shape="card"
+          className="overflow-hidden"
+          contentClassName="px-5 py-5"
+          surfaceClassName="bg-[color:var(--card)]"
           strokeColor="var(--border)"
           strokeWidth={1.45}
           svgClassName="opacity-70"
+          crookednessIntensity={0.6}
         >
           <DialogHeader className="pr-10">
             <DialogTitle>Change password</DialogTitle>
