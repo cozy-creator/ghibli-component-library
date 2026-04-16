@@ -25,6 +25,8 @@ describe("docs information architecture", () => {
     expect(screen.getByRole("heading", { name: "Video Card" })).toBeInTheDocument();
     expect(screen.getByRole("heading", { name: "Generate Editor Bar" })).toBeInTheDocument();
     expect(screen.getByRole("heading", { name: "Storybook" })).toBeInTheDocument();
+    expect(screen.queryByText("Quick picks")).not.toBeInTheDocument();
+    expect(screen.queryByText("Negative prompt")).not.toBeInTheDocument();
 
     const orderedSections = orderedSectionIds.map((id) => {
       const section = container.querySelector(`#${id}`);

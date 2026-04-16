@@ -92,6 +92,11 @@ describe("showcase interactions", () => {
       screen.getByDisplayValue(/A quiet ferry deck at dusk, paper lantern reflections across the water/i)
     ).toBeInTheDocument();
     expect(screen.getByRole("heading", { name: "Generate Editor Bar" })).toBeInTheDocument();
+    expect(screen.queryByText("Quick picks")).not.toBeInTheDocument();
+
+    await user.click(screen.getAllByRole("button", { name: /9:16/i })[0]!);
+
+    expect(screen.getByRole("button", { name: /9:16 portrait/i })).toBeInTheDocument();
 
     await user.click(screen.getByRole("button", { name: "Open email dialog" }));
 
@@ -120,23 +125,47 @@ describe("showcase interactions", () => {
     expect(within(frameSection as HTMLElement).queryByText("Variant")).not.toBeInTheDocument();
     expect(within(frameSection as HTMLElement).queryByText("Variation")).not.toBeInTheDocument();
     expect(
-      within(frameSection as HTMLElement).getByText("Deformation Intensity")
+      within(frameSection as HTMLElement).getByText("Crookedness Intensity")
     ).toBeInTheDocument();
     expect(
-      within(frameSection as HTMLElement).getByText("Use Thickness Variation")
+      within(frameSection as HTMLElement).getByText("Thickness Intensity")
+    ).toBeInTheDocument();
+    expect(
+      within(frameSection as HTMLElement).queryByText("Organic callout")
+    ).not.toBeInTheDocument();
+    expect(
+      within(frameSection as HTMLElement).queryByRole("button", { name: "Shape" })
+    ).not.toBeInTheDocument();
+    expect(
+      within(frameSection as HTMLElement).getByRole("radiogroup", {
+        name: "Crookedness Intensity"
+      })
+    ).toBeInTheDocument();
+    expect(
+      within(frameSection as HTMLElement).getByRole("radiogroup", {
+        name: "Thickness Intensity"
+      })
+    ).toBeInTheDocument();
+    expect(
+      within(frameSection as HTMLElement).getByRole("radiogroup", {
+        name: "Stroke Width"
+      })
     ).toBeInTheDocument();
 
     await user.click(
-      within(frameSection as HTMLElement).getByRole("button", { name: "Shape" })
+      within(frameSection as HTMLElement).getByRole("radio", {
+        name: "Thickness Intensity 8"
+      })
     );
 
-    await user.click(screen.getByRole("button", { name: "Divider" }));
-
     expect(
-      within(frameSection as HTMLElement).getByText("Section one")
+      within(frameSection as HTMLElement).getByText("Frame preview")
     ).toBeInTheDocument();
     expect(
-      within(frameSection as HTMLElement).getAllByText(/deformationIntensity/).length
+      within(frameSection as HTMLElement).getAllByText(/thicknessIntensity=\{8\}/).length
     ).toBeGreaterThan(0);
+    expect(
+      within(frameSection as HTMLElement).queryByText(/shape="/)
+    ).not.toBeInTheDocument();
   }, 10000);
 });

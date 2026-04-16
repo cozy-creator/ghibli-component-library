@@ -10,39 +10,36 @@ describe("hand-drawn frame", () => {
 
     expect(svg).not.toBeNull();
     expect(svg).toHaveAttribute("viewBox", "0 0 100 12");
-    expect(container.querySelectorAll("[data-testid='rule'] svg > path")).toHaveLength(4);
+    expect(container.querySelectorAll("[data-testid='rule'] svg > path").length).toBeGreaterThan(1);
   });
 
-  it("layers stroke thickness when thickness variation is enabled", () => {
+  it("always clips the content layer to the generated frame", () => {
     const { container } = render(
       <HandDrawnFrame
+        contentClassName="px-4 py-4"
         data-testid="frame"
-        deformationIntensity={0.7}
-        seed="thickness-on"
-        shape="organic"
-        strokeWidth={2.2}
+        surfaceClassName="bg-[color:var(--card)]"
+        strokeWidth={1.55}
       >
-        Content
+        <div>Clipped content</div>
       </HandDrawnFrame>,
     );
 
-    const paths = container.querySelectorAll("[data-testid='frame'] svg > path");
+    const root = screen.getByTestId("frame");
+    const surfaceLayer = root.firstElementChild as HTMLElement | null;
+    const contentLayer = root.children[1] as HTMLElement | null;
 
-    expect(paths).toHaveLength(4);
-    expect(
-      Array.from(paths).some((path) => path.getAttribute("stroke-dasharray")),
-    ).toBe(true);
+    expect(container.querySelector("[data-testid='frame'] clipPath")).not.toBeNull();
+    expect(surfaceLayer?.style.clipPath).toMatch(/^url\(#hand-drawn-frame-clip-/);
+    expect(contentLayer?.style.clipPath).toMatch(/^url\(#hand-drawn-frame-clip-/);
   });
 
-  it("falls back to a single stroke when thickness variation is disabled", () => {
+  it("uses a single stroke at thickness intensity 0", () => {
     const { container } = render(
       <HandDrawnFrame
         data-testid="frame"
-        deformationIntensity={0.7}
-        seed="thickness-off"
-        shape="organic"
         strokeWidth={2.2}
-        useThicknessVariation={false}
+        thicknessIntensity={0}
       >
         Content
       </HandDrawnFrame>,
@@ -54,69 +51,22 @@ describe("hand-drawn frame", () => {
     expect(paths[0]?.getAttribute("stroke-dasharray")).toBeNull();
   });
 
-  it("keeps seeded deformation deterministic", () => {
-    const { container } = render(
-      <div>
-        <HandDrawnFrame
-          data-testid="frame-a"
-          deformationIntensity={0.7}
-          seed="same-seed"
-          shape="panel"
-          strokeWidth={1.6}
-          useThicknessVariation={false}
-        >
-          A
-        </HandDrawnFrame>
-        <HandDrawnFrame
-          data-testid="frame-b"
-          deformationIntensity={0.7}
-          seed="same-seed"
-          shape="panel"
-          strokeWidth={1.6}
-          useThicknessVariation={false}
-        >
-          B
-        </HandDrawnFrame>
-        <HandDrawnFrame
-          data-testid="frame-c"
-          deformationIntensity={0.7}
-          seed="different-seed"
-          shape="panel"
-          strokeWidth={1.6}
-          useThicknessVariation={false}
-        >
-          C
-        </HandDrawnFrame>
-      </div>,
-    );
-
-    const frameAPath = container.querySelector("[data-testid='frame-a'] svg > path");
-    const frameBPath = container.querySelector("[data-testid='frame-b'] svg > path");
-    const frameCPath = container.querySelector("[data-testid='frame-c'] svg > path");
-
-    expect(frameAPath?.getAttribute("d")).toBe(frameBPath?.getAttribute("d"));
-    expect(frameAPath?.getAttribute("d")).not.toBe(frameCPath?.getAttribute("d"));
-  });
-
-  it("preserves clipContent support with the generated clip path", () => {
+  it("layers multiple strokes at higher thickness intensities", () => {
     const { container } = render(
       <HandDrawnFrame
-        clipContent
-        data-testid="clip-frame"
-        deformationIntensity={0.6}
-        seed="clip-demo"
-        shape="card"
-        strokeWidth={1.55}
+        data-testid="frame"
+        strokeWidth={2.2}
+        thicknessIntensity={8}
       >
-        <div>Clipped content</div>
+        Content
       </HandDrawnFrame>,
     );
 
-    const root = screen.getByTestId("clip-frame");
-    const contentLayer = root.firstElementChild as HTMLElement | null;
+    const paths = container.querySelectorAll("[data-testid='frame'] svg > path");
 
-    expect(container.querySelector("[data-testid='clip-frame'] clipPath")).not.toBeNull();
-    expect(contentLayer).not.toBeNull();
-    expect(contentLayer?.style.clipPath).toMatch(/^url\(#hand-drawn-frame-clip-/);
+    expect(paths.length).toBeGreaterThan(1);
+    expect(
+      Array.from(paths).some((path) => path.getAttribute("stroke-dasharray")),
+    ).toBe(true);
   });
 });

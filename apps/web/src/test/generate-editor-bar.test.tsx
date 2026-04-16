@@ -1,47 +1,126 @@
-import { fireEvent, render, screen } from "@testing-library/react";
+import { render, screen } from "@testing-library/react";
+import userEvent from "@testing-library/user-event";
 
-import { GenerateEditorBar, GeneratePromptComposer } from "@ghibli/ui";
+import {
+  GenerateAspectRatioSelect,
+  GenerateEditorBar,
+  GenerateModelSelect,
+  GeneratePromptComposer
+} from "@ghibli/ui";
 
 const modeOptions = [
   { label: "Image", value: "image" },
-  { label: "Storyboard", value: "storyboard" }
+  { label: "Video", value: "video" }
 ];
 
-const modelOptions = [
-  { label: "Riverlight", value: "riverlight" },
-  { label: "Lantern Mix", value: "lantern-mix" }
+const generateModelItems = [
+  {
+    baseModel: "Flux",
+    description: "Highest quality",
+    displayName: "Flux Dev",
+    expectedTimeSec: 30,
+    expertise: ["photo", "hyper-real", "classical-art"],
+    name: "flux-dev",
+    supportsVideo: true
+  },
+  {
+    baseModel: "SDXL",
+    description: "Anime specialist",
+    displayName: "Pony V6",
+    expectedTimeSec: 25,
+    expertise: ["anime", "videogame", "physical-art"],
+    name: "pony-v6",
+    supportsVideo: false
+  }
 ];
+
+const modelsByBase = generateModelItems.reduce<Record<string, typeof generateModelItems>>(
+  (accumulator, item) => {
+    (accumulator[item.baseModel] ??= []).push(item);
+    return accumulator;
+  },
+  {}
+);
 
 const aspectRatioOptions = [
-  { label: "Portrait", value: "3:4" },
-  { label: "Landscape", value: "16:9" }
+  { description: "Ultra wide", label: "21:9", value: "21/9" },
+  { description: "Landscape", label: "16:9", value: "16/9" },
+  { description: "Wide", label: "4:3", value: "4/3" },
+  { description: "Square", label: "1:1", value: "1/1" },
+  { description: "Tall", label: "3:4", value: "3/4" },
+  { description: "Portrait", label: "9:16", value: "9/16" },
+  { description: "Ultra Tall", label: "9:21", value: "9/21" }
 ];
 
-describe("generate editor bar", () => {
-  it("renders the prompt and triggers generate", () => {
+describe("generate editor surfaces", () => {
+  it("renders the prompt and triggers generate", async () => {
+    const user = userEvent.setup();
     const handleGenerate = vi.fn();
 
     render(
       <GenerateEditorBar
-        aspectRatio="3:4"
+        aspectRatio="9/16"
         aspectRatioOptions={aspectRatioOptions}
         attachments={[]}
         mode="image"
         modeOptions={modeOptions}
-        model="riverlight"
-        modelOptions={modelOptions}
-        negativePrompt=""
-        numImages={2}
+        model="flux-dev"
+        modelsByBase={modelsByBase}
         onGenerate={handleGenerate}
         prompt="Warm tea shop window at dusk"
+        selectedModel={generateModelItems[0]}
       />
     );
 
-    fireEvent.click(screen.getByRole("button", { name: /generate/i }));
+    await user.click(screen.getByRole("button", { name: /generate/i }));
     expect(handleGenerate).toHaveBeenCalledTimes(1);
   });
 
-  it("renders the prompt composer attachment surface", () => {
+  it("renders grouped model sections and expertise chips", async () => {
+    const user = userEvent.setup();
+
+    render(
+      <GenerateModelSelect
+        model="flux-dev"
+        modelsByBase={modelsByBase}
+        onChange={() => undefined}
+        selectedModel={generateModelItems[0]}
+      />
+    );
+
+    await user.click(screen.getByRole("button", { name: /flux dev/i }));
+
+    expect(screen.getByText("Flux")).toBeInTheDocument();
+    expect(screen.getByText("SDXL")).toBeInTheDocument();
+    expect(screen.getAllByText("photo")[0]).toBeInTheDocument();
+    expect(screen.getByText("Pony V6")).toBeInTheDocument();
+  });
+
+  it("opens the aspect ruler and selects portrait", async () => {
+    const user = userEvent.setup();
+    const handleChange = vi.fn();
+
+    render(
+      <GenerateAspectRatioSelect
+        onValueChange={handleChange}
+        options={aspectRatioOptions}
+        value="1/1"
+      />
+    );
+
+    await user.click(screen.getByRole("button", { name: /1:1/i }));
+
+    expect(screen.getByRole("button", { name: /21:9 ultra wide/i })).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: /9:16 portrait/i })).toBeInTheDocument();
+
+    await user.click(screen.getByRole("button", { name: /9:16 portrait/i }));
+
+    expect(handleChange).toHaveBeenCalledWith("9/16");
+    expect(screen.getByText("(Portrait)")).toBeInTheDocument();
+  });
+
+  it("renders the prompt composer attachment surface and attachment menu", async () => {
+    const user = userEvent.setup();
     const { container } = render(
       <GeneratePromptComposer
         attachments={[
@@ -61,5 +140,7 @@ describe("generate editor bar", () => {
     expect(screen.getByDisplayValue("Riverside cabin at dusk")).toBeInTheDocument();
     expect(screen.getByRole("button", { name: "Open attachment menu" })).toBeInTheDocument();
     expect(container.querySelector("img")).not.toBeNull();
+    await user.click(screen.getByRole("button", { name: "Open attachment menu" }));
+    expect(screen.getByText("Add photos or files")).toBeInTheDocument();
   });
 });

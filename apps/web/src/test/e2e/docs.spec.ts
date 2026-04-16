@@ -40,6 +40,17 @@ test("renders the single-page showcase and redirects legacy routes into anchors"
   await expect(page.getByRole("heading", { exact: true, name: "Lantern ferry glide" })).toBeVisible();
   await page.keyboard.press("Escape");
 
+  const generateControls = page.locator("#pattern-generate-controls");
+  await generateControls.getByRole("button", { name: /9:16/i }).click();
+  const aspectPopup = page.locator('[data-slot="dropdown-menu-content"]:visible').last();
+  await expect(aspectPopup).toBeVisible();
+  await expect(aspectPopup.getByText("Aspect ratio")).toBeVisible();
+  const popupBox = await aspectPopup.boundingBox();
+  expect(popupBox).not.toBeNull();
+  expect((popupBox?.x ?? 0) >= 0).toBe(true);
+  expect((popupBox?.x ?? 0) + (popupBox?.width ?? 0) <= 1440).toBe(true);
+  await page.keyboard.press("Escape");
+
   await page.getByRole("button", { name: "Open password dialog" }).click();
   await expect(page.getByRole("heading", { exact: true, name: "Change password" })).toBeVisible();
   await page.keyboard.press("Escape");
