@@ -45,6 +45,7 @@ import {
   GenerateModeToggle,
   GenerateModelSelect,
   HandDrawnFrame,
+  HandDrawnRule,
   Input,
   LoginForm,
   NoticeBanner,
@@ -285,10 +286,19 @@ function Specimen({
 }) {
   return (
     <section
-      className="grid scroll-mt-28 gap-4 border-t border-[color:rgba(77,59,46,0.32)] py-8 md:grid-cols-[15rem_minmax(0,1fr)] md:gap-8"
+      className="grid scroll-mt-28 gap-4 py-8 md:grid-cols-[15rem_minmax(0,1fr)] md:gap-8"
       data-showcase-item={title}
       id={id}
     >
+      <div className="md:col-span-2">
+        <HandDrawnRule
+          className="h-4"
+          crookednessIntensity={0.65}
+          strokeWidth={1.35}
+          svgClassName="opacity-100"
+          thicknessIntensity={7}
+        />
+      </div>
       <div className="grid content-start gap-2">
         <h2 className="font-[var(--font-heading)] text-3xl leading-none text-[color:var(--ink-strong)]">
           {title}
