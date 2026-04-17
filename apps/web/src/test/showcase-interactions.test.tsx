@@ -86,15 +86,48 @@ describe("showcase interactions", () => {
 
     window.history.pushState({}, "", "/");
 
-    render(<App />);
+    const { container } = render(<App />);
+    const editorSection = container.querySelector("#pattern-generate-editor-bar");
+    const generateControlsSection = container.querySelector("#pattern-generate-controls");
 
-    expect(
-      screen.getByDisplayValue(/A quiet ferry deck at dusk, paper lantern reflections across the water/i)
-    ).toBeInTheDocument();
+    expect(editorSection).not.toBeNull();
+    expect(generateControlsSection).not.toBeNull();
+
     expect(screen.getByRole("heading", { name: "Generate Editor Bar" })).toBeInTheDocument();
+    expect(
+      screen.queryByRole("heading", { name: "Dropdown, Model, Aspect Controls" })
+    ).not.toBeInTheDocument();
     expect(screen.queryByText("Quick picks")).not.toBeInTheDocument();
+    expect(
+      within(editorSection as HTMLElement).getByRole("button", {
+        name: /Describe what you want to create/i
+      })
+    ).toBeInTheDocument();
 
-    await user.click(screen.getAllByRole("button", { name: /9:16/i })[0]!);
+    await user.click(
+      within(editorSection as HTMLElement).getByRole("button", {
+        name: /Describe what you want to create/i
+      })
+    );
+
+    expect(screen.getByPlaceholderText("Text, image or video")).toBeInTheDocument();
+
+    await user.upload(
+      within(editorSection as HTMLElement).getByLabelText("Add photos or files"),
+      new File(["preview"], "moodboard.png", { type: "image/png" })
+    );
+
+    await waitFor(() => {
+      expect(
+        within(editorSection as HTMLElement).getByRole("button", {
+          name: "Remove moodboard.png"
+        })
+      ).toBeInTheDocument();
+    });
+
+    await user.click(
+      within(generateControlsSection as HTMLElement).getByRole("button", { name: /9:16/i })
+    );
 
     expect(screen.getByRole("button", { name: /9:16 portrait/i })).toBeInTheDocument();
 

@@ -25,6 +25,9 @@ describe("docs information architecture", () => {
     expect(screen.getByRole("heading", { name: "Video Card" })).toBeInTheDocument();
     expect(screen.getByRole("heading", { name: "Generate Editor Bar" })).toBeInTheDocument();
     expect(screen.getByRole("heading", { name: "Storybook" })).toBeInTheDocument();
+    expect(
+      screen.queryByRole("heading", { name: "Dropdown, Model, Aspect Controls" })
+    ).not.toBeInTheDocument();
     expect(screen.queryByText("Quick picks")).not.toBeInTheDocument();
     expect(screen.queryByText("Negative prompt")).not.toBeInTheDocument();
 
@@ -88,6 +91,22 @@ describe("docs information architecture", () => {
 
     expect(screen.getByRole("heading", { name: "Header / User Popup" })).toBeInTheDocument();
   });
+
+  it.each(["dropdown-menu", "tooltip"])(
+    "redirects the removed %s showcase route to the preserved generate controls anchor",
+    async (name) => {
+      window.history.pushState({}, "", `/components/${name}`);
+
+      const { container } = render(<App />);
+
+      await waitFor(() => {
+        expect(window.location.hash).toBe("#component-generate-selects");
+      });
+
+      expect(container.querySelector("#component-generate-selects")).not.toBeNull();
+      expect(screen.getByRole("heading", { name: "Generate Controls" })).toBeInTheDocument();
+    }
+  );
 
   it("redirects the removed page-shell showcase route to the reference screens specimen", async () => {
     window.history.pushState({}, "", "/patterns/page-shell");
