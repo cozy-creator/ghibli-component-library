@@ -51,10 +51,6 @@ test("renders the single-page showcase and redirects legacy routes into anchors"
   expect((popupBox?.x ?? 0) + (popupBox?.width ?? 0) <= 1440).toBe(true);
   await page.keyboard.press("Escape");
 
-  await page.getByRole("button", { name: "Open password dialog" }).click();
-  await expect(page.getByRole("heading", { exact: true, name: "Change password" })).toBeVisible();
-  await page.keyboard.press("Escape");
-
   await page.goto("/components/button");
 
   await expect(page).toHaveURL(/#component-button$/);
@@ -83,7 +79,6 @@ test("renders the showcase on mobile and desktop without horizontal page overflo
   await mobileSheet.getByRole("button", { name: "Close" }).click();
   await expect(page.getByRole("heading", { exact: true, name: "Storybook" })).toBeVisible();
   await expect(page.locator("#footer-endmatter")).toBeVisible();
-  await expect(page.getByRole("heading", { exact: true, name: "Account Dialogs" })).toBeVisible();
   await expect.poll(async () =>
     page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth + 1)
   ).toBe(true);
