@@ -1,4 +1,4 @@
-import { useState, type ReactNode } from "react";
+import { useEffect, useRef, useState, type ReactNode } from "react";
 import {
   BookOpen,
   Eye,
@@ -41,6 +41,7 @@ import {
   FormField,
   GenerateAspectRatioSelect,
   GenerateButton,
+  type GenerateAttachment,
   GenerateEditorBar,
   GenerateModeToggle,
   GenerateModelSelect,
@@ -82,7 +83,6 @@ import {
   generateModelItems,
   linkedAccounts,
   modeOptions,
-  sampleAttachments,
   subscriptionOffers,
 } from "@/apps/web/src/data/demo-fixtures";
 
@@ -99,6 +99,30 @@ function groupGenerateModelsByBase(items: typeof generateModelItems) {
     (accumulator[item.baseModel] ??= []).push(item);
     return accumulator;
   }, {});
+}
+
+function formatAttachmentSize(sizeInBytes: number) {
+  if (sizeInBytes < 1024) {
+    return `${sizeInBytes} B`;
+  }
+
+  if (sizeInBytes < 1024 * 1024) {
+    return `${(sizeInBytes / 1024).toFixed(1)} KB`;
+  }
+
+  return `${(sizeInBytes / (1024 * 1024)).toFixed(1)} MB`;
+}
+
+function getGenerateAttachmentKind(file: File): "file" | "image" | "video" {
+  if (file.type.startsWith("image/")) {
+    return "image";
+  }
+
+  if (file.type.startsWith("video/")) {
+    return "video";
+  }
+
+  return "file";
 }
 
 type FrameRulerOption = {
@@ -355,9 +379,8 @@ export function HomePage() {
   const [mode, setMode] = useState("image");
   const [model, setModel] = useState("flux-dev");
   const [aspectRatio, setAspectRatio] = useState("9/16");
-  const [prompt, setPrompt] = useState(
-    "A quiet ferry deck at dusk, paper lantern reflections across the water, soft watercolor lighting.",
-  );
+  const [prompt, setPrompt] = useState("");
+  const [editorAttachments, setEditorAttachments] = useState<GenerateAttachment[]>([]);
   const [authOpen, setAuthOpen] = useState(false);
   const [authTab, setAuthTab] = useState<"login" | "register">("login");
   const [emailDialogOpen, setEmailDialogOpen] = useState(false);
@@ -371,6 +394,8 @@ export function HomePage() {
   const [frameCrookednessIntensity, setFrameCrookednessIntensity] = useState(0.5);
   const [frameThicknessIntensity, setFrameThicknessIntensity] = useState(4);
   const [frameStrokeWidth, setFrameStrokeWidth] = useState(1.6);
+  const editorAttachmentsRef = useRef<GenerateAttachment[]>([]);
+  const editorAttachmentIdRef = useRef(0);
   const availableGenerateModelItems =
     mode === "video"
       ? generateModelItems.filter((item) => item.supportsVideo)
@@ -417,6 +442,56 @@ export function HomePage() {
       setModel("flux-dev");
     }
   };
+
+  useEffect(() => {
+    editorAttachmentsRef.current = editorAttachments;
+  }, [editorAttachments]);
+
+  useEffect(() => {
+    return () => {
+      for (const attachment of editorAttachmentsRef.current) {
+        if (attachment.previewUrl) {
+          URL.revokeObjectURL(attachment.previewUrl);
+        }
+      }
+    };
+  }, []);
+
+  const handleEditorAttachmentsSelected = (files: FileList) => {
+    const nextAttachments = Array.from(files).map((file) => {
+      editorAttachmentIdRef.current += 1;
+
+      const kind = getGenerateAttachmentKind(file);
+      const previewUrl = kind === "image" ? URL.createObjectURL(file) : undefined;
+      const attachment: GenerateAttachment = {
+        id: `home-generate-attachment-${editorAttachmentIdRef.current}`,
+        kind,
+        name: file.name,
+        sizeLabel: formatAttachmentSize(file.size),
+      };
+
+      if (previewUrl) {
+        attachment.previewUrl = previewUrl;
+      }
+
+      return attachment;
+    });
+
+    setEditorAttachments((current) => [...current, ...nextAttachments]);
+  };
+
+  const handleEditorAttachmentRemove = (attachmentId: string) => {
+    setEditorAttachments((current) => {
+      const attachmentToRemove = current.find((attachment) => attachment.id === attachmentId);
+
+      if (attachmentToRemove?.previewUrl) {
+        URL.revokeObjectURL(attachmentToRemove.previewUrl);
+      }
+
+      return current.filter((attachment) => attachment.id !== attachmentId);
+    });
+  };
+
   const framePreviewSnippet = `<HandDrawnFrame
   crookednessIntensity={${frameCrookednessIntensity}}
   thicknessIntensity={${frameThicknessIntensity}}
@@ -872,69 +947,27 @@ export function HomePage() {
 
       <ShowcaseGroup id="generate-flows">
         <Specimen
-          id="component-generate-selects"
-          note="Dropdown and ruler-style selectors from the generate page."
-          title="Dropdown, Model, Aspect Controls"
-        >
-          <div className="flex flex-wrap items-center gap-3">
-            <GenerateModelSelect
-              model={selectedGenerateModel?.name ?? model}
-              modelsByBase={availableGenerateModelsByBase}
-              onChange={setModel}
-              selectedModel={selectedGenerateModel}
-            />
-            <GenerateAspectRatioSelect
-              onValueChange={setAspectRatio}
-              options={aspectRatioOptions}
-              value={aspectRatio}
-            />
-          </div>
-        </Specimen>
-
-        <Specimen
           id="pattern-generate-editor-bar"
-          note="The docked bottom composer from the Cozy generate page, shown in a page-like stage instead of as a detached toolbar."
+          note="The Cozy `/generate` drawer stays docked at the bottom of the stage, starting collapsed until you tap the prompt preview or pull the handle."
           title="Generate Editor Bar"
         >
           <div className="ghibli-generate-editor-stage">
-            <div className="ghibli-generate-editor-stage-canvas">
-              <div className="ghibli-generate-editor-stage-grid">
-                {communityImageItems.slice(0, 3).map((item) => (
-                  <HandDrawnFrame
-                    key={item.id}
-                    className="overflow-hidden"
-                    surfaceClassName="bg-[linear-gradient(180deg,rgba(249,243,226,0.92),rgba(239,227,193,0.92))]"
-                    strokeColor="var(--border)"
-                    strokeWidth={1.55}
-                    crookednessIntensity={0.6}
-                  >
-                    <img
-                      alt=""
-                      aria-hidden="true"
-                      className="aspect-[4/5] w-full object-cover"
-                      src={item.imageUrl}
-                    />
-                  </HandDrawnFrame>
-                ))}
-              </div>
-            </div>
             <div className="ghibli-generate-editor-stage-dock">
               <div className="ghibli-generate-editor-stage-inner">
                 <GenerateEditorBar
                   aspectRatio={aspectRatio}
                   aspectRatioOptions={aspectRatioOptions}
-                  attachments={sampleAttachments}
-                  defaultExpanded
-                  estimateLabel="~18s / image"
+                  attachments={editorAttachments}
                   mode={mode}
                   modeOptions={modeOptions}
                   model={selectedGenerateModel?.name ?? model}
                   modelsByBase={availableGenerateModelsByBase}
                   onAspectRatioChange={setAspectRatio}
+                  onAttachmentsSelected={handleEditorAttachmentsSelected}
                   onModeChange={handleGenerateModeChange}
                   onModelChange={setModel}
                   onPromptChange={setPrompt}
-                  onRemoveAttachment={() => undefined}
+                  onRemoveAttachment={handleEditorAttachmentRemove}
                   prompt={prompt}
                   selectedModel={selectedGenerateModel}
                 />
@@ -942,6 +975,13 @@ export function HomePage() {
             </div>
           </div>
         </Specimen>
+
+        {/* Preserve removed showcase hashes near the surviving generate controls specimen. */}
+        <div
+          aria-hidden="true"
+          className="h-0 scroll-mt-28 overflow-hidden"
+          id="component-generate-selects"
+        />
 
         <Specimen
           id="pattern-generate-controls"

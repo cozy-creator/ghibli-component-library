@@ -2,6 +2,8 @@
 @import "tailwindcss";
 @import "tw-animate-css";
 @import "shadcn/tailwind.css";
+@source "../../../../registry/**/*.{ts,tsx}";
+@source "../../../../packages/ui/src/**/*.{ts,tsx}";
 
 :root {
   --background: #f7f1e5;
@@ -696,37 +698,25 @@
 
 .ghibli-generate-editor-stage {
   position: relative;
-  overflow: hidden;
+  display: flex;
+  align-items: flex-end;
   border: 1px solid color-mix(in oklab, var(--border-strong) 36%, transparent);
   background:
     linear-gradient(180deg, rgba(255, 249, 239, 0.62), rgba(229, 219, 194, 0.26)),
     radial-gradient(circle at top, rgba(255, 255, 255, 0.28), transparent 46%),
     linear-gradient(180deg, rgba(192, 206, 178, 0.48), rgba(170, 182, 151, 0.3));
-  min-height: 36rem;
-}
-
-.ghibli-generate-editor-stage-canvas {
-  min-height: 36rem;
-  padding: 1.25rem 1.25rem 18rem;
-}
-
-.ghibli-generate-editor-stage-grid {
-  display: grid;
-  gap: 1rem;
+  min-height: 16rem;
+  padding: 1rem;
 }
 
 .ghibli-generate-editor-stage-dock {
-  position: absolute;
-  right: 0;
-  bottom: 0;
-  left: 0;
-  padding: 0 1rem 1rem;
+  width: 100%;
 }
 
 .ghibli-generate-editor-stage-inner {
   margin-inline: auto;
   width: 100%;
-  max-width: 80rem;
+  max-width: 72rem;
 }
 
 @media (min-width: 640px) {
@@ -756,8 +746,9 @@
     right: -1.25rem;
   }
 
-  .ghibli-generate-editor-stage-canvas {
-    padding: 1.5rem 1.5rem 18rem;
+  .ghibli-generate-editor-stage {
+    min-height: 18rem;
+    padding: 1.25rem;
   }
 }
 
@@ -822,12 +813,9 @@
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 
-  .ghibli-generate-editor-stage-grid {
-    grid-template-columns: repeat(3, minmax(0, 1fr));
-  }
-
-  .ghibli-generate-editor-stage-dock {
-    padding: 0 1.5rem 1.5rem;
+  .ghibli-generate-editor-stage {
+    min-height: 19rem;
+    padding: 1.5rem;
   }
 }
 
@@ -856,6 +844,100 @@
 }
 
 @layer utilities {
+  .grid-cols-7 {
+    grid-template-columns: repeat(7, minmax(0, 1fr));
+  }
+
+  .h-\[4\.75rem\] {
+    height: 4.75rem;
+  }
+
+  .top-\[2\.8rem\] {
+    top: 2.8rem;
+  }
+
+  .top-\[3\.3rem\] {
+    top: 3.3rem;
+  }
+
+  .top-\[3\.5rem\] {
+    top: 3.5rem;
+  }
+
+  .w-\[min\(28\.5rem\,calc\(100vw-1\.5rem\)\)\] {
+    width: min(28.5rem, calc(100vw - 1.5rem));
+  }
+
+  .min-w-\[6\.9rem\] {
+    min-width: 6.9rem;
+  }
+
+  .max-w-\[7\.4rem\] {
+    max-width: 7.4rem;
+  }
+
+  .shadow-\[0_8px_18px_rgba\(0\,0\,0\,0\.18\)\] {
+    --tw-shadow: 0 8px 18px var(--tw-shadow-color, rgba(0, 0, 0, 0.18));
+    box-shadow:
+      var(--tw-inset-shadow),
+      var(--tw-inset-ring-shadow),
+      var(--tw-ring-offset-shadow),
+      var(--tw-ring-shadow),
+      var(--tw-shadow);
+  }
+
+  @media (min-width: 40rem) {
+    .sm\:flex-row {
+      flex-direction: row;
+    }
+
+    .sm\:items-center {
+      align-items: center;
+    }
+
+    .sm\:items-end {
+      align-items: flex-end;
+    }
+
+    .sm\:justify-start {
+      justify-content: flex-start;
+    }
+
+    .sm\:justify-between {
+      justify-content: space-between;
+    }
+
+    .sm\:self-auto {
+      align-self: auto;
+    }
+
+    .sm\:w-auto {
+      width: auto;
+    }
+
+    .sm\:w-56 {
+      width: calc(var(--spacing) * 56);
+    }
+
+    .sm\:grid-cols-\[auto_auto_auto\] {
+      grid-template-columns: auto auto auto;
+    }
+
+    .sm\:grid-cols-\[auto_auto_auto_auto\] {
+      grid-template-columns: auto auto auto auto;
+    }
+  }
+
+  @media (min-width: 64rem) {
+    .lg\:flex-row {
+      flex-direction: row;
+    }
+
+    .lg\:justify-between {
+      justify-content: space-between;
+    }
+  }
+
   .paper-overlay {
     background-image: var(--texture-paper-overlay-image);
     background-repeat: repeat;
