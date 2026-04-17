@@ -14,7 +14,6 @@ describe("docs information architecture", () => {
       "community-flows",
       "generate-flows",
       "docs-screens",
-      "account-flows",
       "footer-endmatter"
     ];
 
@@ -25,6 +24,8 @@ describe("docs information architecture", () => {
     expect(screen.getByRole("heading", { name: "Video Card" })).toBeInTheDocument();
     expect(screen.getByRole("heading", { name: "Generate Editor Bar" })).toBeInTheDocument();
     expect(screen.getByRole("heading", { name: "Storybook" })).toBeInTheDocument();
+    expect(screen.queryByRole("heading", { name: "Account Dialogs" })).not.toBeInTheDocument();
+    expect(screen.queryByRole("heading", { name: "Account Sections" })).not.toBeInTheDocument();
     expect(
       screen.queryByRole("heading", { name: "Dropdown, Model, Aspect Controls" })
     ).not.toBeInTheDocument();

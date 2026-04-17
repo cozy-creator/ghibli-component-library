@@ -14,12 +14,6 @@ import {
 } from "lucide-react";
 
 import {
-  AccountApiCreditsSection,
-  AccountChangeEmailDialog,
-  AccountChangePasswordDialog,
-  AccountLinkedAccountsSection,
-  AccountProfileSection,
-  AccountSubscriptionSection,
   AuthDialog,
   Badge,
   Button,
@@ -76,14 +70,10 @@ import {
   aspectRatioOptions,
   communityImageItems,
   communityVideoItems,
-  creditLedger,
-  creditOffers,
   faqItems,
   footerColumns,
   generateModelItems,
-  linkedAccounts,
   modeOptions,
-  subscriptionOffers,
 } from "@/apps/web/src/data/demo-fixtures";
 
 const installCommand = "pnpm dlx shadcn@latest add @ghibli/components";
@@ -383,14 +373,8 @@ export function HomePage() {
   const [editorAttachments, setEditorAttachments] = useState<GenerateAttachment[]>([]);
   const [authOpen, setAuthOpen] = useState(false);
   const [authTab, setAuthTab] = useState<"login" | "register">("login");
-  const [emailDialogOpen, setEmailDialogOpen] = useState(false);
-  const [passwordDialogOpen, setPasswordDialogOpen] = useState(false);
   const [communityImageIndex, setCommunityImageIndex] = useState<number | null>(null);
   const [communityVideoIndex, setCommunityVideoIndex] = useState<number | null>(null);
-  const [newEmail, setNewEmail] = useState("new-address@ghibli-ui.test");
-  const [currentPassword, setCurrentPassword] = useState("");
-  const [newPassword, setNewPassword] = useState("");
-  const [confirmPassword, setConfirmPassword] = useState("");
   const [frameCrookednessIntensity, setFrameCrookednessIntensity] = useState(0.5);
   const [frameThicknessIntensity, setFrameThicknessIntensity] = useState(4);
   const [frameStrokeWidth, setFrameStrokeWidth] = useState(1.6);
@@ -812,12 +796,6 @@ export function HomePage() {
             >
               Create account
             </Button>
-            <CartoonButton
-              color="var(--success)"
-              onClick={() => setPasswordDialogOpen(true)}
-              size="sm"
-              text="Change password"
-            />
           </div>
           <AuthDialog
             loginContent={
@@ -847,16 +825,6 @@ export function HomePage() {
               />
             }
             tab={authTab}
-          />
-          <AccountChangePasswordDialog
-            confirmPassword={confirmPassword}
-            currentPassword={currentPassword}
-            newPassword={newPassword}
-            onConfirmPasswordChange={setConfirmPassword}
-            onCurrentPasswordChange={setCurrentPassword}
-            onNewPasswordChange={setNewPassword}
-            onOpenChange={setPasswordDialogOpen}
-            open={passwordDialogOpen}
           />
         </Specimen>
       </ShowcaseGroup>
@@ -1098,62 +1066,6 @@ export function HomePage() {
               description="The same empty-state treatment carries the 404 and fallback screens."
               icon={FileText}
               title="Page not found"
-            />
-          </div>
-        </Specimen>
-      </ShowcaseGroup>
-
-      <ShowcaseGroup id="account-flows">
-        <Specimen
-          id="pattern-account-dialogs"
-          note="Account dialogs are controlled and presentational."
-          title="Account Dialogs"
-        >
-          <div className="flex flex-wrap gap-3">
-            <Button onClick={() => setEmailDialogOpen(true)}>
-              Open email dialog
-            </Button>
-            <Button
-              onClick={() => setPasswordDialogOpen(true)}
-              variant="secondary"
-            >
-              Open password dialog
-            </Button>
-          </div>
-          <AccountChangeEmailDialog
-            currentEmail="mei@ghibli-ui.test"
-            newEmail={newEmail}
-            onNewEmailChange={setNewEmail}
-            onOpenChange={setEmailDialogOpen}
-            open={emailDialogOpen}
-          />
-        </Specimen>
-
-        <Specimen
-          id="pattern-account-sections"
-          note="The broader account sections remain available for settings, subscription, and credit pages."
-          title="Account Sections"
-        >
-          <div className="grid gap-4">
-            <AccountProfileSection
-              email="mei@ghibli-ui.test"
-              name="User"
-              planLabel="Painterly plan"
-            />
-            <AccountLinkedAccountsSection accounts={linkedAccounts} />
-            <AccountSubscriptionSection
-              features={[
-                "200 monthly generations",
-                "Priority queue",
-                "Storyboard mode",
-              ]}
-              offers={subscriptionOffers}
-              planName="Painterly plan"
-            />
-            <AccountApiCreditsSection
-              balanceLabel="128 credits"
-              ledger={creditLedger}
-              offers={creditOffers}
             />
           </div>
         </Specimen>

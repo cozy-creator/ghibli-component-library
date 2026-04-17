@@ -81,7 +81,7 @@ describe("showcase interactions", () => {
     ).toBeInTheDocument();
   }, 10000);
 
-  it("renders the generate flow and opens account dialogs with local state", async () => {
+  it("renders the generate flow with the Cozy drawer interactions", async () => {
     const user = userEvent.setup();
 
     window.history.pushState({}, "", "/");
@@ -131,19 +131,6 @@ describe("showcase interactions", () => {
 
     expect(screen.getByRole("button", { name: /9:16 portrait/i })).toBeInTheDocument();
 
-    await user.click(screen.getByRole("button", { name: "Open email dialog" }));
-
-    expect(screen.getByRole("heading", { name: "Change email" })).toBeInTheDocument();
-
-    await user.click(screen.getByRole("button", { name: "Close" }));
-
-    await waitFor(() => {
-      expect(screen.queryByRole("heading", { name: "Change email" })).not.toBeInTheDocument();
-    });
-
-    await user.click(screen.getByRole("button", { name: "Open password dialog" }));
-
-    expect(screen.getByRole("heading", { name: "Change password" })).toBeInTheDocument();
   }, 10000);
 
   it("updates the hand-drawn frame playground with the new Cozy frame controls", async () => {
