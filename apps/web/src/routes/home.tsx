@@ -19,7 +19,7 @@ import {
   AccountApiCreditsSection,
   AccountChangeEmailDialog,
   AccountChangePasswordDialog,
-  AccountLinkedAccountsSection,
+  AccountChangeUsernameDialog,
   AccountProfileSection,
   AccountSubscriptionSection,
   AccountUserDisplayBox,
@@ -86,11 +86,9 @@ import {
   communityImageItems,
   communityVideoItems,
   creditLedger,
-  creditOffers,
   faqItems,
   footerColumns,
   generateModelItems,
-  linkedAccounts,
   modeOptions,
   subscriptionOffers,
 } from "@/apps/web/src/data/demo-fixtures";
@@ -444,6 +442,8 @@ export function HomePage() {
   const [isChangeThemeOpen, setIsChangeThemeOpen] = useState(false);
   const [isAccountEmailOpen, setIsAccountEmailOpen] = useState(false);
   const [isAccountPasswordOpen, setIsAccountPasswordOpen] = useState(false);
+  const [isAccountUsernameOpen, setIsAccountUsernameOpen] = useState(false);
+  const [accountUsername, setAccountUsername] = useState("Mei Studio");
   const [accountNewEmail, setAccountNewEmail] = useState("mei@ghibli-ui.test");
   const [accountCurrentPassword, setAccountCurrentPassword] = useState("");
   const [accountNewPassword, setAccountNewPassword] = useState("");
@@ -616,6 +616,16 @@ export function HomePage() {
                 { href: "#docs-screens", label: "Docs" },
               ]}
               socialItems={[
+                {
+                  href: "#",
+                  icon: <Palette className="size-4" />,
+                  iconOnly: true,
+                  label: "Change theme",
+                  onClick: (event) => {
+                    event.preventDefault();
+                    setIsChangeThemeOpen(true);
+                  },
+                },
                 {
                   external: true,
                   href: repoUrl,
@@ -930,8 +940,8 @@ export function HomePage() {
               generatedCount={127}
               hasCustomAvatar
               hasPassword
-              name="Mei Studio"
-              onEditName={() => undefined}
+              name={accountUsername}
+              onEditName={() => setIsAccountUsernameOpen(true)}
               onPasswordAction={() => setIsAccountPasswordOpen(true)}
               onRemoveAvatar={() => undefined}
               onUploadAvatar={() => undefined}
@@ -958,68 +968,60 @@ export function HomePage() {
               }
               avatarUrl={mockHeaderAvatarUrl}
               email="mei@ghibli-ui.test"
-              name="Mei Studio"
-              planLabel="Yearly Atelier"
+              name={accountUsername}
+              planLabel="Monthly Studio"
             />
           </DemoSurface>
         </Specimen>
 
         <Specimen
           id="pattern-account-subscription"
-          note="Subscription plan card with status badge, feature list, and upgrade offers."
+          note="Summary of current plan plus the available-plans grid with the current plan marked."
           title="Subscription Section"
         >
           <DemoSurface>
             <AccountSubscriptionSection
               actions={
-                <Button variant="outline">Manage billing</Button>
+                <>
+                  <Button variant="outline">Manage subscription</Button>
+                  <Button
+                    className="text-destructive hover:bg-destructive/10 hover:text-destructive"
+                    variant="ghost"
+                  >
+                    Cancel subscription
+                  </Button>
+                </>
               }
-              features={[
-                "Unlimited generations",
-                "Priority render queue",
-                "API access",
-                "25,000 monthly credits"
-              ]}
-              note="Switching plans takes effect on the next billing cycle."
+              activeOfferId="monthly"
+              balanceLabel="$24.00"
               offers={subscriptionOffers}
-              planName="Yearly Atelier"
-              renewalText="Renews on Apr 25, 2026"
-              status="active"
+              planName="Monthly Studio"
+              priceName="$24 / month"
+              renewalText="May 20, 2026"
             />
           </DemoSurface>
         </Specimen>
 
         <Specimen
           id="pattern-account-credits"
-          note="Credit balance, recent ledger entries, and top-up offers side by side."
-          title="API Credits Section"
+          note="Read-only payments ledger — date, activity, and signed amount."
+          title="Payments Section"
         >
           <DemoSurface>
-            <AccountApiCreditsSection
-              balanceLabel="2,450 credits"
-              ledger={creditLedger}
-              offers={creditOffers}
-            />
-          </DemoSurface>
-        </Specimen>
-
-        <Specimen
-          id="pattern-account-linked"
-          note="OAuth and third-party provider connections with connection-state badges."
-          title="Linked Accounts Section"
-        >
-          <DemoSurface>
-            <AccountLinkedAccountsSection accounts={linkedAccounts} />
+            <AccountApiCreditsSection ledger={creditLedger} />
           </DemoSurface>
         </Specimen>
 
         <Specimen
           id="pattern-account-dialogs"
-          note="Change-email and change-password dialogs, controlled from the account screens."
+          note="Change-username, change-email, and change-password dialogs, controlled from the account screens."
           title="Account Dialogs"
         >
           <DemoSurface>
             <div className="flex flex-wrap gap-3">
+              <Button onClick={() => setIsAccountUsernameOpen(true)} variant="secondary">
+                Open change username
+              </Button>
               <Button onClick={() => setIsAccountEmailOpen(true)} variant="secondary">
                 Open change email
               </Button>
@@ -1486,6 +1488,17 @@ export function HomePage() {
       <ChangeThemeModal
         onOpenChange={setIsChangeThemeOpen}
         open={isChangeThemeOpen}
+      />
+
+      <AccountChangeUsernameDialog
+        onOpenChange={setIsAccountUsernameOpen}
+        onSubmit={(event) => {
+          event.preventDefault();
+          setIsAccountUsernameOpen(false);
+        }}
+        onUsernameChange={setAccountUsername}
+        open={isAccountUsernameOpen}
+        username={accountUsername}
       />
 
       <AccountChangeEmailDialog
