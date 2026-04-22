@@ -42,7 +42,7 @@ export function CartoonButton({
     <Button
       className={cn(
         cartoonButtonFrameClass,
-        "bg-[var(--cartoon-button-bg)] text-white hover:bg-[color:color-mix(in_oklab,var(--cartoon-button-bg)_76%,white)] hover:text-[color:var(--foreground)] hover:brightness-100",
+        "bg-[var(--cartoon-button-bg)] text-[color:var(--primary-foreground)] hover:bg-[color:color-mix(in_oklab,var(--cartoon-button-bg)_76%,white)] hover:text-[color:var(--foreground)] hover:brightness-100",
         className
       )}
       disabled={disabled || loading || needsClickHandler}
