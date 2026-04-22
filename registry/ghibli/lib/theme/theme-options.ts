@@ -17,12 +17,14 @@ export const THEME_OPTIONS = [
     id: "hand-drawn-paper",
     name: "Hand-drawn Paper",
     previewAlt: "Soft hand-drawn paper effect.",
+    previewSrc: "/theme-previews/hand-drawn-paper.png",
   },
   {
     available: true,
     id: "ghibli-forest",
     name: "Ghibli Forest",
     previewAlt: "A lush storybook forest with a sunlit path and rounded trees.",
+    previewSrc: "/theme-previews/ghibli-forest.png",
   },
   {
     availabilityLabel: "Coming soon",
@@ -30,6 +32,7 @@ export const THEME_OPTIONS = [
     id: "sunset",
     name: "Sunset",
     previewAlt: "A warm sunset over layered hills and glowing clouds.",
+    previewSrc: "/theme-previews/sunset.png",
   },
   {
     availabilityLabel: "Coming soon",
@@ -37,6 +40,7 @@ export const THEME_OPTIONS = [
     id: "ocean-breeze",
     name: "Ocean Breeze",
     previewAlt: "A bright blue shoreline with calm water and drifting clouds.",
+    previewSrc: "/theme-previews/ocean-breeze.png",
   },
 ] as const satisfies readonly ThemeOption[];
 
