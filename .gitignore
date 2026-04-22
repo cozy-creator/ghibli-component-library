@@ -11,3 +11,4 @@ storybook-static
 .DS_Store
 .vercel
 apps/web/public/r
+.claude/settings.local.json
