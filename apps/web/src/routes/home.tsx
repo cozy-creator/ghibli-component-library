@@ -70,7 +70,7 @@ import {
 } from "@ghibli/ui";
 
 import {
-  DocsHeaderIcon,
+  DiscordHeaderIcon,
   GitHubHeaderIcon,
   mockHeaderAvatarUrl,
 } from "@/apps/web/src/components/site-header-icons";
@@ -634,10 +634,11 @@ export function HomePage() {
                   label: "GitHub",
                 },
                 {
-                  href: "#docs-screens",
-                  icon: <DocsHeaderIcon />,
+                  external: true,
+                  href: "https://discord.gg/cozyart",
+                  icon: <DiscordHeaderIcon />,
                   iconOnly: true,
-                  label: "Docs",
+                  label: "Discord",
                 },
               ]}
               user={{
