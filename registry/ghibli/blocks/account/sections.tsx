@@ -1,9 +1,9 @@
 import * as React from "react";
-import { Camera, CheckCircle2, Coins, Link2, Loader2, Pencil, Sparkles, Trash2, UserRound } from "lucide-react";
+import { Camera, Link2, Loader2, Pencil, Trash2, UserRound } from "lucide-react";
 
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { CartoonButton } from "@/components/ui/cartoon-button";
 import { HandDrawnFrame } from "@/components/ui/hand-drawn-frame";
@@ -114,17 +114,18 @@ export function AccountUserDisplayBox({
                           )}
                           src={avatarUrl}
                         />
-                      ) : null}
-                      <AvatarFallback
-                        className={cn(
-                          "text-3xl transition duration-200",
-                          isUploadingAvatar
-                            ? "brightness-[0.45]"
-                            : "group-hover:brightness-[0.45] group-focus-within:brightness-[0.45]"
-                        )}
-                      >
-                        {initial}
-                      </AvatarFallback>
+                      ) : (
+                        <AvatarFallback
+                          className={cn(
+                            "text-3xl transition duration-200",
+                            isUploadingAvatar
+                              ? "brightness-[0.45]"
+                              : "group-hover:brightness-[0.45] group-focus-within:brightness-[0.45]"
+                          )}
+                        >
+                          {initial}
+                        </AvatarFallback>
+                      )}
                     </Avatar>
 
                     <div
@@ -258,8 +259,11 @@ export function AccountProfileSection({
       <div className="flex flex-col gap-4 rounded-[calc(var(--radius)-0.25rem)] border border-[color:var(--border)] bg-[color:var(--paper-soft)] p-4 sm:flex-row sm:items-center sm:justify-between">
         <div className="flex items-center gap-4">
           <Avatar size="lg">
-            {avatarUrl ? <AvatarImage alt={name} src={avatarUrl} /> : null}
-            <AvatarFallback>{name.slice(0, 2).toUpperCase()}</AvatarFallback>
+            {avatarUrl ? (
+              <AvatarImage alt={name} src={avatarUrl} />
+            ) : (
+              <AvatarFallback>{name.slice(0, 2).toUpperCase()}</AvatarFallback>
+            )}
           </Avatar>
           <div className="grid gap-1">
             <h3 className="font-[var(--font-heading)] text-2xl text-[color:var(--ink-strong)]">
@@ -329,154 +333,245 @@ export function AccountLinkedAccountsSection({
 }
 
 export interface SubscriptionOffer {
-  description?: string;
   id: string;
-  label: string;
+  name: string;
   onSelect?: () => void;
   priceLabel: string;
+  subtitle?: string;
 }
 
 export interface AccountSubscriptionSectionProps {
   actions?: React.ReactNode;
-  features: string[];
-  note?: string;
+  activeOfferId?: string;
+  balanceLabel?: string;
   offers: SubscriptionOffer[];
   planName: string;
+  priceName?: string;
+  renewalLabel?: string;
   renewalText?: string;
-  status?: string;
+}
+
+function SubscriptionSummaryRow({
+  label,
+  value
+}: {
+  label: string;
+  value: React.ReactNode;
+}) {
+  return (
+    <div className="flex items-center justify-between gap-4">
+      <p className="text-sm text-muted-foreground">{label}</p>
+      <div className="text-right text-sm text-[color:var(--ink-strong)]">{value}</div>
+    </div>
+  );
+}
+
+function SubscriptionOfferCard({
+  actionLabel,
+  isActive,
+  offer
+}: {
+  actionLabel: string;
+  isActive: boolean;
+  offer: SubscriptionOffer;
+}) {
+  return (
+    <HandDrawnFrame
+      className="h-full"
+      contentClassName="flex h-full flex-col p-5"
+      crookednessIntensity={3}
+      strokeColor={isActive ? "var(--primary-edge)" : "var(--border-soft)"}
+      strokeWidth={1.1}
+      surfaceClassName={
+        isActive
+          ? "bg-[color:var(--primary-soft)]"
+          : "bg-[color:color-mix(in_oklab,var(--card)_46%,transparent)]"
+      }
+      svgClassName="opacity-90"
+    >
+      <div className="flex-1 space-y-1">
+        <p className="text-sm font-semibold text-[color:var(--ink-strong)]">{offer.name}</p>
+        <div className="mt-3 flex items-end gap-2">
+          <span className="font-[var(--font-heading)] text-4xl text-[color:var(--ink-strong)]">
+            {offer.priceLabel}
+          </span>
+        </div>
+        {offer.subtitle ? (
+          <p className="text-xs font-medium uppercase tracking-[0.12em] text-muted-foreground">
+            {offer.subtitle}
+          </p>
+        ) : null}
+      </div>
+      <CartoonButton
+        className="mt-6 w-full"
+        color={isActive ? "var(--border-strong)" : "var(--success)"}
+        disabled={isActive}
+        onClick={offer.onSelect ?? null}
+        text={actionLabel}
+      />
+    </HandDrawnFrame>
+  );
 }
 
 export function AccountSubscriptionSection({
   actions,
-  features,
-  note,
+  activeOfferId,
+  balanceLabel,
   offers,
   planName,
-  renewalText,
-  status = "active"
+  priceName,
+  renewalLabel = "Renews on",
+  renewalText
 }: AccountSubscriptionSectionProps) {
+  const hasActive = Boolean(activeOfferId);
+  const accountSurfaceClass =
+    "bg-[linear-gradient(180deg,color-mix(in_oklab,var(--card)_50%,var(--primary-foreground)),color-mix(in_oklab,var(--paper-soft)_96%,var(--primary-foreground)))]";
+
   return (
-    <SectionShell
-      description="Present offers, current status, and next billing detail in one paper section."
-      icon={Sparkles}
-      title="Subscription"
-    >
-      <div className="grid gap-4 rounded-[calc(var(--radius)-0.25rem)] border border-[color:var(--border)] bg-[color:var(--paper-soft)] p-4">
-        <div className="flex flex-wrap items-center justify-between gap-3">
-          <div className="grid gap-1">
-            <h3 className="font-[var(--font-heading)] text-2xl text-[color:var(--ink-strong)]">
-              {planName}
-            </h3>
-            {renewalText ? (
-              <p className="text-sm text-[color:var(--muted-foreground)]">{renewalText}</p>
+    <div className="space-y-6">
+      <HandDrawnFrame
+        crookednessIntensity={0.35}
+        strokeColor="var(--border)"
+        strokeWidth={1.65}
+        surfaceClassName={accountSurfaceClass}
+      >
+        <Card className="border-0 bg-transparent shadow-none">
+          <CardHeader>
+            <CardTitle className="text-xl">Subscription</CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            {balanceLabel ? (
+              <SubscriptionSummaryRow
+                label="Available API Credits"
+                value={<span className="font-semibold">{balanceLabel}</span>}
+              />
             ) : null}
+            <SubscriptionSummaryRow
+              label="Current Plan"
+              value={
+                <div className="space-y-0.5">
+                  <div className="font-semibold">{planName}</div>
+                  {priceName ? (
+                    <div className="text-muted-foreground">{priceName}</div>
+                  ) : null}
+                </div>
+              }
+            />
+            {renewalText ? (
+              <SubscriptionSummaryRow
+                label={renewalLabel}
+                value={<span className="font-semibold">{renewalText}</span>}
+              />
+            ) : null}
+            {actions ? (
+              <div className="flex flex-wrap gap-2 pt-1">{actions}</div>
+            ) : null}
+          </CardContent>
+        </Card>
+      </HandDrawnFrame>
+
+      <section className="space-y-3">
+        <h2 className="font-[var(--font-heading)] text-2xl text-[color:var(--ink-strong)]">
+          Available Plans
+        </h2>
+        {offers.length === 0 ? (
+          <p className="text-sm text-muted-foreground">
+            No subscription products available.
+          </p>
+        ) : (
+          <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
+            {offers.map((offer) => {
+              const isActive = offer.id === activeOfferId;
+              const actionLabel = isActive
+                ? "Current plan"
+                : hasActive
+                  ? "Change plan"
+                  : "Subscribe";
+              return (
+                <SubscriptionOfferCard
+                  actionLabel={actionLabel}
+                  isActive={isActive}
+                  key={offer.id}
+                  offer={offer}
+                />
+              );
+            })}
           </div>
-          <div className="flex flex-wrap items-center gap-2">
-            <Badge tone={status === "active" ? "meadow" : "rose"} variant="soft">
-              {status}
-            </Badge>
-            {actions}
-          </div>
-        </div>
-        <div className="grid gap-2 md:grid-cols-2">
-          {features.map((feature) => (
-            <div className="flex items-center gap-2 text-sm" key={feature}>
-              <CheckCircle2 className="size-4 text-[color:var(--primary)]" />
-              {feature}
-            </div>
-          ))}
-        </div>
-        <div className="grid gap-3 md:grid-cols-2">
-          {offers.map((offer) => (
-            <Card className="bg-white/55" key={offer.id}>
-              <CardHeader>
-                <CardTitle className="text-xl">{offer.label}</CardTitle>
-                <CardDescription>{offer.description}</CardDescription>
-              </CardHeader>
-              <CardFooter className="justify-between">
-                <span className="font-medium">{offer.priceLabel}</span>
-                <Button onClick={offer.onSelect} variant="secondary">
-                  Choose
-                </Button>
-              </CardFooter>
-            </Card>
-          ))}
-        </div>
-        {note ? <p className="text-sm text-[color:var(--muted-foreground)]">{note}</p> : null}
-      </div>
-    </SectionShell>
+        )}
+      </section>
+    </div>
   );
 }
 
 export interface CreditLedgerEntry {
-  deltaLabel: string;
+  activity: string;
+  amountLabel: string;
+  date: string;
+  direction?: "credit" | "debit";
   id: string;
-  meta?: string;
-  title: string;
-}
-
-export interface CreditOffer {
-  id: string;
-  label: string;
-  onSelect?: () => void;
-  priceLabel: string;
 }
 
 export interface AccountApiCreditsSectionProps {
-  balanceLabel: string;
+  emptyMessage?: string;
   ledger: CreditLedgerEntry[];
-  offers: CreditOffer[];
+  title?: string;
 }
 
 export function AccountApiCreditsSection({
-  balanceLabel,
+  emptyMessage = "You have not bought GPU time yet.",
   ledger,
-  offers
+  title = "Payments"
 }: AccountApiCreditsSectionProps) {
   return (
-    <SectionShell
-      description="Combine the current credit balance, ledger history, and top-up offers."
-      icon={Coins}
-      title="API credits"
+    <HandDrawnFrame
+      crookednessIntensity={0.35}
+      strokeColor="var(--border)"
+      strokeWidth={1.65}
+      surfaceClassName="bg-[image:var(--surface-panel-gradient)]"
     >
-      <div className="grid gap-4 md:grid-cols-[minmax(0,1.1fr)_minmax(0,0.9fr)]">
-        <div className="grid gap-3 rounded-[calc(var(--radius)-0.25rem)] border border-[color:var(--border)] bg-[color:var(--paper-soft)] p-4">
-          <div className="flex items-center justify-between gap-3">
-            <h3 className="font-[var(--font-heading)] text-2xl text-[color:var(--ink-strong)]">
-              Balance
-            </h3>
-            <Badge tone="lantern">{balanceLabel}</Badge>
-          </div>
-          <div className="grid gap-2">
-            {ledger.map((entry) => (
-              <div className="flex items-center justify-between gap-3 text-sm" key={entry.id}>
-                <div className="grid gap-1">
-                  <span className="font-medium">{entry.title}</span>
-                  {entry.meta ? (
-                    <span className="text-xs text-[color:var(--muted-foreground)]">{entry.meta}</span>
-                  ) : null}
-                </div>
-                <span className="font-medium">{entry.deltaLabel}</span>
-              </div>
-            ))}
-          </div>
-        </div>
-        <div className="grid gap-3">
-          {offers.map((offer) => (
-            <Card key={offer.id}>
-              <CardHeader>
-                <CardTitle className="text-xl">{offer.label}</CardTitle>
-              </CardHeader>
-              <CardFooter className="justify-between">
-                <span>{offer.priceLabel}</span>
-                <Button onClick={offer.onSelect} variant="secondary">
-                  Buy
-                </Button>
-              </CardFooter>
-            </Card>
-          ))}
-        </div>
-      </div>
-    </SectionShell>
+      <Card className="border-0 bg-transparent shadow-none">
+        <CardHeader>
+          <CardTitle className="text-xl">{title}</CardTitle>
+        </CardHeader>
+        <CardContent>
+          {ledger.length === 0 ? (
+            <p className="text-sm text-muted-foreground">{emptyMessage}</p>
+          ) : (
+            <div className="overflow-x-auto">
+              <table className="min-w-full border-collapse text-sm">
+                <thead>
+                  <tr className="border-b border-[color:var(--border-soft)] text-left text-[0.72rem] uppercase tracking-[0.18em] text-muted-foreground">
+                    <th className="py-3 pr-6 font-medium">Date</th>
+                    <th className="py-3 pr-6 font-medium">Activity</th>
+                    <th className="py-3 text-right font-medium">Amount</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {ledger.map((entry) => (
+                    <tr
+                      className="border-b border-[color:var(--border-faint)] last:border-b-0"
+                      key={entry.id}
+                    >
+                      <td className="py-3 pr-6 text-[color:var(--foreground)]">{entry.date}</td>
+                      <td className="py-3 pr-6 text-[color:var(--foreground)]">{entry.activity}</td>
+                      <td
+                        className={cn(
+                          "py-3 text-right font-medium",
+                          entry.direction === "debit"
+                            ? "text-destructive"
+                            : "text-primary"
+                        )}
+                      >
+                        {entry.amountLabel}
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          )}
+        </CardContent>
+      </Card>
+    </HandDrawnFrame>
   );
 }
