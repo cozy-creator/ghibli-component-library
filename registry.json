@@ -57,9 +57,24 @@
           "target": "lib/theme/theme-types.ts"
         },
         {
+          "path": "registry/ghibli/lib/theme/theme-sound-effects.ts",
+          "type": "registry:lib",
+          "target": "lib/theme/theme-sound-effects.ts"
+        },
+        {
           "path": "registry/ghibli/lib/theme/use-theme.ts",
           "type": "registry:lib",
           "target": "lib/theme/use-theme.ts"
+        },
+        {
+          "path": "registry/ghibli/lib/theme/use-ui-sound.ts",
+          "type": "registry:lib",
+          "target": "lib/theme/use-ui-sound.ts"
+        },
+        {
+          "path": "registry/ghibli/lib/theme/use-theme-sound-effect.ts",
+          "type": "registry:lib",
+          "target": "lib/theme/use-theme-sound-effect.ts"
         }
       ]
     },
@@ -172,8 +187,7 @@
             "min-height": "100vh",
             "font-family": "var(--font-body)",
             "color": "var(--foreground)",
-            "background-color": "var(--background)",
-            "background": "radial-gradient(circle at top, rgba(255,255,255,0.48), transparent 34%), linear-gradient(180deg, rgba(127,168,187,0.2), transparent 15rem), linear-gradient(180deg, rgba(255,249,240,0.86), rgba(247,241,229,0.96)), var(--background)"
+            "background-color": "var(--background)"
           },
           "body::before": {
             "position": "fixed",
@@ -200,7 +214,10 @@
         ".ghibli-prose": {
           "max-width": "72ch",
           "line-height": "1.85",
-          "color": "var(--muted-foreground)"
+          "color": "var(--card-foreground)"
+        },
+        ".app-backdrop": {
+          "background": "var(--surface-wash-background), var(--app-background-image)"
         },
         ".ghibli-prose a": {
           "color": "var(--ink-strong)",
@@ -219,7 +236,7 @@
           "color": "var(--ink-strong)"
         },
         ".ghibli-wash": {
-          "background": "linear-gradient(180deg, rgba(255,255,255,0.28), transparent 18rem), color-mix(in oklab, var(--paper) 76%, white)"
+          "background": "linear-gradient(180deg, rgba(255,255,255,0.28), transparent 18rem), color-mix(in oklab, var(--paper) 99%, white)"
         },
         "@layer utilities": {
           ".paper-overlay": {
@@ -629,6 +646,7 @@
       "description": "Large image and video detail overlays for feed browsing.",
       "registryDependencies": [
         "@ghibli/style",
+        "@ghibli/theme",
         "@ghibli/badge",
         "@ghibli/button",
         "@ghibli/dialog"
@@ -679,7 +697,8 @@
       "type": "registry:block",
       "description": "Sticky or fixed scenic action dock for persistent editor and page actions.",
       "registryDependencies": [
-        "@ghibli/style"
+        "@ghibli/style",
+        "@ghibli/theme"
       ],
       "files": [
         {
@@ -788,6 +807,7 @@
       "description": "Header and footer blocks for navigation-heavy pages.",
       "registryDependencies": [
         "@ghibli/style",
+        "@ghibli/theme",
         "@ghibli/avatar",
         "@ghibli/button",
         "@ghibli/dropdown-menu",

@@ -52,7 +52,11 @@ export function SiteShell() {
   const [isChangeThemeOpen, setIsChangeThemeOpen] = useState(false);
 
   return (
-    <div className="ghibli-wash relative isolate min-h-screen">
+    <div className="relative isolate min-h-screen">
+      <div
+        aria-hidden="true"
+        className="app-backdrop pointer-events-none fixed inset-0 z-0"
+      />
       <div
         aria-hidden="true"
         className="paper-overlay pointer-events-none absolute inset-0 z-0 opacity-70 mix-blend-multiply"
