@@ -2,7 +2,33 @@
 
 ## Quick Start
 
-**Do this:**
+Ghibli UI ships as a shadcn registry, components are installed by copying source into your app, not via npm. Add the namespace below to your app's components.json once, then install either the whole set with @ghibli/all or any single item by its name (e.g. @ghibli/button, @ghibli/auth-forms). Every section on this page shows its own install command with a copy button.
+
+1. Make sure your app already has shadcn wired up. If not, run `pnpm dlx shadcn@latest init` and follow its prompts.
+2. Add the `@ghibli` namespace to your app's `components.json`:
+   ```json
+   {
+     "registries": {
+       "@ghibli": "https://ghibli-ui.example.com/r/{name}.json"
+     }
+   }
+   ```
+3. Install components — pick one or more:  install either the whole set with @ghibli/all or any single item by its name)
+   ```bash
+   pnpm dlx shadcn@latest add @ghibli/button       # one component
+   pnpm dlx shadcn@latest add @ghibli/auth-forms   # a pattern block
+   pnpm dlx shadcn@latest add @ghibli/all          # everything
+   ```
+   Each command writes the TypeScript source into your project (e.g. `src/components/ui/button.tsx`) and installs any npm peer deps (`clsx`, `tailwind-merge`, Radix primitives…).
+4. Import and use:
+   ```tsx
+   import { Button } from "@/components/ui/button";
+   ```
+   From here on, that file is yours — edit it freely.
+
+Every showcase section on the docs site displays its own install command with a copy button, so the quickest way to discover what's installable is to browse the live showcase.
+
+### Deploying the registry (maintainers)
 
 1. `pnpm install && pnpm build:web` — produces `apps/web/dist/` (contains `dist/r/*.json`).
 2. Pick any static host (GitHub Pages, Cloudflare Pages, Netlify, Vercel, S3…) and deploy `apps/web/dist/`. Build cmd: `pnpm build:web`. Output: `apps/web/dist`.
