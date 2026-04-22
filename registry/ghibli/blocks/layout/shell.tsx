@@ -9,7 +9,7 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger
 } from "@/components/ui/dropdown-menu";
-import { HandDrawnFrame } from "@/components/ui/hand-drawn-frame";
+import { HandDrawnFrame, HandDrawnRule } from "@/components/ui/hand-drawn-frame";
 import {
   Sheet,
   SheetClose,
@@ -398,7 +398,14 @@ export function ShellFooter({
       )}
       data-site-footer
     >
-      <div className="border-t border-[color:var(--foreground)] pt-8 md:pt-10">
+      <div className="relative pt-8 md:pt-10">
+        <HandDrawnRule
+          className="absolute inset-x-0 top-0 h-3"
+          crookednessIntensity={9}
+          strokeColor="var(--foreground)"
+          strokeWidth={1.4}
+          svgClassName="opacity-85"
+        />
         <div className="flex flex-wrap items-center justify-center gap-x-5 gap-y-4 md:gap-x-6">
           {brand}
           {text ? <p className="text-sm tracking-[0.01em]">{text}</p> : null}
