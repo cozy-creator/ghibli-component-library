@@ -5,12 +5,13 @@ import { Outlet } from "react-router-dom";
 import { ChangeThemeModal, HandDrawnFrame, ShellHeader } from "@ghibli/ui";
 
 import {
-  DocsHeaderIcon,
+  DiscordHeaderIcon,
   GitHubHeaderIcon,
   mockHeaderAvatarUrl,
 } from "@/apps/web/src/components/site-header-icons";
 
 const repoUrl = "https://github.com/rodrigoluz/ghibli-component-library";
+const discordUrl = "https://discord.gg/cozyart";
 
 function jumpToAnchor(anchorId: string) {
   window.location.hash = anchorId;
@@ -97,10 +98,11 @@ export function SiteShell() {
               label: "GitHub",
             },
             {
-              href: "#docs-screens",
-              icon: <DocsHeaderIcon />,
+              external: true,
+              href: discordUrl,
+              icon: <DiscordHeaderIcon />,
               iconOnly: true,
-              label: "Docs",
+              label: "Discord",
             },
           ]}
           user={{
