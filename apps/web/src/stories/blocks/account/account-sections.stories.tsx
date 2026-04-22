@@ -8,7 +8,7 @@ import {
   AccountUserDisplayBox
 } from "@ghibli/ui";
 
-import { creditLedger, creditOffers, linkedAccounts, subscriptionOffers } from "@/apps/web/src/data/demo-fixtures";
+import { creditLedger, linkedAccounts, subscriptionOffers } from "@/apps/web/src/data/demo-fixtures";
 
 const meta = {
   title: "Patterns/Account/Account Sections"
@@ -21,15 +21,17 @@ export const Overview: Story = {
   render: () => (
     <div className="grid gap-4">
       <AccountUserDisplayBox email="mei@ghibli-ui.test" generatedCount={128} name="User" />
-      <AccountProfileSection email="melina@ghibli-ui.dev" name="Melina Sketch" planLabel="Painterly Plan" />
+      <AccountProfileSection email="melina@ghibli-ui.dev" name="Melina Sketch" planLabel="Monthly Studio" />
       <AccountLinkedAccountsSection accounts={linkedAccounts} />
       <AccountSubscriptionSection
-        features={["200 monthly generations", "Priority queue", "Storyboard mode", "Reviewer links"]}
+        activeOfferId="monthly"
+        balanceLabel="$24.00"
         offers={subscriptionOffers}
-        planName="Painterly plan"
-        renewalText="Renews on April 14, 2026"
+        planName="Monthly Studio"
+        priceName="$24 / month"
+        renewalText="April 14, 2026"
       />
-      <AccountApiCreditsSection balanceLabel="128 credits" ledger={creditLedger} offers={creditOffers} />
+      <AccountApiCreditsSection ledger={creditLedger} />
     </div>
   )
 };
