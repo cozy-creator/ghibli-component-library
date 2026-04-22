@@ -55,7 +55,7 @@ test("renders the single-page showcase and redirects legacy routes into anchors"
 
   await expect(page).toHaveURL(/#component-button$/);
   await expect(page.getByRole("heading", { exact: true, name: "Button" })).toBeVisible();
-  await expect(page.getByText("pnpm dlx shadcn@latest add @ghibli/button")).toHaveCount(0);
+  await expect(page.getByText("pnpm dlx shadcn@latest add @ghibli/button")).toBeVisible();
 
   await page.goto("/patterns/auth-forms");
 

@@ -66,7 +66,7 @@ describe("docs information architecture", () => {
     });
 
     expect(screen.getByRole("heading", { name: "Button" })).toBeInTheDocument();
-    expect(screen.queryByText("pnpm dlx shadcn@latest add @ghibli/button")).not.toBeInTheDocument();
+    expect(screen.getByText("pnpm dlx shadcn@latest add @ghibli/button")).toBeInTheDocument();
   });
 
   it("redirects legacy item routes to the matching anchor on the showcase", async () => {
@@ -81,7 +81,7 @@ describe("docs information architecture", () => {
     expect(screen.getByRole("heading", { name: "Auth Forms" })).toBeInTheDocument();
     expect(screen.getAllByRole("button", { name: "Sign in" })).not.toHaveLength(0);
     expect(screen.getByRole("button", { name: "Create account" })).toBeInTheDocument();
-    expect(screen.queryByText("pnpm dlx shadcn@latest add @ghibli/auth-forms")).not.toBeInTheDocument();
+    expect(screen.getByText("pnpm dlx shadcn@latest add @ghibli/auth-forms")).toBeInTheDocument();
   });
 
   it("redirects the removed sheet showcase route to the header specimen", async () => {
