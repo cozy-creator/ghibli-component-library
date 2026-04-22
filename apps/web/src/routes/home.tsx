@@ -1,5 +1,7 @@
 import { useEffect, useRef, useState, type ReactNode } from "react";
 import {
+  Check,
+  Copy,
   Download,
   Eye,
   EyeOff,
@@ -315,11 +317,13 @@ function ShowcaseGroup({
 function Specimen({
   children,
   id,
+  installName,
   note,
   title,
 }: {
   children: ReactNode;
   id: string;
+  installName?: string;
   note?: string;
   title: string;
 }) {
@@ -353,9 +357,43 @@ function Specimen({
         ) : null}
       </div>
       <div className="min-w-0 overflow-x-clip overflow-y-visible px-1">
+        {installName ? <CopyableInstallLine name={installName} /> : null}
         {children}
       </div>
     </section>
+  );
+}
+
+function CopyableInstallLine({ name }: { name: string }) {
+  const [copied, setCopied] = useState(false);
+  const command = `pnpm dlx shadcn@latest add @ghibli/${name}`;
+
+  const handleCopy = () => {
+    navigator.clipboard
+      .writeText(command)
+      .then(() => {
+        setCopied(true);
+        window.setTimeout(() => setCopied(false), 1500);
+      })
+      .catch(() => {
+        // Clipboard unavailable (e.g. insecure context); no-op.
+      });
+  };
+
+  return (
+    <div className="mb-4 flex w-fit max-w-full items-center gap-2 rounded border border-[color:var(--border-soft)] bg-[var(--surface-sunk)] px-3 py-1.5">
+      <code className="min-w-0 flex-1 overflow-x-auto whitespace-nowrap font-mono text-xs text-[color:var(--ink-strong)]">
+        {command}
+      </code>
+      <button
+        aria-label={copied ? "Copied" : "Copy install command"}
+        className="inline-flex size-6 shrink-0 items-center justify-center rounded text-[color:var(--muted-foreground)] transition-colors hover:bg-[var(--surface-panel-floating)] hover:text-[color:var(--ink-strong)]"
+        onClick={handleCopy}
+        type="button"
+      >
+        {copied ? <Check className="size-3.5" /> : <Copy className="size-3.5" />}
+      </button>
+    </div>
   );
 }
 
@@ -621,6 +659,7 @@ export function HomePage() {
       <ShowcaseGroup id="shell-navigation">
         <Specimen
           id="component-user-popup"
+          installName="layout-shell"
           note="The layout shell header, utility links, and user menu are shown directly instead of abstract placeholders."
           title="Header / User Popup"
         >
@@ -696,6 +735,7 @@ export function HomePage() {
 
         <Specimen
           id="component-tabs"
+          installName="tabs"
           note="The community tab switch used for live feed, video, and X posts."
           title="Tabs Switch"
         >
@@ -706,6 +746,7 @@ export function HomePage() {
 
         <Specimen
           id="component-hand-drawn-frame"
+          installName="hand-drawn-frame"
           note="The frame primitive now mirrors Cozy.art's surface and divider API with crookedness compensation and thickness intensity controls."
           title="Hand Drawn Frame"
         >
@@ -769,6 +810,7 @@ export function HomePage() {
       <ShowcaseGroup id="core-primitives">
         <Specimen
           id="component-button"
+          installName="button"
           note="The base shadcn-style action primitive."
           title="Button"
         >
@@ -785,6 +827,7 @@ export function HomePage() {
 
         <Specimen
           id="component-cartoon-button"
+          installName="cartoon-button"
           note="The chunky CTA used across the generate flow."
           title="Cartoon Button"
         >
@@ -807,6 +850,7 @@ export function HomePage() {
 
         <Specimen
           id="component-forms"
+          installName="form-field"
           note="Presented as real form rows so users can see the primitive inputs and the full field wrapper in the same place."
           title="Input, Textarea, Form Field"
         >
@@ -897,6 +941,7 @@ export function HomePage() {
       <ShowcaseGroup id="auth-flows">
         <Specimen
           id="pattern-auth-forms"
+          installName="auth-forms"
           note="Cozy-style auth entry points stay button-driven and open the matching modal instead of rendering full forms inline."
           title="Auth Forms"
         >
@@ -955,6 +1000,7 @@ export function HomePage() {
       <ShowcaseGroup id="account-screens">
         <Specimen
           id="pattern-account-user-display"
+          installName="account-sections"
           note="Primary profile header for the account page: avatar upload, username edit, generation count, and password action."
           title="Account User Display"
         >
@@ -976,6 +1022,7 @@ export function HomePage() {
 
         <Specimen
           id="pattern-account-profile-summary"
+          installName="account-sections"
           note="Quiet profile summary for the top of billing pages."
           title="Account Profile Section"
         >
@@ -1001,6 +1048,7 @@ export function HomePage() {
 
         <Specimen
           id="pattern-account-subscription"
+          installName="account-sections"
           note="Summary of current plan plus the available-plans grid with the current plan marked."
           title="Subscription Section"
         >
@@ -1029,6 +1077,7 @@ export function HomePage() {
 
         <Specimen
           id="pattern-account-credits"
+          installName="account-sections"
           note="Read-only payments ledger — date, activity, and signed amount."
           title="Payments Section"
         >
@@ -1039,6 +1088,7 @@ export function HomePage() {
 
         <Specimen
           id="pattern-account-dialogs"
+          installName="account-dialogs"
           note="Change-username, change-email, and change-password dialogs, controlled from the account screens."
           title="Account Dialogs"
         >
@@ -1061,6 +1111,7 @@ export function HomePage() {
       <ShowcaseGroup id="community-flows">
         <Specimen
           id="pattern-community-cards"
+          installName="community-cards"
           note="Two Cozy-style image cards with the same click-through gallery viewer."
           title="Image Card"
         >
@@ -1102,6 +1153,7 @@ export function HomePage() {
 
         <Specimen
           id="pattern-community-video-card"
+          installName="community-cards"
           note="Two Cozy-style video cards using the same full-screen viewer and chrome."
           title="Video Card"
         >
@@ -1145,6 +1197,7 @@ export function HomePage() {
       <ShowcaseGroup id="generate-flows">
         <Specimen
           id="pattern-generate-editor-bar"
+          installName="generate-editor-bar"
           note="The Cozy `/generate` drawer stays docked at the bottom of the stage, starting collapsed until you tap the prompt preview or pull the handle."
           title="Generate Editor Bar"
         >
@@ -1182,6 +1235,7 @@ export function HomePage() {
 
         <Specimen
           id="pattern-generate-controls"
+          installName="generate-controls"
           note="Individual controls used below the prompt composer."
           title="Generate Controls"
         >
@@ -1211,6 +1265,7 @@ export function HomePage() {
       <ShowcaseGroup id="docs-screens">
         <Specimen
           id="pattern-docs"
+          installName="docs-article"
           note="Docs article and FAQ blocks remain public, but now they sit beside the larger route-level page examples."
           title="Docs Article and FAQ"
         >
@@ -1233,6 +1288,7 @@ export function HomePage() {
 
         <Specimen
           id="reference-screens"
+          installName="page-shell"
           note="These route-level specimens stay on the one-page showcase so teams can inspect the larger page shapes without leaving the install surface."
           title="Info, Legal, Reset, Not Found"
         >
@@ -1303,6 +1359,7 @@ export function HomePage() {
       <ShowcaseGroup id="new-in-sync">
         <Specimen
           id="pattern-theme-switcher"
+          installName="theme"
           note="Runtime theme switching via data-theme on the document root. State persists to localStorage. Also reachable from the header user menu → Theme."
           title="Theme Switcher"
         >
@@ -1442,6 +1499,7 @@ export function HomePage() {
       <ShowcaseGroup id="footer-endmatter">
         <Specimen
           id="pattern-feedback"
+          installName="notice-banner"
           note="Inline feedback and sticky action surfaces."
           title="Notice Banner, Empty State, Floating Action"
         >
@@ -1486,6 +1544,7 @@ export function HomePage() {
 
         <Specimen
           id="component-footer"
+          installName="layout-shell"
           note="The shared footer treatment through the layout shell."
           title="Footer"
         >
