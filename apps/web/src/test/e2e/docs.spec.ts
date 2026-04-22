@@ -11,7 +11,7 @@ test("renders the single-page showcase and redirects legacy routes into anchors"
   await expect(desktopHeader.getByRole("link", { name: "GitHub" })).toBeVisible();
   await expect(desktopHeader.getByRole("link", { name: "Docs" })).toBeVisible();
   await expect(desktopHeader.getByRole("button", { name: /User/i })).toBeVisible();
-  await expect(page.getByText("pnpm dlx shadcn@latest add @ghibli/components")).toBeVisible();
+  await expect(page.getByText("pnpm dlx shadcn@latest add @ghibli/all")).toBeVisible();
   await expect(page.locator("#shell-navigation")).toBeVisible();
   await expect(page.locator("#core-primitives")).toBeVisible();
   await expect(page.getByRole("heading", { exact: true, name: "Button" })).toBeVisible();

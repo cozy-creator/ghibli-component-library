@@ -19,7 +19,7 @@ describe("docs information architecture", () => {
       "footer-endmatter"
     ];
 
-    expect(screen.getAllByText("pnpm dlx shadcn@latest add @ghibli/components")).toHaveLength(1);
+    expect(screen.getAllByText(/pnpm dlx shadcn@latest add @ghibli\/all/)).toHaveLength(1);
     expect(screen.getByRole("heading", { name: "Button" })).toBeInTheDocument();
     expect(screen.getByRole("heading", { name: "Tabs Switch" })).toBeInTheDocument();
     expect(screen.getByRole("heading", { name: "Image Card" })).toBeInTheDocument();
