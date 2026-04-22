@@ -1,4 +1,5 @@
 export * from "../../../registry/ghibli/lib/utils";
+export * from "../../../registry/ghibli/lib/theme";
 
 export * from "../../../registry/ghibli/ui/accordion";
 export * from "../../../registry/ghibli/ui/avatar";

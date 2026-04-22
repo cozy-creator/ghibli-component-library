@@ -21,6 +21,49 @@
       ]
     },
     {
+      "name": "theme",
+      "title": "Theme",
+      "type": "registry:lib",
+      "description": "Runtime theme provider, data-theme switcher, and localStorage persistence for hand-drawn-paper and ghibli-forest themes.",
+      "files": [
+        {
+          "path": "registry/ghibli/lib/theme/index.ts",
+          "type": "registry:lib",
+          "target": "lib/theme/index.ts"
+        },
+        {
+          "path": "registry/ghibli/lib/theme/theme-dom.ts",
+          "type": "registry:lib",
+          "target": "lib/theme/theme-dom.ts"
+        },
+        {
+          "path": "registry/ghibli/lib/theme/theme-options.ts",
+          "type": "registry:lib",
+          "target": "lib/theme/theme-options.ts"
+        },
+        {
+          "path": "registry/ghibli/lib/theme/theme-provider.tsx",
+          "type": "registry:lib",
+          "target": "lib/theme/theme-provider.tsx"
+        },
+        {
+          "path": "registry/ghibli/lib/theme/theme-storage.ts",
+          "type": "registry:lib",
+          "target": "lib/theme/theme-storage.ts"
+        },
+        {
+          "path": "registry/ghibli/lib/theme/theme-types.ts",
+          "type": "registry:lib",
+          "target": "lib/theme/theme-types.ts"
+        },
+        {
+          "path": "registry/ghibli/lib/theme/use-theme.ts",
+          "type": "registry:lib",
+          "target": "lib/theme/use-theme.ts"
+        }
+      ]
+    },
+    {
       "name": "style",
       "title": "Ghibli Paper Theme",
       "type": "registry:style",
@@ -878,6 +921,7 @@
       "description": "Installs every public Ghibli UI primitive and block in one shadcn command.",
       "registryDependencies": [
         "@ghibli/style",
+        "@ghibli/theme",
         "@ghibli/button",
         "@ghibli/cartoon-button",
         "@ghibli/badge",
