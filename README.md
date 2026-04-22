@@ -1,89 +1,67 @@
 # Ghibli UI
 
+## Quick Start
+
+**Do this:**
+
+1. `pnpm install && pnpm build:web` — produces `apps/web/dist/` (contains `dist/r/*.json`).
+2. Pick any static host (GitHub Pages, Cloudflare Pages, Netlify, Vercel, S3…) and deploy `apps/web/dist/`. Build cmd: `pnpm build:web`. Output: `apps/web/dist`.
+3. Get your URL (e.g. `https://foo.example.com`). Verify: `curl -sf https://foo.example.com/r/button.json | jq .name` → `"button"`.
+4. Update two spots with that URL, then redeploy:
+   - [README.md](README.md) install snippet
+   - [registry.json:4](registry.json#L4) `homepage` field
+5. Share with users — they add to their `components.json`:
+   ```json
+   { "registries": { "@ghibli": "https://foo.example.com/r/{name}.json" } }
+   ```
+   and run `pnpm dlx shadcn@latest add @ghibli/all` (or any single component).
+
+That's it. Pick host → deploy → paste URL in 2 files → done.
+
+---
+
 Registry-first, shadcn-style React components with a soft paper-and-ink visual language.
 
-Ghibli UI is designed for source distribution, not package consumption. Consumers install components with `shadcn add`, copy the source into their app, and customize it there.
+Ghibli UI is designed for **source distribution, not package consumption**. Nothing is published to npm. Consumers install components with `shadcn add`, which fetches the component's JSON from a hosted registry and copies the TypeScript source directly into their own app. From that point on, it's their code — they edit it freely.
 
-The repository is organized around a showcase-first workflow:
+- React + TypeScript, Vite, Tailwind CSS v4
+- shadcn registry format
+- Storybook, Vitest, Playwright
 
-- `apps/web` is the primary one-page component showcase
-- Storybook is the secondary isolated demo surface
-- `registry/ghibli` is the canonical public source
-- `registry.json` is the install contract
+## How It Works
 
-## What You Get
-
-- Installable scenic primitives such as buttons, cards, fields, tabs, overlays, and tooltips
-- New reusable primitives such as `cartoon-button` and `hand-drawn-frame`
-- Grouped patterns such as auth forms, docs surfaces, feedback banners, layout shells, marketing sections, account sections, and generation controls
-- A simple one-page showcase with one install command and one-by-one component previews
-- Storybook grouped by `Foundations`, `Components/*`, and `Patterns/*`
-
-## Stack
-
-- React + TypeScript
-- Vite
-- Tailwind CSS v4
-- shadcn registry
-- Storybook
-- Vitest + Playwright
-
-## Workspace
-
-```text
-apps/web            Vite docs app and registry host
-examples/consumer-vite  Minimal consumer usage example
-packages/ui         Internal re-export layer for local development
-packages/eslint-config
-packages/tsconfig
-registry/ghibli     Canonical public source for installable items
-scripts             Smoke and build helpers
-registry.json       shadcn registry manifest
+```
+  ┌──────────────────────┐     pnpm build:web      ┌───────────────────────────┐
+  │ registry/ghibli/**   │  ───────────────────►   │ apps/web/dist/r/*.json    │
+  │ registry.json        │                         │ (static site + registry)  │
+  └──────────────────────┘                         └──────────────┬────────────┘
+                                                                  │ deploy
+                                                                  ▼
+                                                  ┌───────────────────────────┐
+                                                  │ https://<your-domain>     │
+                                                  │   /r/button.json etc.     │
+                                                  └──────────────┬────────────┘
+                                                                 │ fetch
+                                                                 ▼
+   Consumer repo:                         ┌──────────────────────────────────────┐
+     1. Add @ghibli namespace             │ pnpm dlx shadcn@latest               │
+        to components.json                │   add @ghibli/button                 │
+     2. Run shadcn add                    │ → writes button.tsx into src/...     │
+                                          └──────────────────────────────────────┘
 ```
 
-## Commands
+Two things matter:
 
-```bash
-pnpm install
-pnpm dev
-pnpm dev:storybook
-pnpm typecheck
-pnpm lint
-pnpm test
-pnpm build:web
-pnpm build:storybook
-pnpm smoke:registry
-```
+1. **You host `/r/*.json` on a public HTTPS URL** (any static host — GitHub Pages, Cloudflare Pages, Netlify, Vercel, S3, Render…).
+2. **Consumers point `shadcn` at that URL** and install.
 
-`pnpm dev` starts the showcase app. `pnpm dev:storybook` starts Storybook.
+---
 
-`pnpm build:web` generates the registry into `apps/web/public/r` before building the docs app, so preview and deployment always serve the latest registry artifacts.
+## For Consumers — Installing Ghibli UI In Your App
 
-## Running The Project
+### 1. Add the `@ghibli` registry namespace
 
-Install dependencies once:
-
-```bash
-pnpm install
-```
-
-Run the docs app:
-
-```bash
-pnpm dev
-```
-
-Run Storybook:
-
-```bash
-pnpm dev:storybook
-```
-
-The showcase app is the main public experience. Storybook is useful when you want to inspect isolated states or compare variants quickly.
-
-## Registry Usage
-
-Add this namespace to a consumer `components.json`:
+In your consumer app's `components.json`:
 
 ```json
 {
@@ -93,39 +71,155 @@ Add this namespace to a consumer `components.json`:
 }
 ```
 
-Then install items with:
+Replace `<your-domain>` with wherever this registry is deployed.
+
+### 2. Install components
 
 ```bash
+# a single component
+pnpm dlx shadcn@latest add @ghibli/button
+
+# a grouped pattern (auth forms, marketing sections, etc.)
+pnpm dlx shadcn@latest add @ghibli/auth-forms
+
+# everything at once
 pnpm dlx shadcn@latest add @ghibli/all
 ```
 
-`@ghibli/all` is a fileless aggregate registry item that installs every public component and block in one command.
+`@ghibli/all` is a fileless aggregate item that installs every public component and block in one command. Shadcn resolves peer dependencies (`clsx`, `tailwind-merge`, Radix primitives, etc.) and writes source files into your project's `components/ui/` and sibling paths.
 
-## Documentation Structure
+### 3. Use them
 
-The web app is now a single anchored component specimen page:
+Imports follow whatever path alias your app uses — typically:
 
-- install and registry setup at the top
-- every public component displayed one by one
-- interactive triggers for dropdowns, sheets, and modals
-- Storybook linked only as the isolated inspection surface
-
-Legacy component, pattern, guide, and example routes redirect into the matching showcase section or item anchor.
-
-## Consumer Example
-
-`examples/consumer-vite` shows a minimal local consumer setup with the scenic theme applied and a few components rendered together.
-
-Useful commands:
-
-```bash
-pnpm --filter @ghibli/consumer-vite dev
-pnpm --filter @ghibli/consumer-vite build
+```tsx
+import { Button } from "@/components/ui/button";
+import { HandDrawnFrame } from "@/components/ui/hand-drawn-frame";
 ```
 
-## Quality Gates
+---
 
-Use these before publishing or handing off the repo:
+## For Maintainers — Deploying The Registry
+
+The registry is just a folder of static JSON files under `/r/`. Any static host with HTTPS works.
+
+### 1. Build locally to verify
+
+```bash
+pnpm install
+pnpm build:web
+```
+
+This runs `pnpm registry:build` (which writes `apps/web/public/r/*.json`) and then builds `apps/web/dist/` — a static site that already includes `dist/r/*.json`.
+
+### 2. Choose a host
+
+Any of these work — no assumption is made about which:
+
+- **GitHub Pages** — push `apps/web/dist` to a `gh-pages` branch
+- **Cloudflare Pages / Netlify** — connect the repo, set build command `pnpm build:web`, output dir `apps/web/dist`
+- **Vercel** — same three fields as above
+- **S3 + CloudFront / any bucket** — upload `apps/web/dist/`
+
+CORS must allow `shadcn` to fetch the JSON. Most default static hosts handle this; bare S3 buckets may need an `Access-Control-Allow-Origin: *` header.
+
+### 3. Wire the real URL into the repo
+
+Once the registry is live at `https://<your-domain>`, update two spots so the docs and snippets reflect it:
+
+- [README.md](README.md) — the install snippet near the top of the consumer section
+- [registry.json:4](registry.json#L4) — the `homepage` field (currently a placeholder)
+
+Then re-run `pnpm build:web` and redeploy.
+
+### 4. Verify
+
+```bash
+# the JSON artifact is publicly fetchable
+curl -sf https://<your-domain>/r/button.json | jq .name
+# → "button"
+
+# full install loop against the live URL, in a temp app
+mkdir /tmp/ghibli-check && cd /tmp/ghibli-check
+pnpm create vite@latest app -- --template react-ts
+cd app && pnpm install
+pnpm dlx shadcn@latest init
+# edit components.json to add "@ghibli": "https://<your-domain>/r/{name}.json"
+pnpm dlx shadcn@latest add @ghibli/button
+# confirm src/components/ui/button.tsx appears
+
+# repo-local smoke test (spins up its own preview server)
+pnpm smoke:registry
+```
+
+### 5. Keep the host in sync on every change
+
+Each time you edit `registry/ghibli/**` or `registry.json`, the built `/r/*.json` needs to be refreshed on the host. Two options:
+
+- **Git-integrated hosts** (GitHub Pages Action, Cloudflare Pages, Netlify, Vercel): configure them to run `pnpm build:web` on every push to `main` and publish `apps/web/dist/` — nothing to maintain in the repo.
+- **Manual hosts**: add a CI job or local script that uploads `apps/web/dist/` after `pnpm build:web`.
+
+---
+
+## Local Development
+
+### Setup
+
+```bash
+pnpm install
+pnpm dev            # showcase app on the default Vite port
+pnpm dev:storybook  # isolated component inspection
+```
+
+`pnpm dev` runs `registry:build` first so `/r/*.json` is in sync with the current source.
+
+### Workspace layout
+
+```text
+apps/web                Vite showcase app + registry host (serves public/r/*.json)
+examples/consumer-vite  Minimal in-monorepo consumer example
+packages/ui             Internal re-export layer (not published; dev ergonomics only)
+packages/eslint-config  Shared ESLint config
+packages/tsconfig       Shared tsconfig base
+registry/ghibli/        Canonical installable sources — { ui, blocks, lib }
+registry.json           shadcn registry manifest (the install contract)
+scripts/                Smoke-test and build helpers
+```
+
+### Adding or editing a component
+
+1. Edit the source in `registry/ghibli/ui/<name>.tsx` (or `blocks/<name>.tsx`).
+2. Add the export to `packages/ui/src/index.ts` so the docs app and Storybook can import it.
+3. Add or update its entry in `registry.json`.
+4. Run `pnpm registry:build` so `apps/web/public/r/` stays in sync.
+
+### Path aliases
+
+Defined in `tsconfig.base.json`, mirrored in `apps/web/vite.config.ts`:
+
+- `@/components/ui/*` → `registry/ghibli/ui/*`
+- `@/components/blocks/*` → `registry/ghibli/blocks/*`
+- `@/lib/*` → `registry/ghibli/lib/*`
+- `@/*` → repo root
+
+Registry items ship with this same alias shape, so source copies cleanly into a consumer app.
+
+### Commands
+
+```bash
+pnpm dev              # showcase app (registry:build then vite)
+pnpm dev:storybook    # Storybook
+pnpm typecheck        # tsc across workspace
+pnpm lint             # eslint across workspace
+pnpm test             # vitest unit tests
+pnpm test:e2e         # Playwright, builds + previews first
+pnpm build:web        # registry:build then vite build → apps/web/dist
+pnpm build:storybook  # static Storybook build
+pnpm registry:build   # shadcn build → apps/web/public/r/*.json
+pnpm smoke:registry   # end-to-end: temp project installs @ghibli/all and builds
+```
+
+### Quality gates before handoff
 
 ```bash
 pnpm typecheck
@@ -136,6 +230,21 @@ pnpm build:storybook
 pnpm smoke:registry
 ```
 
+---
+
+## The Consumer Example
+
+`examples/consumer-vite` is a minimal app that renders a few components with the scenic theme applied. It imports from `@ghibli/ui` using the workspace protocol — so it validates that the _components_ work, not the _registry install flow_ (that's what `pnpm smoke:registry` is for).
+
+```bash
+pnpm --filter @ghibli/consumer-vite dev
+pnpm --filter @ghibli/consumer-vite build
+```
+
+---
+
 ## Notes
 
-The public contract is the registry, not `@ghibli/ui`. `packages/ui` exists only to make local docs, Storybook, and example development ergonomic inside the monorepo.
+- **The public contract is the registry, not `@ghibli/ui`.** `packages/ui` exists only to make local docs, Storybook, and the consumer example ergonomic inside the monorepo. It is not published and should not be imported by external apps.
+- **Nothing is published to npm.** All workspace packages are `private: true` by design. Consumers get source files via `shadcn add`, never an npm dependency.
+- **The docs app is a single anchored specimen page.** Every component, pattern, and guide lives on one route; legacy per-component URLs redirect to hash anchors.
