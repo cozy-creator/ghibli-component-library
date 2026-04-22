@@ -38,3 +38,5 @@ export * from "../../../registry/ghibli/blocks/layout/shell";
 export * from "../../../registry/ghibli/blocks/marketing/sections";
 export * from "../../../registry/ghibli/blocks/navigation/sidebar-nav";
 export * from "../../../registry/ghibli/blocks/shared/empty-state";
+export * from "../../../registry/ghibli/blocks/theme/change-theme-modal";
+export * from "../../../registry/ghibli/blocks/theme/theme-option-card";
