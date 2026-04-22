@@ -3,6 +3,10 @@
   "include": [
     "src",
     "../../registry"
+  ],
+  "exclude": [
+    "../../registry/**/*.test.ts",
+    "../../registry/**/*.test.tsx"
   ]
 }
 

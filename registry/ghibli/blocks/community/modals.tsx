@@ -12,6 +12,10 @@ import {
   DialogTitle
 } from "@/components/ui/dialog";
 import { HandDrawnFrame } from "@/components/ui/hand-drawn-frame";
+import {
+  THEME_SOUND_CATEGORIES,
+  useThemeSoundEffect,
+} from "@/lib/theme";
 import { cn } from "@/lib/utils";
 
 export interface CommunityImageModalItem {
@@ -465,6 +469,22 @@ export function CommunityImageModal({
 }: CommunityImageModalProps) {
   const image = images[currentIndex];
   const title = image?.title ?? "Community image";
+  const playNavigationSound = useThemeSoundEffect(
+    THEME_SOUND_CATEGORIES.mediaNavigation,
+    { volume: 0.7 }
+  );
+
+  const handlePrev = React.useCallback(() => {
+    if (currentIndex <= 0) return;
+    playNavigationSound();
+    onPrev?.();
+  }, [currentIndex, onPrev, playNavigationSound]);
+
+  const handleNext = React.useCallback(() => {
+    if (currentIndex < 0 || currentIndex >= images.length - 1) return;
+    playNavigationSound();
+    onNext?.();
+  }, [currentIndex, images.length, onNext, playNavigationSound]);
 
   React.useEffect(() => {
     if (!open) {
@@ -476,18 +496,18 @@ export function CommunityImageModal({
         onOpenChange(false);
       }
 
-      if (event.key === "ArrowLeft" && currentIndex > 0) {
-        onPrev?.();
+      if (event.key === "ArrowLeft") {
+        handlePrev();
       }
 
-      if (event.key === "ArrowRight" && currentIndex < images.length - 1) {
-        onNext?.();
+      if (event.key === "ArrowRight") {
+        handleNext();
       }
     };
 
     window.addEventListener("keydown", onKey);
     return () => window.removeEventListener("keydown", onKey);
-  }, [currentIndex, images.length, onNext, onOpenChange, onPrev, open]);
+  }, [handleNext, handlePrev, onOpenChange, open]);
 
   if (!image) {
     return null;
@@ -510,7 +530,7 @@ export function CommunityImageModal({
             aria-label="Show previous image"
             className="ghibli-community-modal-nav ghibli-community-modal-nav--prev"
             disabled={currentIndex <= 0}
-            onClick={onPrev}
+            onClick={handlePrev}
             size="icon-sm"
             type="button"
             variant="ghost"
@@ -528,7 +548,7 @@ export function CommunityImageModal({
             aria-label="Show next image"
             className="ghibli-community-modal-nav ghibli-community-modal-nav--next"
             disabled={currentIndex >= images.length - 1}
-            onClick={onNext}
+            onClick={handleNext}
             size="icon-sm"
             type="button"
             variant="ghost"
@@ -551,6 +571,22 @@ export function CommunityVideoModal({
 }: CommunityVideoModalProps) {
   const video = videos[currentIndex];
   const title = video?.title ?? "Community video";
+  const playNavigationSound = useThemeSoundEffect(
+    THEME_SOUND_CATEGORIES.mediaNavigation,
+    { volume: 0.7 }
+  );
+
+  const handlePrev = React.useCallback(() => {
+    if (currentIndex <= 0) return;
+    playNavigationSound();
+    onPrev?.();
+  }, [currentIndex, onPrev, playNavigationSound]);
+
+  const handleNext = React.useCallback(() => {
+    if (currentIndex < 0 || currentIndex >= videos.length - 1) return;
+    playNavigationSound();
+    onNext?.();
+  }, [currentIndex, onNext, playNavigationSound, videos.length]);
 
   React.useEffect(() => {
     if (!open) {
@@ -562,18 +598,18 @@ export function CommunityVideoModal({
         onOpenChange(false);
       }
 
-      if (event.key === "ArrowLeft" && currentIndex > 0) {
-        onPrev?.();
+      if (event.key === "ArrowLeft") {
+        handlePrev();
       }
 
-      if (event.key === "ArrowRight" && currentIndex < videos.length - 1) {
-        onNext?.();
+      if (event.key === "ArrowRight") {
+        handleNext();
       }
     };
 
     window.addEventListener("keydown", onKey);
     return () => window.removeEventListener("keydown", onKey);
-  }, [currentIndex, onNext, onOpenChange, onPrev, open, videos.length]);
+  }, [handleNext, handlePrev, onOpenChange, open]);
 
   if (!video) {
     return null;
@@ -596,7 +632,7 @@ export function CommunityVideoModal({
             aria-label="Show previous video"
             className="ghibli-community-modal-nav ghibli-community-modal-nav--prev"
             disabled={currentIndex <= 0}
-            onClick={onPrev}
+            onClick={handlePrev}
             size="icon-sm"
             type="button"
             variant="ghost"
@@ -614,7 +650,7 @@ export function CommunityVideoModal({
             aria-label="Show next video"
             className="ghibli-community-modal-nav ghibli-community-modal-nav--next"
             disabled={currentIndex >= videos.length - 1}
-            onClick={onNext}
+            onClick={handleNext}
             size="icon-sm"
             type="button"
             variant="ghost"

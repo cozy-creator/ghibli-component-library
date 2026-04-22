@@ -7,8 +7,8 @@ export interface ThemeOption {
   availabilityLabel?: string;
   id: ThemeId;
   name: string;
-  previewAlt?: string;
-  previewSrc?: string;
+  previewAlt: string;
+  previewSrc: string;
 }
 
 export const THEME_OPTIONS = [

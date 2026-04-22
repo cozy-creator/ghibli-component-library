@@ -32,6 +32,7 @@ html[data-theme="hand-drawn-paper"] {
   --paper: #eece84;
   --paper-soft: #faf4e8;
   --surface-shell: #f4e5c3;
+  --surface-shell-background: none;
   --surface-highlight: #f5ead0;
   --surface-highlight-border: #e6d3a3;
 
@@ -41,6 +42,7 @@ html[data-theme="hand-drawn-paper"] {
   --ink-soft: #7d6552;
   --muted: #eadfcb;
   --muted-foreground: #7a6857;
+  --footer-muted-foreground: var(--ink-soft);
 
   /* Brand / accent */
   --primary: #587855;
@@ -100,7 +102,7 @@ html[data-theme="hand-drawn-paper"] {
   --prose-inline-code-background: rgba(255, 255, 255, 0.45);
   --surface-wash-background:
     linear-gradient(180deg, rgba(255, 255, 255, 0.28), transparent 18rem),
-    color-mix(in oklab, var(--paper) 76%, white);
+    color-mix(in oklab, var(--paper) 99%, white);
   --texture-paper-overlay-image: var(--texture-paper-overlay-image-source);
   --scrollbar-track: var(--background);
   --scrollbar-thumb: color-mix(in oklab, var(--border-strong) 72%, transparent);
@@ -118,56 +120,88 @@ html[data-theme="hand-drawn-paper"] {
   --surface-overlay-strongest: rgba(255, 251, 244, 0.96);
   --surface-footer: rgba(255, 255, 255, 0.3);
   --surface-panel-floating: rgba(247, 241, 229, 0.95);
-  --surface-card-gradient:
-    linear-gradient(180deg, rgba(249, 243, 226, 0.98), rgba(239, 227, 193, 0.98));
-  --surface-panel-gradient:
-    linear-gradient(180deg, rgba(255, 255, 255, 0.5), rgba(250, 244, 232, 0.96));
+  --surface-card-gradient: linear-gradient(
+    180deg,
+    rgba(249, 243, 226, 0.98),
+    rgba(239, 227, 193, 0.98)
+  );
+  --surface-panel-gradient: linear-gradient(
+    180deg,
+    rgba(255, 255, 255, 0.5),
+    rgba(250, 244, 232, 0.96)
+  );
+  --theme-floating-action-glow:
+    linear-gradient(90deg, transparent, rgba(181, 176, 108, 0.36), transparent)
+      bottom / 100% 1px no-repeat,
+    radial-gradient(
+      circle at 50% 94%,
+      rgba(199, 189, 114, 0.34) 0%,
+      rgba(134, 160, 115, 0.22) 38%,
+      rgba(207, 214, 168, 0.08) 68%,
+      transparent 86%
+    ),
+    linear-gradient(
+      to top,
+      rgba(163, 182, 143, 0.46) 0%,
+      rgba(197, 185, 120, 0.28) 38%,
+      rgba(223, 230, 197, 0.12) 62%,
+      transparent 100%
+    );
   --overlay-backdrop: rgba(54, 42, 31, 0.34);
   --overlay-backdrop-soft: rgba(54, 42, 31, 0.28);
   --media-overlay-backdrop: rgba(8, 7, 6, 0.82);
-  --texture-overlay-opacity: 0.7;
+  --texture-overlay-opacity: 0.9;
 }
 
 html[data-theme="ghibli-forest"] {
   /* Surface / background */
-  --background: #eef3e9;
-  --card: #fbfdf8;
-  --card-foreground: #384438;
-  --popover: #fcfef9;
-  --popover-foreground: #384438;
-  --paper: #d7ddb2;
-  --paper-soft: #f5f8ef;
-  --surface-shell: #d9e2cf;
-  --surface-highlight: #e7eddc;
-  --surface-highlight-border: #b7c59f;
+  --background: #ebf2e1;
+  --card: #f7f9f0;
+  --card-foreground: #2f3b2f;
+  --popover: #fbfdf5;
+  --popover-foreground: #2f3b2f;
+  --paper: #c6d59a;
+  --paper-soft: #eef4df;
+  --surface-shell: #ad8760;
+  --surface-shell-background:
+    linear-gradient(180deg, rgba(255, 236, 201, 0.2), rgba(87, 53, 23, 0.12)),
+    repeating-linear-gradient(
+      90deg,
+      rgba(133, 87, 43, 0.1) 0 12px,
+      rgba(181, 129, 74, 0.16) 12px 22px,
+      rgba(114, 73, 36, 0.12) 22px 34px
+    );
+  --surface-highlight: #d7e3ba;
+  --surface-highlight-border: #889c63;
 
   /* Foreground / text */
-  --foreground: #384438;
-  --ink-strong: #273427;
-  --ink-soft: #667561;
-  --muted: #dce7d7;
-  --muted-foreground: #66745f;
+  --foreground: #2f3b2f;
+  --ink-strong: #1f2a1f;
+  --ink-soft: #506049;
+  --muted: #d5dfcf;
+  --muted-foreground: var(--ink-strong);
+  --footer-muted-foreground: var(--destructive-foreground);
 
   /* Brand / accent */
-  --primary: #5c7751;
+  --primary: #4e6b31;
   --primary-foreground: #f6faef;
-  --primary-edge: #48613e;
-  --primary-soft: rgba(92, 119, 81, 0.12);
-  --secondary: #dbe4d3;
-  --secondary-foreground: #485646;
-  --accent: #7da29e;
-  --accent-foreground: #27403c;
+  --primary-edge: #38511f;
+  --primary-soft: rgba(78, 107, 49, 0.14);
+  --secondary: #d3ddc4;
+  --secondary-foreground: #40513d;
+  --accent: #8ca164;
+  --accent-foreground: #26351c;
 
   /* Border / focus */
-  --border: #7b845e;
-  --border-soft: #d2dccb;
-  --border-strong: #97a784;
-  --border-faint: rgba(123, 132, 94, 0.18);
-  --input: #e9efe1;
-  --ring: #92af8b;
+  --border: #667440;
+  --border-soft: #c8d4bd;
+  --border-strong: #7f8f57;
+  --border-faint: rgba(102, 116, 64, 0.18);
+  --input: #e4ecd7;
+  --ring: #a7b85f;
 
   /* Status */
-  --success: #708c5d;
+  --success: #67844a;
   --destructive: #b86d5d;
   --destructive-foreground: #fff7f3;
   --destructive-edge: #914f44;
@@ -176,62 +210,136 @@ html[data-theme="ghibli-forest"] {
   --destructive-soft-border: rgba(184, 109, 93, 0.28);
 
   /* Scenic tones */
-  --cloud-surface: #edf3eb;
-  --cloud-ink: #556356;
-  --cloud-border: #afbcab;
-  --lantern: #e4b66d;
-  --lantern-edge: #b78137;
-  --meadow-surface: #dbe8d3;
-  --meadow-ink: #41523f;
-  --meadow-border: #829878;
-  --river-surface: #d9e7e5;
-  --river-ink: #375059;
-  --river-border: #7e9ea2;
+  --cloud-surface: #eef4e5;
+  --cloud-ink: #4e5f4d;
+  --cloud-border: #a6b694;
+  --lantern: #ebc86d;
+  --lantern-edge: #b57b27;
+  --meadow-surface: #d7e3c4;
+  --meadow-ink: #3f5236;
+  --meadow-border: #738b52;
+  --river-surface: #d8e6d8;
+  --river-ink: #324c33;
+  --river-border: #769164;
   --rose-surface: #e7d7d0;
   --rose-ink: #634944;
   --rose-border: #a78379;
 
   /* Decorative theme variables */
   --app-background-image:
-    radial-gradient(circle at top, rgba(255, 255, 255, 0.46), transparent 36%),
-    linear-gradient(180deg, rgba(125, 162, 158, 0.18), transparent 15rem),
+    radial-gradient(
+      circle at 50% 13%,
+      rgba(255, 245, 191, 0.52),
+      rgba(255, 247, 211, 0.18) 24%,
+      transparent 46%
+    ),
+    radial-gradient(
+      circle at 50% 70%,
+      rgba(255, 219, 132, 0.18),
+      transparent 28%
+    ),
+    linear-gradient(
+      90deg,
+      rgba(17, 47, 18, 0.48),
+      transparent 15%,
+      transparent 85%,
+      rgba(17, 47, 18, 0.48)
+    ),
     linear-gradient(
       180deg,
-      rgba(247, 250, 243, 0.88),
-      rgba(238, 243, 233, 0.98)
+      rgba(18, 40, 12, 0.28),
+      transparent 18%,
+      transparent 72%,
+      rgba(16, 34, 12, 0.24)
     ),
+    url("/themes/forest/background-main.webp") center / cover no-repeat,
     var(--background);
-  --selection-background: rgba(228, 182, 109, 0.34);
+  --selection-background: rgba(235, 200, 109, 0.44);
   --selection-foreground: var(--ink-strong);
-  --prose-inline-code-background: rgba(250, 253, 247, 0.58);
+  --prose-inline-code-background: rgba(250, 252, 241, 0.66);
   --surface-wash-background:
-    linear-gradient(180deg, rgba(255, 255, 255, 0.24), transparent 18rem),
-    color-mix(in oklab, var(--meadow-surface) 82%, white);
-  --texture-paper-overlay-image: var(--texture-paper-overlay-image-source);
-  --scrollbar-track: color-mix(in oklab, var(--background) 96%, white 4%);
-  --scrollbar-thumb: color-mix(in oklab, var(--border-strong) 76%, transparent);
+    radial-gradient(
+      circle at 50% 14%,
+      rgba(255, 247, 203, 0.18),
+      transparent 32%
+    ),
+    linear-gradient(180deg, rgba(255, 255, 255, 0.08), transparent 18rem),
+    linear-gradient(
+      90deg,
+      rgba(25, 54, 20, 0.2),
+      transparent 18%,
+      transparent 82%,
+      rgba(25, 54, 20, 0.18)
+    );
+  --texture-paper-overlay-image: none;
+  --scrollbar-track: color-mix(in oklab, var(--background) 92%, #23361f 8%);
+  --scrollbar-thumb: color-mix(in oklab, var(--border-strong) 82%, transparent);
   --scrollbar-thumb-hover: color-mix(
     in oklab,
-    var(--primary-edge) 84%,
+    var(--primary-edge) 88%,
     transparent
   );
-  --surface-overlay: rgba(252, 254, 249, 0.48);
-  --surface-overlay-hover: rgba(252, 254, 249, 0.72);
-  --surface-overlay-strong: rgba(250, 253, 247, 0.84);
-  --surface-overlay-stronger: rgba(250, 253, 247, 0.9);
-  --surface-overlay-soft: rgba(245, 248, 239, 0.74);
-  --surface-overlay-soft-strong: rgba(245, 248, 239, 0.86);
-  --surface-overlay-strongest: rgba(250, 253, 247, 0.95);
-  --surface-footer: rgba(250, 253, 247, 0.34);
-  --surface-panel-floating: rgba(238, 243, 233, 0.95);
+  --surface-overlay: rgba(245, 250, 236, 0.58);
+  --surface-overlay-hover: rgba(245, 250, 236, 0.74);
+  --surface-overlay-strong: rgba(244, 249, 234, 0.88);
+  --surface-overlay-stronger: rgba(244, 249, 234, 0.93);
+  --surface-overlay-soft: rgba(236, 244, 221, 0.8);
+  --surface-overlay-soft-strong: rgba(236, 244, 221, 0.89);
+  --surface-overlay-strongest: rgba(246, 251, 238, 0.97);
+  --surface-footer: rgba(247, 251, 241, 0.36);
+  --surface-panel-floating: rgba(232, 242, 219, 0.92);
   --surface-card-gradient:
-    linear-gradient(180deg, rgba(248, 251, 243, 0.98), rgba(224, 235, 214, 0.98));
+    radial-gradient(
+      circle at 50% 16%,
+      rgba(255, 242, 179, 0.16),
+      transparent 28%
+    ),
+    linear-gradient(
+      180deg,
+      rgba(194, 214, 150, 0.96) 0%,
+      rgba(116, 149, 71, 0.95) 55%,
+      rgba(171, 198, 120, 0.97) 100%
+    );
   --surface-panel-gradient:
-    linear-gradient(180deg, rgba(252, 254, 249, 0.56), rgba(245, 248, 239, 0.98));
-  --overlay-backdrop: rgba(39, 52, 39, 0.34);
-  --overlay-backdrop-soft: rgba(39, 52, 39, 0.28);
-  --media-overlay-backdrop: rgba(18, 24, 17, 0.84);
-  --texture-overlay-opacity: 0.42;
+    radial-gradient(
+      circle at 50% 14%,
+      rgba(255, 240, 177, 0.14),
+      transparent 24%
+    ),
+    linear-gradient(
+      90deg,
+      rgba(36, 67, 29, 0.18),
+      transparent 14%,
+      transparent 86%,
+      rgba(36, 67, 29, 0.18)
+    ),
+    linear-gradient(
+      180deg,
+      rgba(191, 213, 143, 0.9) 0%,
+      rgba(107, 140, 65, 0.92) 44%,
+      rgba(148, 181, 102, 0.9) 100%
+    );
+  --theme-floating-action-glow:
+    linear-gradient(90deg, transparent, rgba(214, 184, 93, 0.42), transparent)
+      bottom / 100% 1px no-repeat,
+    radial-gradient(
+      circle at 50% 94%,
+      rgba(241, 207, 113, 0.34) 0%,
+      rgba(182, 164, 88, 0.18) 34%,
+      rgba(112, 146, 72, 0.16) 62%,
+      transparent 84%
+    ),
+    linear-gradient(
+      to top,
+      rgba(121, 145, 73, 0.46) 0%,
+      rgba(191, 179, 92, 0.24) 38%,
+      rgba(229, 236, 173, 0.1) 62%,
+      transparent 100%
+    );
+  --overlay-backdrop: rgba(20, 31, 15, 0.44);
+  --overlay-backdrop-soft: rgba(20, 31, 15, 0.34);
+  --media-overlay-backdrop: rgba(11, 19, 9, 0.86);
+  --texture-overlay-opacity: 0;
 }
 
 @theme inline {
@@ -272,7 +380,6 @@ html[data-theme="ghibli-forest"] {
     min-height: 100vh;
     color: var(--foreground);
     background-color: var(--background);
-    background: var(--app-background-image);
   }
 
   #root {
@@ -316,7 +423,11 @@ html[data-theme="ghibli-forest"] {
 .ghibli-prose {
   max-width: 72ch;
   line-height: 1.85;
-  color: var(--muted-foreground);
+  color: var(--card-foreground);
+}
+
+.app-backdrop {
+  background: var(--surface-wash-background), var(--app-background-image);
 }
 
 .sr-only {

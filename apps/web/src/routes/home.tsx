@@ -95,6 +95,9 @@ import {
 
 const installCommand = "pnpm dlx shadcn@latest add @ghibli/components";
 
+const forestReadableTextClass =
+  "[html[data-theme='ghibli-forest']_&]:inline-block [html[data-theme='ghibli-forest']_&]:rounded-sm [html[data-theme='ghibli-forest']_&]:bg-black/40 [html[data-theme='ghibli-forest']_&]:px-3 [html[data-theme='ghibli-forest']_&]:py-1 [html[data-theme='ghibli-forest']_&]:text-white";
+
 const registrySnippet = `{
   "registries": {
     "@ghibli": "https://<your-domain>/r/{name}.json"
@@ -195,13 +198,26 @@ function LibraryMark({ className }: { className?: string }) {
   );
 }
 
-function DemoSurface({ children }: { children: ReactNode }) {
+function DemoSurface({
+  children,
+  className,
+}: {
+  children: ReactNode;
+  className?: string;
+}) {
   return (
-    <div className="min-w-0 border border-[color:var(--border-soft)] bg-[color:rgba(255,255,255,0.35)] p-4">
+    <div
+      className={`min-w-0 border border-[color:var(--border-soft)] bg-[color:rgba(255,255,255,0.35)] p-4${
+        className ? ` ${className}` : ""
+      }`}
+    >
       {children}
     </div>
   );
 }
+
+const forestWoodSurfaceClass =
+  "[html[data-theme='ghibli-forest']_&]:bg-[color:var(--surface-shell)] [html[data-theme='ghibli-forest']_&]:bg-[image:var(--surface-shell-background)] [html[data-theme='ghibli-forest']_&]:border-[color:var(--border)] [html[data-theme='ghibli-forest']_&]:shadow-[0_10px_30px_color-mix(in_oklab,var(--ink-strong)_18%,transparent)]";
 
 function FrameRulerField({
   description,
@@ -323,11 +339,15 @@ function Specimen({
         />
       </div>
       <div className="grid content-start gap-2">
-        <h2 className="font-[var(--font-heading)] text-3xl leading-none text-[color:var(--ink-strong)]">
+        <h2
+          className={`font-[var(--font-heading)] text-3xl leading-none text-[color:var(--ink-strong)] ${forestReadableTextClass}`}
+        >
           {title}
         </h2>
         {note ? (
-          <p className="text-sm leading-7 text-[color:var(--muted-foreground)]">
+          <p
+            className={`text-sm leading-7 text-[color:var(--muted-foreground)] ${forestReadableTextClass}`}
+          >
             {note}
           </p>
         ) : null}
@@ -577,7 +597,9 @@ export function HomePage() {
         <div className="grid gap-4 md:grid-cols-[minmax(0,1.1fr)_minmax(18rem,0.9fr)]">
           <DemoSurface>
             <div className="grid gap-3">
-              <p className="text-xs font-semibold uppercase tracking-[0.18em] text-[color:var(--muted-foreground)]">
+              <p
+                className={`text-xs font-semibold uppercase tracking-[0.18em] text-[color:var(--muted-foreground)] ${forestReadableTextClass}`}
+              >
                 Install all components
               </p>
               <CodeBlock>{installCommand}</CodeBlock>
@@ -585,7 +607,9 @@ export function HomePage() {
           </DemoSurface>
           <DemoSurface>
             <div className="grid gap-3">
-              <p className="text-xs font-semibold uppercase tracking-[0.18em] text-[color:var(--muted-foreground)]">
+              <p
+                className={`text-xs font-semibold uppercase tracking-[0.18em] text-[color:var(--muted-foreground)] ${forestReadableTextClass}`}
+              >
                 Registry setup
               </p>
               <CodeBlock>{registrySnippet}</CodeBlock>
@@ -686,7 +710,7 @@ export function HomePage() {
           title="Hand Drawn Frame"
         >
           <div className="grid gap-4 lg:grid-cols-[minmax(0,18rem)_minmax(0,1fr)]">
-            <DemoSurface>
+            <DemoSurface className={forestWoodSurfaceClass}>
               <div className="grid gap-3">
                 <FrameRulerField
                   description="Lower values keep the frame closer to a steady surface."
@@ -711,7 +735,7 @@ export function HomePage() {
                 />
               </div>
             </DemoSurface>
-            <DemoSurface>
+            <DemoSurface className={forestWoodSurfaceClass}>
               <div className="grid gap-4">
                 <div className="grid gap-1">
                   <p className="font-[var(--font-heading)] text-xl text-[color:var(--ink-strong)]">
@@ -787,7 +811,7 @@ export function HomePage() {
           title="Input, Textarea, Form Field"
         >
           <div className="grid gap-4 xl:grid-cols-[minmax(0,1.1fr)_minmax(0,0.9fr)]">
-            <DemoSurface>
+            <DemoSurface className={forestWoodSurfaceClass}>
               <div className="grid gap-4">
                 <div className="grid gap-1">
                   <p className="font-[var(--font-heading)] text-xl text-[color:var(--ink-strong)]">
@@ -812,7 +836,7 @@ export function HomePage() {
               </div>
             </DemoSurface>
             <div className="grid gap-4">
-              <DemoSurface>
+              <DemoSurface className={forestWoodSurfaceClass}>
                 <div className="grid gap-4">
                   <div className="grid gap-1">
                     <p className="font-[var(--font-heading)] text-xl text-[color:var(--ink-strong)]">
@@ -841,7 +865,7 @@ export function HomePage() {
                   </FormField>
                 </div>
               </DemoSurface>
-              <DemoSurface>
+              <DemoSurface className={forestWoodSurfaceClass}>
                 <div className="grid gap-4">
                   <div className="grid gap-1">
                     <p className="font-[var(--font-heading)] text-xl text-[color:var(--ink-strong)]">

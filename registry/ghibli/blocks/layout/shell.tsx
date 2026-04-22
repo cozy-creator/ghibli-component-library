@@ -18,6 +18,7 @@ import {
   SheetTitle,
   SheetTrigger
 } from "@/components/ui/sheet";
+import { useTheme } from "@/lib/theme";
 import { cn, focusRingClass, type NavItem } from "@/lib/utils";
 
 export interface ShellNavItem extends NavItem {
@@ -173,17 +174,23 @@ export function ShellHeader({
   const sheetPrimaryAction = primaryAction
     ? renderSheetPrimaryAction(primaryAction)
     : null;
+  const { theme } = useTheme();
+  const isForestTheme = theme === "ghibli-forest";
 
   return (
     <header className="sticky top-4 z-40">
       <HandDrawnFrame
         className={className}
         contentClassName="px-4 py-3"
-        surfaceClassName="bg-[color:var(--surface-shell)] backdrop-blur-md"
+        surfaceClassName={cn(
+          "bg-[color:var(--surface-shell)] bg-[image:var(--surface-shell-background)] backdrop-blur-md",
+          isForestTheme &&
+            "shadow-[0_10px_30px_color-mix(in_oklab,var(--ink-strong)_18%,transparent)]"
+        )}
         strokeColor="var(--border)"
-        strokeWidth={2.1}
-        crookednessIntensity={0.5}
-        thicknessIntensity={4}
+        strokeWidth={isForestTheme ? 1.9 : 2.1}
+        crookednessIntensity={isForestTheme ? 0 : 0.5}
+        thicknessIntensity={isForestTheme ? 0 : 4}
       >
         <div
           className="shell-header-layout"
