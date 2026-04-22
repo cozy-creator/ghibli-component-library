@@ -202,12 +202,7 @@ export const communityImageItems = [
     createdAtLabel: "2 hours ago",
     description: "Painterly landscape card with room for title, meta, and short supporting copy.",
     id: "forest",
-    imageUrl: scenicDataUri({
-      accent: "#f3c177",
-      label: "Forest Lantern Walk",
-      skyBottom: "#d8e4c2",
-      skyTop: "#b7d8d8"
-    }),
+    imageUrl: "https://picsum.photos/seed/ghibli-forest-lantern/1200/800",
     meta: "Updated 2h ago",
     negativePromptText: "harsh contrast, oversharpening, cluttered skyline",
     promptText:
@@ -219,12 +214,7 @@ export const communityImageItems = [
     createdAtLabel: "Yesterday",
     description: "Warm editorial postcard treatment that still reads like a reusable UI card.",
     id: "coast",
-    imageUrl: scenicDataUri({
-      accent: "#efb57c",
-      label: "Harbor Tea Break",
-      skyBottom: "#f0dfb7",
-      skyTop: "#9ec7db"
-    }),
+    imageUrl: "https://picsum.photos/seed/ghibli-harbor-tea/1200/800",
     meta: "Updated yesterday",
     negativePromptText: "busy crowds, modern signage, noisy reflections",
     promptText:
@@ -255,16 +245,12 @@ export const communityVideoItems = [
     id: "video-1",
     meta: "Preview loop • 12s",
     negativePromptText: "camera shake, modern neon, harsh shadows",
-    posterUrl: scenicDataUri({
-      accent: "#f0b970",
-      label: "Lantern Ferry",
-      skyBottom: "#d6c38f",
-      skyTop: "#9db6cd"
-    }),
+    posterUrl: "https://picsum.photos/seed/ghibli-lantern-ferry/1200/800",
     promptText:
       "Slow ferry drifting through lantern reflections at dusk, watercolor ripples, quiet cinematic motion.",
     title: "Lantern ferry glide",
-    videoUrl: "https://interactive-examples.mdn.mozilla.net/media/cc0-videos/flower.mp4"
+    videoUrl:
+      "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerBlazes.mp4"
   },
   {
     authorName: "Jun Atelier",
@@ -273,16 +259,12 @@ export const communityVideoItems = [
     id: "video-2",
     meta: "Preview loop • 8s",
     negativePromptText: "compression artifacts, flicker, oversaturated lights",
-    posterUrl: scenicDataUri({
-      accent: "#cf8b74",
-      label: "Window Rain Study",
-      skyBottom: "#c8bea6",
-      skyTop: "#96acc5"
-    }),
+    posterUrl: "https://picsum.photos/seed/ghibli-window-rain/1200/800",
     promptText:
       "Rain tracing a train window at night, dim interior reflections, soft hand-painted movement and muted city glow.",
     title: "Window rain study",
-    videoUrl: "https://interactive-examples.mdn.mozilla.net/media/cc0-videos/flower.mp4"
+    videoUrl:
+      "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerMeltdowns.mp4"
   }
 ];
 
