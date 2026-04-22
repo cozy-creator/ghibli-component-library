@@ -11,6 +11,35 @@ const themeSwatches: Record<string, readonly string[]> = {
   "ocean-breeze": ["#e6f1f4", "#b8d4dc", "#5a8ca0", "#26566a", "#142934"]
 };
 
+function ThemePreview({ option }: { option: ThemeOption }) {
+  if (option.previewSrc) {
+    return (
+      <img
+        alt=""
+        aria-hidden="true"
+        className={cn(
+          "size-full object-cover transition-transform duration-300",
+          option.available ? "group-hover:scale-[1.02]" : "scale-100 saturate-[0.85]"
+        )}
+        src={option.previewSrc}
+      />
+    );
+  }
+
+  const swatches = themeSwatches[option.id] ?? themeSwatches["hand-drawn-paper"]!;
+  return (
+    <div className="grid size-full grid-cols-5">
+      {swatches.map((color, index) => (
+        <span
+          aria-hidden="true"
+          key={`${option.id}-swatch-${index}`}
+          style={{ background: color }}
+        />
+      ))}
+    </div>
+  );
+}
+
 export interface ThemeOptionCardProps
   extends Omit<React.ComponentPropsWithoutRef<"button">, "onSelect"> {
   onSelect: (themeId: ThemeOptionId) => void;
@@ -26,7 +55,6 @@ export const ThemeOptionCard = React.forwardRef<
   ref
 ) {
   const isAvailable = option.available;
-  const swatches = themeSwatches[option.id] ?? themeSwatches["hand-drawn-paper"]!;
 
   return (
     <button
@@ -66,15 +94,7 @@ export const ThemeOptionCard = React.forwardRef<
             {option.availabilityLabel}
           </span>
         ) : null}
-        <div className="grid size-full grid-cols-5">
-          {swatches.map((color, index) => (
-            <span
-              aria-hidden="true"
-              key={`${option.id}-swatch-${index}`}
-              style={{ background: color }}
-            />
-          ))}
-        </div>
+        <ThemePreview option={option} />
       </div>
       <div className="flex min-h-11 items-center justify-center px-3 py-2 text-center text-[0.82rem] leading-tight font-medium">
         <span>{option.name}</span>
