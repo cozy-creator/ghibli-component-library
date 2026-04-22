@@ -8,6 +8,7 @@ import {
   Heart,
   LogIn,
   LogOut,
+  Palette,
   Share2,
   Sparkles,
   UserRound,
@@ -15,11 +16,19 @@ import {
 } from "lucide-react";
 
 import {
+  AccountApiCreditsSection,
+  AccountChangeEmailDialog,
+  AccountChangePasswordDialog,
+  AccountLinkedAccountsSection,
+  AccountProfileSection,
+  AccountSubscriptionSection,
+  AccountUserDisplayBox,
   AuthDialog,
   AVAILABLE_THEME_IDS,
   Badge,
   Button,
   CartoonButton,
+  ChangeThemeModal,
   cn,
   CommunityImageCard,
   CommunityImageModal,
@@ -76,10 +85,14 @@ import {
   aspectRatioOptions,
   communityImageItems,
   communityVideoItems,
+  creditLedger,
+  creditOffers,
   faqItems,
   footerColumns,
   generateModelItems,
+  linkedAccounts,
   modeOptions,
+  subscriptionOffers,
 } from "@/apps/web/src/data/demo-fixtures";
 
 const installCommand = "pnpm dlx shadcn@latest add @ghibli/components";
@@ -428,6 +441,13 @@ function TokenSwatch({
 
 export function HomePage() {
   const [activeTab, setActiveTab] = useState("live-feed");
+  const [isChangeThemeOpen, setIsChangeThemeOpen] = useState(false);
+  const [isAccountEmailOpen, setIsAccountEmailOpen] = useState(false);
+  const [isAccountPasswordOpen, setIsAccountPasswordOpen] = useState(false);
+  const [accountNewEmail, setAccountNewEmail] = useState("mei@ghibli-ui.test");
+  const [accountCurrentPassword, setAccountCurrentPassword] = useState("");
+  const [accountNewPassword, setAccountNewPassword] = useState("");
+  const [accountConfirmPassword, setAccountConfirmPassword] = useState("");
   const [mode, setMode] = useState("image");
   const [model, setModel] = useState("flux-dev");
   const [aspectRatio, setAspectRatio] = useState("9/16");
@@ -618,6 +638,12 @@ export function HomePage() {
                     icon: <UserRound className="size-4" />,
                     id: "account",
                     label: "Account",
+                  },
+                  {
+                    icon: <Palette className="size-4" />,
+                    id: "theme",
+                    label: "Theme",
+                    onSelect: () => setIsChangeThemeOpen(true),
                   },
                   {
                     destructive: true,
@@ -891,6 +917,120 @@ export function HomePage() {
         </Specimen>
       </ShowcaseGroup>
 
+      <ShowcaseGroup id="account-screens">
+        <Specimen
+          id="pattern-account-user-display"
+          note="Primary profile header for the account page: avatar upload, username edit, generation count, and password action."
+          title="Account User Display"
+        >
+          <DemoSurface>
+            <AccountUserDisplayBox
+              avatarUrl={mockHeaderAvatarUrl}
+              email="mei@ghibli-ui.test"
+              generatedCount={127}
+              hasCustomAvatar
+              hasPassword
+              name="Mei Studio"
+              onEditName={() => undefined}
+              onPasswordAction={() => setIsAccountPasswordOpen(true)}
+              onRemoveAvatar={() => undefined}
+              onUploadAvatar={() => undefined}
+            />
+          </DemoSurface>
+        </Specimen>
+
+        <Specimen
+          id="pattern-account-profile-summary"
+          note="Quiet profile summary for the top of billing pages."
+          title="Account Profile Section"
+        >
+          <DemoSurface>
+            <AccountProfileSection
+              actions={
+                <>
+                  <Button onClick={() => setIsAccountEmailOpen(true)} variant="outline">
+                    Change email
+                  </Button>
+                  <Button onClick={() => setIsAccountPasswordOpen(true)} variant="secondary">
+                    Change password
+                  </Button>
+                </>
+              }
+              avatarUrl={mockHeaderAvatarUrl}
+              email="mei@ghibli-ui.test"
+              name="Mei Studio"
+              planLabel="Yearly Atelier"
+            />
+          </DemoSurface>
+        </Specimen>
+
+        <Specimen
+          id="pattern-account-subscription"
+          note="Subscription plan card with status badge, feature list, and upgrade offers."
+          title="Subscription Section"
+        >
+          <DemoSurface>
+            <AccountSubscriptionSection
+              actions={
+                <Button variant="outline">Manage billing</Button>
+              }
+              features={[
+                "Unlimited generations",
+                "Priority render queue",
+                "API access",
+                "25,000 monthly credits"
+              ]}
+              note="Switching plans takes effect on the next billing cycle."
+              offers={subscriptionOffers}
+              planName="Yearly Atelier"
+              renewalText="Renews on Apr 25, 2026"
+              status="active"
+            />
+          </DemoSurface>
+        </Specimen>
+
+        <Specimen
+          id="pattern-account-credits"
+          note="Credit balance, recent ledger entries, and top-up offers side by side."
+          title="API Credits Section"
+        >
+          <DemoSurface>
+            <AccountApiCreditsSection
+              balanceLabel="2,450 credits"
+              ledger={creditLedger}
+              offers={creditOffers}
+            />
+          </DemoSurface>
+        </Specimen>
+
+        <Specimen
+          id="pattern-account-linked"
+          note="OAuth and third-party provider connections with connection-state badges."
+          title="Linked Accounts Section"
+        >
+          <DemoSurface>
+            <AccountLinkedAccountsSection accounts={linkedAccounts} />
+          </DemoSurface>
+        </Specimen>
+
+        <Specimen
+          id="pattern-account-dialogs"
+          note="Change-email and change-password dialogs, controlled from the account screens."
+          title="Account Dialogs"
+        >
+          <DemoSurface>
+            <div className="flex flex-wrap gap-3">
+              <Button onClick={() => setIsAccountEmailOpen(true)} variant="secondary">
+                Open change email
+              </Button>
+              <Button onClick={() => setIsAccountPasswordOpen(true)} variant="secondary">
+                Open change password
+              </Button>
+            </div>
+          </DemoSurface>
+        </Specimen>
+      </ShowcaseGroup>
+
       <ShowcaseGroup id="community-flows">
         <Specimen
           id="pattern-community-cards"
@@ -1136,12 +1276,21 @@ export function HomePage() {
       <ShowcaseGroup id="new-in-sync">
         <Specimen
           id="pattern-theme-switcher"
-          note="Runtime theme switching via data-theme on the document root. State persists to localStorage."
+          note="Runtime theme switching via data-theme on the document root. State persists to localStorage. Also reachable from the header user menu → Theme."
           title="Theme Switcher"
         >
           <DemoSurface>
             <div className="grid gap-4">
               <ThemeSwitcher />
+              <div className="flex flex-wrap items-center gap-3">
+                <Button onClick={() => setIsChangeThemeOpen(true)} variant="outline">
+                  <Palette className="size-4" />
+                  Open Change Theme modal
+                </Button>
+                <span className="text-xs text-[color:var(--muted-foreground)]">
+                  Same modal the header user menu opens.
+                </span>
+              </div>
               <p className="text-sm leading-7 text-[color:var(--muted-foreground)]">
                 Selecting a theme rewrites every scoped CSS variable (surfaces,
                 scenic tones, overlays, scrollbar). Components reading{" "}
@@ -1333,6 +1482,41 @@ export function HomePage() {
           />
         </Specimen>
       </ShowcaseGroup>
+
+      <ChangeThemeModal
+        onOpenChange={setIsChangeThemeOpen}
+        open={isChangeThemeOpen}
+      />
+
+      <AccountChangeEmailDialog
+        currentEmail="mei@ghibli-ui.test"
+        newEmail={accountNewEmail}
+        onNewEmailChange={setAccountNewEmail}
+        onOpenChange={setIsAccountEmailOpen}
+        onSubmit={(event) => {
+          event.preventDefault();
+          setIsAccountEmailOpen(false);
+        }}
+        open={isAccountEmailOpen}
+      />
+
+      <AccountChangePasswordDialog
+        confirmPassword={accountConfirmPassword}
+        currentPassword={accountCurrentPassword}
+        newPassword={accountNewPassword}
+        onConfirmPasswordChange={setAccountConfirmPassword}
+        onCurrentPasswordChange={setAccountCurrentPassword}
+        onNewPasswordChange={setAccountNewPassword}
+        onOpenChange={setIsAccountPasswordOpen}
+        onSubmit={(event) => {
+          event.preventDefault();
+          setIsAccountPasswordOpen(false);
+          setAccountCurrentPassword("");
+          setAccountNewPassword("");
+          setAccountConfirmPassword("");
+        }}
+        open={isAccountPasswordOpen}
+      />
     </div>
   );
 }

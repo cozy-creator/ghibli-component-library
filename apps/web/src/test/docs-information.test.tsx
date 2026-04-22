@@ -11,9 +11,11 @@ describe("docs information architecture", () => {
       "shell-navigation",
       "core-primitives",
       "auth-flows",
+      "account-screens",
       "community-flows",
       "generate-flows",
       "docs-screens",
+      "new-in-sync",
       "footer-endmatter"
     ];
 
@@ -24,8 +26,9 @@ describe("docs information architecture", () => {
     expect(screen.getByRole("heading", { name: "Video Card" })).toBeInTheDocument();
     expect(screen.getByRole("heading", { name: "Generate Editor Bar" })).toBeInTheDocument();
     expect(screen.getByRole("heading", { name: "Storybook" })).toBeInTheDocument();
-    expect(screen.queryByRole("heading", { name: "Account Dialogs" })).not.toBeInTheDocument();
-    expect(screen.queryByRole("heading", { name: "Account Sections" })).not.toBeInTheDocument();
+    expect(screen.getByRole("heading", { name: "Account Dialogs" })).toBeInTheDocument();
+    expect(screen.getByRole("heading", { name: "Account User Display" })).toBeInTheDocument();
+    expect(screen.getByRole("heading", { name: "Subscription Section" })).toBeInTheDocument();
     expect(
       screen.queryByRole("heading", { name: "Dropdown, Model, Aspect Controls" })
     ).not.toBeInTheDocument();
