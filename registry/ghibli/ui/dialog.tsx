@@ -123,7 +123,7 @@ export function DialogFooter({
   return (
     <div
       className={cn(
-        "-mx-5 -mb-5 flex flex-col-reverse gap-2 border-t border-[color:var(--border)] bg-white/30 px-5 py-4 sm:flex-row sm:justify-end",
+        "-mx-5 -mb-5 flex flex-col-reverse gap-2 border-t border-[color:var(--border)] bg-[color:var(--surface-footer)] px-5 py-4 sm:flex-row sm:justify-end",
         className
       )}
       data-slot="dialog-footer"
