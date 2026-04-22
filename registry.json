@@ -915,6 +915,45 @@
       ]
     },
     {
+      "name": "theme-option-card",
+      "title": "Theme Option Card",
+      "type": "registry:block",
+      "description": "Swatch-preview theme card with radio semantics, keyboard focus, and selected/unavailable states.",
+      "registryDependencies": [
+        "@ghibli/style",
+        "@ghibli/theme"
+      ],
+      "files": [
+        {
+          "path": "registry/ghibli/blocks/theme/theme-option-card.tsx",
+          "type": "registry:block",
+          "target": "components/blocks/theme/theme-option-card.tsx"
+        }
+      ]
+    },
+    {
+      "name": "change-theme-modal",
+      "title": "Change Theme Modal",
+      "type": "registry:block",
+      "description": "Hand-drawn theme picker modal with keyboard navigation, pending selection, and apply/cancel controls.",
+      "registryDependencies": [
+        "@ghibli/style",
+        "@ghibli/theme",
+        "@ghibli/dialog",
+        "@ghibli/hand-drawn-frame",
+        "@ghibli/button",
+        "@ghibli/cartoon-button",
+        "@ghibli/theme-option-card"
+      ],
+      "files": [
+        {
+          "path": "registry/ghibli/blocks/theme/change-theme-modal.tsx",
+          "type": "registry:block",
+          "target": "components/blocks/theme/change-theme-modal.tsx"
+        }
+      ]
+    },
+    {
       "name": "all",
       "title": "All Ghibli Components",
       "type": "registry:item",
@@ -957,7 +996,9 @@
         "@ghibli/account-dialogs",
         "@ghibli/marketing-sections",
         "@ghibli/docs-article",
-        "@ghibli/docs-faq-accordion"
+        "@ghibli/docs-faq-accordion",
+        "@ghibli/theme-option-card",
+        "@ghibli/change-theme-modal"
       ]
     }
   ]
