@@ -387,7 +387,7 @@ function CopyableInstallLine({ name }: { name: string }) {
   };
 
   return (
-    <div className="mb-4 flex w-fit max-w-full items-center gap-2 rounded border border-[color:var(--border-soft)] bg-[var(--surface-sunk)] px-3 py-1.5">
+    <div className="mb-4 flex w-fit max-w-full items-center gap-2 rounded border border-[color:var(--border-soft)] bg-[var(--surface-sunk)] px-3 py-1.5 [html[data-theme='ghibli-forest']_&]:border-[color:var(--border)] [html[data-theme='ghibli-forest']_&]:bg-[color:var(--surface-shell)] [html[data-theme='ghibli-forest']_&]:bg-[image:var(--surface-shell-background)]">
       <code className="min-w-0 flex-1 overflow-x-auto whitespace-nowrap font-mono text-xs text-[color:var(--ink-strong)]">
         {command}
       </code>
