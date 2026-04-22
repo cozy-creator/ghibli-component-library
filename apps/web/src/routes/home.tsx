@@ -95,16 +95,22 @@ import {
   subscriptionOffers,
 } from "@/apps/web/src/data/demo-fixtures";
 
-const installCommand = "pnpm dlx shadcn@latest add @ghibli/components";
-
 const forestReadableTextClass =
   "[html[data-theme='ghibli-forest']_&]:inline-block [html[data-theme='ghibli-forest']_&]:rounded-sm [html[data-theme='ghibli-forest']_&]:bg-black/40 [html[data-theme='ghibli-forest']_&]:px-3 [html[data-theme='ghibli-forest']_&]:py-1 [html[data-theme='ghibli-forest']_&]:text-white";
 
 const registrySnippet = `{
   "registries": {
-    "@ghibli": "https://<your-domain>/r/{name}.json"
+    "@ghibli": "https://ghibli-ui.example.com/r/{name}.json"
   }
 }`;
+
+const shadcnInitSnippet = `pnpm dlx shadcn@latest init`;
+
+const installCommandsSnippet = `pnpm dlx shadcn@latest add @ghibli/button       # one component
+pnpm dlx shadcn@latest add @ghibli/auth-forms   # a pattern block
+pnpm dlx shadcn@latest add @ghibli/all          # everything`;
+
+const importSnippet = `import { Button } from "@/components/ui/button";`;
 
 function groupGenerateModelsByBase(items: typeof generateModelItems) {
   return items.reduce<Record<string, typeof generateModelItems>>((accumulator, item) => {
@@ -632,28 +638,87 @@ export function HomePage() {
       data-testid="component-showcase"
     >
       <section className="grid gap-6" id="install">
-        <div className="grid gap-4 md:grid-cols-[minmax(0,1.1fr)_minmax(18rem,0.9fr)]">
-          <DemoSurface>
-            <div className="grid gap-3">
+        <div className="grid gap-3">
+          <h2
+            className={`font-[var(--font-heading)] text-3xl leading-none text-[color:var(--ink-strong)] ${forestReadableTextClass}`}
+          >
+            Quick Start
+          </h2>
+          <p
+            className={`max-w-3xl text-sm leading-7 text-[color:var(--muted-foreground)] ${forestReadableTextClass}`}
+          >
+            Ghibli UI ships as a shadcn registry, components are installed by
+            copying source into your app, not via npm. Add the namespace below
+            to your app&apos;s <code>components.json</code> once, then install
+            either the whole set with <code>@ghibli/all</code> or any single
+            item by its name (e.g. <code>@ghibli/button</code>,{" "}
+            <code>@ghibli/auth-forms</code>). Every section on this page shows
+            its own install command with a copy button.
+          </p>
+        </div>
+        <DemoSurface>
+          <ol className="grid list-none gap-6">
+            <li className="grid gap-2">
               <p
-                className={`text-xs font-semibold uppercase tracking-[0.18em] text-[color:var(--muted-foreground)] ${forestReadableTextClass}`}
+                className={`text-sm leading-7 text-[color:var(--ink-strong)] ${forestReadableTextClass}`}
               >
-                Install all components
+                <span className="font-[var(--font-heading)] text-base">1.</span>{" "}
+                Make sure your app already has shadcn wired up. If not, run
+                the command below and follow its prompts.
               </p>
-              <CodeBlock>{installCommand}</CodeBlock>
-            </div>
-          </DemoSurface>
-          <DemoSurface>
-            <div className="grid gap-3">
+              <CodeBlock>{shadcnInitSnippet}</CodeBlock>
+            </li>
+            <li className="grid gap-2">
               <p
-                className={`text-xs font-semibold uppercase tracking-[0.18em] text-[color:var(--muted-foreground)] ${forestReadableTextClass}`}
+                className={`text-sm leading-7 text-[color:var(--ink-strong)] ${forestReadableTextClass}`}
               >
-                Registry setup
+                <span className="font-[var(--font-heading)] text-base">2.</span>{" "}
+                Add the <code>@ghibli</code> namespace to your app&apos;s{" "}
+                <code>components.json</code>:
               </p>
               <CodeBlock>{registrySnippet}</CodeBlock>
-            </div>
-          </DemoSurface>
-        </div>
+            </li>
+            <li className="grid gap-2">
+              <p
+                className={`text-sm leading-7 text-[color:var(--ink-strong)] ${forestReadableTextClass}`}
+              >
+                <span className="font-[var(--font-heading)] text-base">3.</span>{" "}
+                Install components — pick one or more (install either the whole
+                set with <code>@ghibli/all</code> or any single item by its name):
+              </p>
+              <CodeBlock>{installCommandsSnippet}</CodeBlock>
+              <p
+                className={`text-xs leading-6 text-[color:var(--muted-foreground)] ${forestReadableTextClass}`}
+              >
+                Each command writes the TypeScript source into your project
+                (e.g. <code>src/components/ui/button.tsx</code>) and installs
+                any npm peer deps (<code>clsx</code>, <code>tailwind-merge</code>,
+                Radix primitives…).
+              </p>
+            </li>
+            <li className="grid gap-2">
+              <p
+                className={`text-sm leading-7 text-[color:var(--ink-strong)] ${forestReadableTextClass}`}
+              >
+                <span className="font-[var(--font-heading)] text-base">4.</span>{" "}
+                Import and use:
+              </p>
+              <CodeBlock>{importSnippet}</CodeBlock>
+              <p
+                className={`text-xs leading-6 text-[color:var(--muted-foreground)] ${forestReadableTextClass}`}
+              >
+                From here on, that file is yours — edit it freely.
+              </p>
+            </li>
+          </ol>
+        </DemoSurface>
+        <p
+          className={`max-w-3xl text-sm leading-7 text-[color:var(--muted-foreground)] ${forestReadableTextClass}`}
+        >
+          Every showcase section below displays its own install command with a
+          copy button, so the quickest way to discover what&apos;s installable
+          is to browse the sections that follow.
+        </p>
       </section>
 
       <ShowcaseGroup id="shell-navigation">

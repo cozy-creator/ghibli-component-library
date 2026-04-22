@@ -8,7 +8,7 @@ describe("app", () => {
 
     render(<App />);
 
-    expect(screen.getByText("pnpm dlx shadcn@latest add @ghibli/components")).toBeInTheDocument();
+    expect(screen.getByText(/pnpm dlx shadcn@latest add @ghibli\/all/)).toBeInTheDocument();
     expect(screen.getByRole("heading", { name: "Button" })).toBeInTheDocument();
     expect(screen.getByRole("heading", { name: "Generate Editor Bar" })).toBeInTheDocument();
     expect(screen.getByRole("heading", { name: "Footer" })).toBeInTheDocument();
