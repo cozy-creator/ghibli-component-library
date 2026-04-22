@@ -1,13 +1,14 @@
 import { useEffect, useRef, useState, type ReactNode } from "react";
 import {
-  BookOpen,
+  Download,
   Eye,
   EyeOff,
   FileText,
   Flower2,
+  Heart,
   LogIn,
   LogOut,
-  MessageCircle,
+  Share2,
   Sparkles,
   UserRound,
   Wand2,
@@ -15,14 +16,17 @@ import {
 
 import {
   AuthDialog,
+  AVAILABLE_THEME_IDS,
   Badge,
   Button,
   CartoonButton,
+  cn,
   CommunityImageCard,
   CommunityImageModal,
   CommunityTabsList,
   CommunityVideoCard,
   CommunityVideoModal,
+  contrastIconButtonClass,
   DocsArticle,
   DocsCallout,
   DocsCodeBlock,
@@ -52,6 +56,8 @@ import {
   ShellHeader,
   Tabs,
   Textarea,
+  THEME_OPTIONS,
+  useTheme,
 } from "@ghibli/ui";
 
 import {
@@ -175,14 +181,6 @@ function LibraryMark({ className }: { className?: string }) {
         className="size-full text-[color:var(--ink-strong)]"
       />
     </HandDrawnFrame>
-  );
-}
-
-function DemoGrid({ children }: { children: ReactNode }) {
-  return (
-    <div className="grid min-w-0 gap-4 md:grid-cols-2 xl:grid-cols-3">
-      {children}
-    </div>
   );
 }
 
@@ -361,6 +359,70 @@ function ShowcasePasswordInput({
         </button>
       </div>
     </FormField>
+  );
+}
+
+function ThemeSwitcher() {
+  const { setTheme, theme } = useTheme();
+  const selectable = THEME_OPTIONS.filter((option) =>
+    AVAILABLE_THEME_IDS.includes(option.id as (typeof AVAILABLE_THEME_IDS)[number]),
+  );
+
+  return (
+    <div className="flex flex-wrap gap-3">
+      {selectable.map((option) => {
+        const isActive = option.id === theme;
+        return (
+          <button
+            aria-pressed={isActive}
+            className={cn(
+              "grid min-w-[12rem] gap-1 border-2 px-4 py-3 text-left transition-colors",
+              isActive
+                ? "border-[color:var(--border)] bg-[color:var(--paper)] text-[color:var(--ink-strong)]"
+                : "border-[color:var(--border-soft)] bg-[color:var(--paper-soft)] text-[color:var(--muted-foreground)] hover:text-[color:var(--ink-strong)]",
+            )}
+            key={option.id}
+            onClick={() => setTheme(option.id)}
+            type="button"
+          >
+            <span className="font-[var(--font-heading)] text-base leading-none">
+              {option.name}
+            </span>
+            <span className="text-xs">
+              data-theme="{option.id}"
+            </span>
+          </button>
+        );
+      })}
+    </div>
+  );
+}
+
+function TokenSwatch({
+  description,
+  name,
+  value,
+}: {
+  description?: string;
+  name: string;
+  value: string;
+}) {
+  return (
+    <div className="grid gap-2 border border-[color:var(--border-soft)] bg-[color:var(--paper-soft)] p-3">
+      <div
+        aria-hidden="true"
+        className="h-14 w-full border border-[color:var(--border-soft)]"
+        style={{ background: value }}
+      />
+      <div className="grid gap-1">
+        <code className="text-xs text-[color:var(--ink-strong)]">{name}</code>
+        {description ? (
+          <p className="text-xs leading-5 text-[color:var(--muted-foreground)]">
+            {description}
+          </p>
+        ) : null}
+      </div>
+    </div>
   );
 }
 
@@ -1068,6 +1130,136 @@ export function HomePage() {
               title="Page not found"
             />
           </div>
+        </Specimen>
+      </ShowcaseGroup>
+
+      <ShowcaseGroup id="new-in-sync">
+        <Specimen
+          id="pattern-theme-switcher"
+          note="Runtime theme switching via data-theme on the document root. State persists to localStorage."
+          title="Theme Switcher"
+        >
+          <DemoSurface>
+            <div className="grid gap-4">
+              <ThemeSwitcher />
+              <p className="text-sm leading-7 text-[color:var(--muted-foreground)]">
+                Selecting a theme rewrites every scoped CSS variable (surfaces,
+                scenic tones, overlays, scrollbar). Components reading{" "}
+                <code>var(--*)</code> update instantly.
+              </p>
+            </div>
+          </DemoSurface>
+        </Specimen>
+
+        <Specimen
+          id="component-contrast-icon-button"
+          note="High-contrast icon action — dark ink fill with accented icon color. Use for persistent toolbar controls."
+          title="Contrast Icon Button"
+        >
+          <DemoSurface>
+            <div className="flex flex-wrap gap-3">
+              <button
+                aria-label="Save"
+                className={cn(contrastIconButtonClass, "flex size-11 items-center justify-center")}
+                type="button"
+              >
+                <Heart className="size-5" />
+              </button>
+              <button
+                aria-label="Download"
+                className={cn(contrastIconButtonClass, "flex size-11 items-center justify-center")}
+                type="button"
+              >
+                <Download className="size-5" />
+              </button>
+              <button
+                aria-label="Share"
+                className={cn(contrastIconButtonClass, "flex size-11 items-center justify-center")}
+                type="button"
+              >
+                <Share2 className="size-5" />
+              </button>
+              <button
+                aria-label="Disabled"
+                className={cn(contrastIconButtonClass, "flex size-11 items-center justify-center")}
+                disabled
+                type="button"
+              >
+                <Share2 className="size-5" />
+              </button>
+            </div>
+          </DemoSurface>
+        </Specimen>
+
+        <Specimen
+          id="pattern-new-tokens"
+          note="CSS custom properties synced from Cozy Art. Each swatch is the resolved value under the active theme."
+          title="New Tokens"
+        >
+          <DemoSurface>
+            <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+              <TokenSwatch
+                description="Header / navigation surface."
+                name="--surface-shell"
+                value="var(--surface-shell)"
+              />
+              <TokenSwatch
+                description="Faint border for dividers and chrome."
+                name="--border-faint"
+                value="var(--border-faint)"
+              />
+              <TokenSwatch
+                description="Low-opacity primary, for hover/active tints."
+                name="--primary-soft"
+                value="var(--primary-soft)"
+              />
+              <TokenSwatch
+                description="Low-opacity destructive for inline alerts."
+                name="--destructive-soft"
+                value="var(--destructive-soft)"
+              />
+              <TokenSwatch
+                description="Text selection background."
+                name="--selection-background"
+                value="var(--selection-background)"
+              />
+              <TokenSwatch
+                description="Scrollbar thumb."
+                name="--scrollbar-thumb"
+                value="var(--scrollbar-thumb)"
+              />
+              <TokenSwatch
+                description="Dialog backdrop."
+                name="--overlay-backdrop"
+                value="var(--overlay-backdrop)"
+              />
+              <TokenSwatch
+                description="Media viewer backdrop (community modals)."
+                name="--media-overlay-backdrop"
+                value="var(--media-overlay-backdrop)"
+              />
+              <TokenSwatch
+                description="Floating panel surface."
+                name="--surface-panel-floating"
+                value="var(--surface-panel-floating)"
+              />
+              <TokenSwatch
+                description="Card gradient for raised surfaces."
+                name="--surface-card-gradient"
+                value="var(--surface-card-gradient)"
+              />
+              <TokenSwatch
+                description="Panel gradient for popovers and sheets."
+                name="--surface-panel-gradient"
+                value="var(--surface-panel-gradient)"
+              />
+              <TokenSwatch
+                description="App-level background stack."
+                name="--app-background-image"
+                value="var(--app-background-image)"
+              />
+            </div>
+          </DemoSurface>
         </Specimen>
       </ShowcaseGroup>
 
