@@ -25,7 +25,7 @@ export interface ShellNavItem extends NavItem {
   external?: boolean;
   icon?: React.ReactNode;
   iconOnly?: boolean;
-  onClick?: () => void;
+  onClick?: (event: React.MouseEvent<HTMLAnchorElement>) => void;
 }
 
 export interface ShellUserMenuItem {
