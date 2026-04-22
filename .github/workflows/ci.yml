@@ -43,7 +43,7 @@ jobs:
         run: pnpm build:storybook
 
       - name: Install Playwright browsers
-        run: pnpm --filter @mori/web exec playwright install --with-deps chromium
+        run: pnpm --filter @ghibli/web exec playwright install --with-deps chromium
 
       - name: Playwright smoke
         run: pnpm test:e2e

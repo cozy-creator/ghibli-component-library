@@ -67,5 +67,4 @@ Turbo's `build` task outputs include `apps/web/public/r/**`, so the registry is 
 
 ## Known gotchas
 
-- `.github/workflows/ci.yml` installs Playwright via `pnpm --filter @mori/web exec playwright install` — that filter doesn't match any package in this repo (it's `@ghibli/web`). If CI is failing on the Playwright step, this is why.
 - `pnpm dev` and `pnpm build:web` both run `registry:build` first. `pnpm --filter @ghibli/web build` does **not** — only use it if you're deliberately skipping the registry rebuild.
