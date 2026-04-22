@@ -33,10 +33,18 @@ export const paperFieldClass = cn(
 );
 
 export const cartoonButtonFrameClass = cn(
-  "border-2 border-[#7a5a2b] font-medium shadow-[inset_0_1px_0_rgba(255,255,255,0.45),0_3px_0_rgba(122,90,43,0.58)]",
+  "border-2 border-[color:color-mix(in_oklab,var(--border)_58%,var(--ink-strong))] font-medium shadow-[inset_0_1px_0_color-mix(in_oklab,var(--paper-soft)_60%,transparent),0_3px_0_color-mix(in_oklab,var(--ink-strong)_38%,transparent)]",
   "[font-family:'Comic_Sans_MS','Chalkboard_SE',cursive]",
   "hover:-translate-y-[1px] active:translate-y-[2px]",
-  "active:shadow-[inset_0_1px_0_rgba(255,255,255,0.35),0_1px_0_rgba(122,90,43,0.55)]"
+  "active:shadow-[inset_0_1px_0_color-mix(in_oklab,var(--paper-soft)_48%,transparent),0_1px_0_color-mix(in_oklab,var(--ink-strong)_44%,transparent)]"
+);
+
+export const contrastIconButtonClass = cn(
+  "border border-[color:color-mix(in_oklab,var(--ink-strong)_58%,transparent)]",
+  "bg-[color:color-mix(in_oklab,var(--ink-strong)_88%,transparent)]",
+  "text-[color:var(--success)] transition-colors",
+  "hover:bg-[color:color-mix(in_oklab,var(--ink-strong)_96%,transparent)]",
+  "disabled:cursor-not-allowed disabled:opacity-60"
 );
 
 export const scenicToneClasses = {
