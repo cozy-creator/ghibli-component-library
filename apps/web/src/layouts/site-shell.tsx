@@ -66,13 +66,14 @@ export function SiteShell() {
               <a
                 className={className}
                 href={item.href}
+                onClick={item.onClick}
                 rel="noreferrer"
                 target="_blank"
               >
                 {children}
               </a>
             ) : (
-              <a className={className} href={item.href}>
+              <a className={className} href={item.href} onClick={item.onClick}>
                 {children}
               </a>
             )
