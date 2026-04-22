@@ -250,7 +250,7 @@ export const communityVideoItems = [
       "Slow ferry drifting through lantern reflections at dusk, watercolor ripples, quiet cinematic motion.",
     title: "Lantern ferry glide",
     videoUrl:
-      "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerBlazes.mp4"
+      "https://test-videos.co.uk/vids/bigbuckbunny/mp4/h264/360/Big_Buck_Bunny_360_10s_1MB.mp4"
   },
   {
     authorName: "Jun Atelier",
@@ -264,7 +264,7 @@ export const communityVideoItems = [
       "Rain tracing a train window at night, dim interior reflections, soft hand-painted movement and muted city glow.",
     title: "Window rain study",
     videoUrl:
-      "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerMeltdowns.mp4"
+      "https://test-videos.co.uk/vids/sintel/mp4/h264/360/Sintel_360_10s_1MB.mp4"
   }
 ];
 
@@ -430,28 +430,54 @@ export const linkedAccounts = [
 
 export const subscriptionOffers = [
   {
-    description: "For smaller teams building editorial or creative tools.",
-    id: "monthly",
-    label: "Monthly Studio",
-    priceLabel: "$24 / month"
+    id: "free",
+    name: "Free",
+    priceLabel: "$0",
+    subtitle: "Limited to 100 generations"
   },
   {
-    description: "For product teams that want higher volume examples and reviews.",
+    id: "monthly",
+    name: "Monthly Studio",
+    priceLabel: "$24",
+    subtitle: "Billed monthly"
+  },
+  {
     id: "yearly",
-    label: "Yearly Atelier",
-    priceLabel: "$240 / year"
+    name: "Yearly Atelier",
+    priceLabel: "$240",
+    subtitle: "Billed yearly"
   }
 ];
 
-export const creditOffers = [
-  { id: "small", label: "Starter credits", priceLabel: "$8" },
-  { id: "large", label: "Production credits", priceLabel: "$28" }
-];
-
 export const creditLedger = [
-  { deltaLabel: "-12", id: "ledger-1", meta: "Today", title: "Generation batch" },
-  { deltaLabel: "+100", id: "ledger-2", meta: "2 days ago", title: "Credit top-up" },
-  { deltaLabel: "-8", id: "ledger-3", meta: "3 days ago", title: "Variation run" }
+  {
+    activity: "Subscription · Stripe",
+    amountLabel: "+$24.00",
+    date: "Apr 20, 2026",
+    direction: "credit" as const,
+    id: "ledger-1"
+  },
+  {
+    activity: "Generation batch · API",
+    amountLabel: "-$1.20",
+    date: "Apr 18, 2026",
+    direction: "debit" as const,
+    id: "ledger-2"
+  },
+  {
+    activity: "Credit top-up · Stripe",
+    amountLabel: "+$50.00",
+    date: "Apr 12, 2026",
+    direction: "credit" as const,
+    id: "ledger-3"
+  },
+  {
+    activity: "Variation run · API",
+    amountLabel: "-$0.80",
+    date: "Apr 10, 2026",
+    direction: "debit" as const,
+    id: "ledger-4"
+  }
 ];
 
 export const marketingVisual = (

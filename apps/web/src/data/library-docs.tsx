@@ -61,7 +61,6 @@ import {
   communityImageItems,
   communityVideoItems,
   creditLedger,
-  creditOffers,
   faqItems,
   featureItems,
   featureVisualItems,
@@ -1744,12 +1743,14 @@ export const patternDocs: DocItem[] = [
             <AccountProfileSection email="hello@ghibli-ui.dev" name="Mina Journal" planLabel="Atelier plan" />
             <AccountLinkedAccountsSection accounts={linkedAccounts} />
             <AccountSubscriptionSection
-              features={["200 monthly generations", "Priority queue access", "Reviewer links", "Variation tools"]}
+              activeOfferId="monthly"
+              balanceLabel="$24.00"
               offers={subscriptionOffers}
-              planName="Atelier plan"
-              renewalText="Renews on April 14, 2026"
+              planName="Monthly Studio"
+              priceName="$24 / month"
+              renewalText="April 14, 2026"
             />
-            <AccountApiCreditsSection balanceLabel="128 credits" ledger={creditLedger} offers={creditOffers} />
+            <AccountApiCreditsSection ledger={creditLedger} />
           </div>
         ),
         snippet: snippet(
@@ -1790,10 +1791,12 @@ export const patternDocs: DocItem[] = [
         <AccountProfileSection email="hello@ghibli-ui.dev" name="Mina Journal" planLabel="Atelier plan" />
         <AccountLinkedAccountsSection accounts={linkedAccounts} />
         <AccountSubscriptionSection
-          features={["200 monthly generations", "Priority queue access", "Reviewer links", "Variation tools"]}
+          activeOfferId="monthly"
+          balanceLabel="$24.00"
           offers={subscriptionOffers}
-          planName="Atelier plan"
-          renewalText="Renews on April 14, 2026"
+          planName="Monthly Studio"
+          priceName="$24 / month"
+          renewalText="April 14, 2026"
         />
       </div>
     ),

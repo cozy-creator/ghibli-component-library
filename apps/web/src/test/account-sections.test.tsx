@@ -20,14 +20,14 @@ describe("account sections", () => {
           ]}
         />
         <AccountSubscriptionSection
-          features={["200 monthly generations", "Priority queue"]}
-          offers={[{ id: "plan", label: "Monthly", priceLabel: "$24 / month" }]}
+          activeOfferId="plan"
+          balanceLabel="$24.00"
+          offers={[{ id: "plan", name: "Monthly", priceLabel: "$24", subtitle: "Billed monthly" }]}
           planName="Painterly plan"
+          priceName="$24 / month"
         />
         <AccountApiCreditsSection
-          balanceLabel="128 credits"
-          ledger={[{ deltaLabel: "-12", id: "entry", title: "Generation batch" }]}
-          offers={[{ id: "credits", label: "Starter credits", priceLabel: "$8" }]}
+          ledger={[{ activity: "Generation batch", amountLabel: "-$1.20", date: "Apr 20, 2026", direction: "debit", id: "entry" }]}
         />
       </div>
     );
@@ -36,6 +36,6 @@ describe("account sections", () => {
     expect(screen.getByText("64 Total generations")).toBeInTheDocument();
     expect(screen.getByText("GitHub")).toBeInTheDocument();
     expect(screen.getAllByText("Painterly plan")).not.toHaveLength(0);
-    expect(screen.getByText("128 credits")).toBeInTheDocument();
+    expect(screen.getByText("$24.00")).toBeInTheDocument();
   });
 });
