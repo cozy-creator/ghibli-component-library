@@ -1,7 +1,8 @@
-import { Flower2, LogOut, UserRound } from "lucide-react";
+import { useState } from "react";
+import { Flower2, LogOut, Palette, UserRound } from "lucide-react";
 import { Outlet } from "react-router-dom";
 
-import { HandDrawnFrame, ShellHeader } from "@ghibli/ui";
+import { ChangeThemeModal, HandDrawnFrame, ShellHeader } from "@ghibli/ui";
 
 import {
   DocsHeaderIcon,
@@ -47,6 +48,8 @@ function SiteBrand() {
 }
 
 export function SiteShell() {
+  const [isChangeThemeOpen, setIsChangeThemeOpen] = useState(false);
+
   return (
     <div className="ghibli-wash relative isolate min-h-screen">
       <div
@@ -76,6 +79,16 @@ export function SiteShell() {
           }
           socialItems={[
             {
+              href: "#",
+              icon: <Palette className="size-4" />,
+              iconOnly: true,
+              label: "Change theme",
+              onClick: (event) => {
+                event.preventDefault();
+                setIsChangeThemeOpen(true);
+              },
+            },
+            {
               external: true,
               href: repoUrl,
               icon: <GitHubHeaderIcon />,
@@ -97,7 +110,13 @@ export function SiteShell() {
                 icon: <UserRound className="size-4" />,
                 id: "account",
                 label: "Account",
-                onSelect: () => jumpToAnchor("account-flows"),
+                onSelect: () => jumpToAnchor("account-screens"),
+              },
+              {
+                icon: <Palette className="size-4" />,
+                id: "theme",
+                label: "Theme",
+                onSelect: () => setIsChangeThemeOpen(true),
               },
               {
                 destructive: true,
@@ -114,6 +133,11 @@ export function SiteShell() {
           <Outlet />
         </main>
       </div>
+
+      <ChangeThemeModal
+        onOpenChange={setIsChangeThemeOpen}
+        open={isChangeThemeOpen}
+      />
     </div>
   );
 }
