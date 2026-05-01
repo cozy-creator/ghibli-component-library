@@ -12,4 +12,3 @@ storybook-static
 .vercel
 apps/web/public/r
 .claude/settings.local.json
-.claude/agent-memory/

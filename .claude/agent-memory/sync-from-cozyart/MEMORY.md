@@ -1,0 +1,1 @@
+- [Cozy Art ↔ Ghibli style sync map](project_sync_map.md) — canonical file pairs between `cozy.art/frontend` (source) and this repo's registry, plus sync gotchas.
