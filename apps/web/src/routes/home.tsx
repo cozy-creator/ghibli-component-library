@@ -440,7 +440,7 @@ function ShowcasePasswordInput({
 function ThemeSwitcher() {
   const { setTheme, theme } = useTheme();
   const selectable = THEME_OPTIONS.filter((option) =>
-    AVAILABLE_THEME_IDS.includes(option.id as (typeof AVAILABLE_THEME_IDS)[number]),
+    AVAILABLE_THEME_IDS.includes(option.id),
   );
 
   return (
