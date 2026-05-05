@@ -27,32 +27,41 @@ export const THEME_OPTIONS = [
     previewSrc: "/theme-previews/ghibli-forest.png",
   },
   {
-    availabilityLabel: "Coming soon",
-    available: false,
+    available: true,
+    id: "modern",
+    name: "Modern",
+    previewAlt:
+      "A dark product interface with charcoal surfaces and bright lime accents.",
+    previewSrc: "/theme-previews/modern.png",
+  },
+  {
+    available: true,
     id: "sunset",
     name: "Sunset",
     previewAlt: "A warm sunset over layered hills and glowing clouds.",
     previewSrc: "/theme-previews/sunset.png",
   },
   {
-    availabilityLabel: "Coming soon",
-    available: false,
-    id: "ocean-breeze",
+    available: true,
+    id: "ocean",
     name: "Ocean Breeze",
     previewAlt: "A bright blue shoreline with calm water and drifting clouds.",
-    previewSrc: "/theme-previews/ocean-breeze.png",
+    // TODO: Replace with /theme-previews/ocean.png once a dedicated picker preview is added.
+    previewSrc: "/themes/ocean/ocean-breeze.png",
   },
 ] as const satisfies readonly ThemeOption[];
 
 export const AVAILABLE_THEME_IDS = [
   "hand-drawn-paper",
   "ghibli-forest",
+  "modern",
+  "sunset",
+  "ocean",
 ] as const satisfies readonly ThemeId[];
 
 export type AvailableThemeId = (typeof AVAILABLE_THEME_IDS)[number];
 
-export const DEFAULT_AVAILABLE_THEME_ID: AvailableThemeId =
-  "hand-drawn-paper";
+export const DEFAULT_AVAILABLE_THEME_ID: AvailableThemeId = "hand-drawn-paper";
 
 export function isAvailableThemeId(value: unknown): value is AvailableThemeId {
   return (

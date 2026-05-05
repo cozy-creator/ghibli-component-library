@@ -8,6 +8,8 @@ export type ThemeSoundCategory =
   (typeof THEME_SOUND_CATEGORIES)[keyof typeof THEME_SOUND_CATEGORIES];
 
 export const SOUND_EFFECT_IDS = {
+  modern: "modern",
+  oceanBubble: "ocean-bubble",
   pageFlip: "page-flip",
   treeRustle: "tree-rustle",
 } as const;
@@ -16,6 +18,8 @@ export type SoundEffectId =
   (typeof SOUND_EFFECT_IDS)[keyof typeof SOUND_EFFECT_IDS];
 
 const SOUND_EFFECT_SOURCES = {
+  [SOUND_EFFECT_IDS.modern]: "/audio/modern-sound.mp3",
+  [SOUND_EFFECT_IDS.oceanBubble]: "/audio/ocean-bubble.mp3",
   [SOUND_EFFECT_IDS.pageFlip]: "/audio/page-flip.mp3",
   [SOUND_EFFECT_IDS.treeRustle]: "/audio/tree-rustle.mp3",
 } as const satisfies Record<SoundEffectId, string>;
@@ -31,6 +35,12 @@ const THEME_SOUND_EFFECT_OVERRIDES: Partial<
 > = {
   "ghibli-forest": {
     [THEME_SOUND_CATEGORIES.mediaNavigation]: SOUND_EFFECT_IDS.treeRustle,
+  },
+  modern: {
+    [THEME_SOUND_CATEGORIES.mediaNavigation]: SOUND_EFFECT_IDS.modern,
+  },
+  ocean: {
+    [THEME_SOUND_CATEGORIES.mediaNavigation]: SOUND_EFFECT_IDS.oceanBubble,
   },
 };
 
