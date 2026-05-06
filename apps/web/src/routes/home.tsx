@@ -100,7 +100,7 @@ const forestReadableTextClass =
 
 const registrySnippet = `{
   "registries": {
-    "@ghibli": "https://ghibli-ui.example.com/r/{name}.json"
+    "@ghibli": "https://ghibli-component-library.vercel.app//r/{name}.json"
   }
 }`;
 
@@ -113,10 +113,13 @@ pnpm dlx shadcn@latest add @ghibli/all          # everything`;
 const importSnippet = `import { Button } from "@/components/ui/button";`;
 
 function groupGenerateModelsByBase(items: typeof generateModelItems) {
-  return items.reduce<Record<string, typeof generateModelItems>>((accumulator, item) => {
-    (accumulator[item.baseModel] ??= []).push(item);
-    return accumulator;
-  }, {});
+  return items.reduce<Record<string, typeof generateModelItems>>(
+    (accumulator, item) => {
+      (accumulator[item.baseModel] ??= []).push(item);
+      return accumulator;
+    },
+    {},
+  );
 }
 
 function formatAttachmentSize(sizeInBytes: number) {
@@ -240,11 +243,16 @@ function FrameRulerField({
   options: FrameRulerOption[];
   value: number;
 }) {
-  const activeOption = options.find((option) => option.value === value) ?? options[0]!;
+  const activeOption =
+    options.find((option) => option.value === value) ?? options[0]!;
 
   return (
     <FormField
-      action={<span className="text-xs text-muted-foreground">{activeOption.label}</span>}
+      action={
+        <span className="text-xs text-muted-foreground">
+          {activeOption.label}
+        </span>
+      }
       description={description}
       label={label}
     >
@@ -258,7 +266,9 @@ function FrameRulerField({
           aria-label={label}
           className="grid items-start"
           role="radiogroup"
-          style={{ gridTemplateColumns: `repeat(${options.length}, minmax(0, 1fr))` }}
+          style={{
+            gridTemplateColumns: `repeat(${options.length}, minmax(0, 1fr))`,
+          }}
         >
           {options.map((option) => {
             const isSelected = option.value === value;
@@ -310,14 +320,12 @@ function FrameRulerField({
   );
 }
 
-function ShowcaseGroup({
-  children,
-  id,
-}: {
-  children: ReactNode;
-  id: string;
-}) {
-  return <section className="grid gap-8" id={id}>{children}</section>;
+function ShowcaseGroup({ children, id }: { children: ReactNode; id: string }) {
+  return (
+    <section className="grid gap-8" id={id}>
+      {children}
+    </section>
+  );
 }
 
 function Specimen({
@@ -397,7 +405,11 @@ function CopyableInstallLine({ name }: { name: string }) {
         onClick={handleCopy}
         type="button"
       >
-        {copied ? <Check className="size-3.5" /> : <Copy className="size-3.5" />}
+        {copied ? (
+          <Check className="size-3.5" />
+        ) : (
+          <Copy className="size-3.5" />
+        )}
       </button>
     </div>
   );
@@ -440,7 +452,9 @@ function ShowcasePasswordInput({
 function ThemeSwitcher() {
   const { setTheme, theme } = useTheme();
   const selectable = THEME_OPTIONS.filter((option) =>
-    AVAILABLE_THEME_IDS.includes(option.id as (typeof AVAILABLE_THEME_IDS)[number]),
+    AVAILABLE_THEME_IDS.includes(
+      option.id as (typeof AVAILABLE_THEME_IDS)[number],
+    ),
   );
 
   return (
@@ -463,9 +477,7 @@ function ThemeSwitcher() {
             <span className="font-[var(--font-heading)] text-base leading-none">
               {option.name}
             </span>
-            <span className="text-xs">
-              data-theme="{option.id}"
-            </span>
+            <span className="text-xs">data-theme="{option.id}"</span>
           </button>
         );
       })}
@@ -516,12 +528,19 @@ export function HomePage() {
   const [model, setModel] = useState("flux-dev");
   const [aspectRatio, setAspectRatio] = useState("9/16");
   const [prompt, setPrompt] = useState("");
-  const [editorAttachments, setEditorAttachments] = useState<GenerateAttachment[]>([]);
+  const [editorAttachments, setEditorAttachments] = useState<
+    GenerateAttachment[]
+  >([]);
   const [authOpen, setAuthOpen] = useState(false);
   const [authTab, setAuthTab] = useState<"login" | "register">("login");
-  const [communityImageIndex, setCommunityImageIndex] = useState<number | null>(null);
-  const [communityVideoIndex, setCommunityVideoIndex] = useState<number | null>(null);
-  const [frameCrookednessIntensity, setFrameCrookednessIntensity] = useState(0.5);
+  const [communityImageIndex, setCommunityImageIndex] = useState<number | null>(
+    null,
+  );
+  const [communityVideoIndex, setCommunityVideoIndex] = useState<number | null>(
+    null,
+  );
+  const [frameCrookednessIntensity, setFrameCrookednessIntensity] =
+    useState(0.5);
   const [frameThicknessIntensity, setFrameThicknessIntensity] = useState(4);
   const [frameStrokeWidth, setFrameStrokeWidth] = useState(1.6);
   const editorAttachmentsRef = useRef<GenerateAttachment[]>([]);
@@ -592,7 +611,8 @@ export function HomePage() {
       editorAttachmentIdRef.current += 1;
 
       const kind = getGenerateAttachmentKind(file);
-      const previewUrl = kind === "image" ? URL.createObjectURL(file) : undefined;
+      const previewUrl =
+        kind === "image" ? URL.createObjectURL(file) : undefined;
       const attachment: GenerateAttachment = {
         id: `home-generate-attachment-${editorAttachmentIdRef.current}`,
         kind,
@@ -612,7 +632,9 @@ export function HomePage() {
 
   const handleEditorAttachmentRemove = (attachmentId: string) => {
     setEditorAttachments((current) => {
-      const attachmentToRemove = current.find((attachment) => attachment.id === attachmentId);
+      const attachmentToRemove = current.find(
+        (attachment) => attachment.id === attachmentId,
+      );
 
       if (attachmentToRemove?.previewUrl) {
         URL.revokeObjectURL(attachmentToRemove.previewUrl);
@@ -663,8 +685,8 @@ export function HomePage() {
                 className={`text-sm leading-7 text-[color:var(--ink-strong)] ${forestReadableTextClass}`}
               >
                 <span className="font-[var(--font-heading)] text-base">1.</span>{" "}
-                Make sure your app already has shadcn wired up. If not, run
-                the command below and follow its prompts.
+                Make sure your app already has shadcn wired up. If not, run the
+                command below and follow its prompts.
               </p>
               <CodeBlock>{shadcnInitSnippet}</CodeBlock>
             </li>
@@ -684,7 +706,8 @@ export function HomePage() {
               >
                 <span className="font-[var(--font-heading)] text-base">3.</span>{" "}
                 Install components — pick one or more (install either the whole
-                set with <code>@ghibli/all</code> or any single item by its name):
+                set with <code>@ghibli/all</code> or any single item by its
+                name):
               </p>
               <CodeBlock>{installCommandsSnippet}</CodeBlock>
               <p
@@ -692,8 +715,8 @@ export function HomePage() {
               >
                 Each command writes the TypeScript source into your project
                 (e.g. <code>src/components/ui/button.tsx</code>) and installs
-                any npm peer deps (<code>clsx</code>, <code>tailwind-merge</code>,
-                Radix primitives…).
+                any npm peer deps (<code>clsx</code>,{" "}
+                <code>tailwind-merge</code>, Radix primitives…).
               </p>
             </li>
             <li className="grid gap-2">
@@ -804,7 +827,11 @@ export function HomePage() {
           note="The community tab switch used for live feed, video, and X posts."
           title="Tabs Switch"
         >
-          <Tabs className="min-w-0 gap-6" onValueChange={setActiveTab} value={activeTab}>
+          <Tabs
+            className="min-w-0 gap-6"
+            onValueChange={setActiveTab}
+            value={activeTab}
+          >
             <CommunityTabsList activeTab={activeTab} />
           </Tabs>
         </Specimen>
@@ -848,7 +875,8 @@ export function HomePage() {
                     Interactive playground
                   </p>
                   <p className="text-sm leading-7 text-muted-foreground">
-                    Adjust the Cozy-style surface controls and preview the result live.
+                    Adjust the Cozy-style surface controls and preview the
+                    result live.
                   </p>
                 </div>
                 <HandDrawnFrame
@@ -862,7 +890,8 @@ export function HomePage() {
                     Frame preview
                   </p>
                   <p className="mt-2 text-sm leading-7 text-muted-foreground">
-                    The showcase focuses on the primary Cozy surface treatment instead of exposing every frame mode here.
+                    The showcase focuses on the primary Cozy surface treatment
+                    instead of exposing every frame mode here.
                   </p>
                 </HandDrawnFrame>
                 <CodeBlock>{framePreviewSnippet}</CodeBlock>
@@ -927,7 +956,8 @@ export function HomePage() {
                     Input Types
                   </p>
                   <p className="text-sm leading-7 text-muted-foreground">
-                    Text, email, search, and password are shown as editable rows instead of isolated screenshots.
+                    Text, email, search, and password are shown as editable rows
+                    instead of isolated screenshots.
                   </p>
                 </div>
                 <div className="grid gap-3">
@@ -952,7 +982,8 @@ export function HomePage() {
                       Form Field States
                     </p>
                     <p className="text-sm leading-7 text-muted-foreground">
-                      Description, action, and error states are part of the wrapper, not the input primitive.
+                      Description, action, and error states are part of the
+                      wrapper, not the input primitive.
                     </p>
                   </div>
                   <FormField
@@ -981,7 +1012,8 @@ export function HomePage() {
                       Textarea
                     </p>
                     <p className="text-sm leading-7 text-muted-foreground">
-                      The longer prompt surface keeps the same hand-drawn shell and fits naturally inside `FormField`.
+                      The longer prompt surface keeps the same hand-drawn shell
+                      and fits naturally inside `FormField`.
                     </p>
                   </div>
                   <FormField
@@ -1000,7 +1032,6 @@ export function HomePage() {
             </div>
           </div>
         </Specimen>
-
       </ShowcaseGroup>
 
       <ShowcaseGroup id="auth-flows">
@@ -1095,10 +1126,16 @@ export function HomePage() {
             <AccountProfileSection
               actions={
                 <>
-                  <Button onClick={() => setIsAccountEmailOpen(true)} variant="outline">
+                  <Button
+                    onClick={() => setIsAccountEmailOpen(true)}
+                    variant="outline"
+                  >
                     Change email
                   </Button>
-                  <Button onClick={() => setIsAccountPasswordOpen(true)} variant="secondary">
+                  <Button
+                    onClick={() => setIsAccountPasswordOpen(true)}
+                    variant="secondary"
+                  >
                     Change password
                   </Button>
                 </>
@@ -1159,13 +1196,22 @@ export function HomePage() {
         >
           <DemoSurface>
             <div className="flex flex-wrap gap-3">
-              <Button onClick={() => setIsAccountUsernameOpen(true)} variant="secondary">
+              <Button
+                onClick={() => setIsAccountUsernameOpen(true)}
+                variant="secondary"
+              >
                 Open change username
               </Button>
-              <Button onClick={() => setIsAccountEmailOpen(true)} variant="secondary">
+              <Button
+                onClick={() => setIsAccountEmailOpen(true)}
+                variant="secondary"
+              >
                 Open change email
               </Button>
-              <Button onClick={() => setIsAccountPasswordOpen(true)} variant="secondary">
+              <Button
+                onClick={() => setIsAccountPasswordOpen(true)}
+                variant="secondary"
+              >
                 Open change password
               </Button>
             </div>
@@ -1324,7 +1370,6 @@ export function HomePage() {
             <GenerateButton isAuthenticated onClick={() => undefined} />
           </div>
         </Specimen>
-
       </ShowcaseGroup>
 
       <ShowcaseGroup id="docs-screens">
@@ -1338,8 +1383,7 @@ export function HomePage() {
             <DocsArticle>
               <DocsH2>Docs article</DocsH2>
               <DocsParagraph>
-                Use this block for prose pages that still need the paper
-                rhythm.
+                Use this block for prose pages that still need the paper rhythm.
               </DocsParagraph>
               <DocsCallout>
                 Callouts keep important notes visible without introducing app
@@ -1432,7 +1476,10 @@ export function HomePage() {
             <div className="grid gap-4">
               <ThemeSwitcher />
               <div className="flex flex-wrap items-center gap-3">
-                <Button onClick={() => setIsChangeThemeOpen(true)} variant="outline">
+                <Button
+                  onClick={() => setIsChangeThemeOpen(true)}
+                  variant="outline"
+                >
                   <Palette className="size-4" />
                   Open Change Theme modal
                 </Button>
@@ -1458,28 +1505,40 @@ export function HomePage() {
             <div className="flex flex-wrap gap-3">
               <button
                 aria-label="Save"
-                className={cn(contrastIconButtonClass, "flex size-11 items-center justify-center")}
+                className={cn(
+                  contrastIconButtonClass,
+                  "flex size-11 items-center justify-center",
+                )}
                 type="button"
               >
                 <Heart className="size-5" />
               </button>
               <button
                 aria-label="Download"
-                className={cn(contrastIconButtonClass, "flex size-11 items-center justify-center")}
+                className={cn(
+                  contrastIconButtonClass,
+                  "flex size-11 items-center justify-center",
+                )}
                 type="button"
               >
                 <Download className="size-5" />
               </button>
               <button
                 aria-label="Share"
-                className={cn(contrastIconButtonClass, "flex size-11 items-center justify-center")}
+                className={cn(
+                  contrastIconButtonClass,
+                  "flex size-11 items-center justify-center",
+                )}
                 type="button"
               >
                 <Share2 className="size-5" />
               </button>
               <button
                 aria-label="Disabled"
-                className={cn(contrastIconButtonClass, "flex size-11 items-center justify-center")}
+                className={cn(
+                  contrastIconButtonClass,
+                  "flex size-11 items-center justify-center",
+                )}
                 disabled
                 type="button"
               >

@@ -9,11 +9,11 @@ Ghibli UI ships as a shadcn registry, components are installed by copying source
    ```json
    {
      "registries": {
-       "@ghibli": "https://ghibli-ui.example.com/r/{name}.json"
+       "@ghibli": "https://ghibli-component-library.vercel.app//r/{name}.json"
      }
    }
    ```
-3. Install components — pick one or more:  install either the whole set with @ghibli/all or any single item by its name)
+3. Install components — pick one or more: install either the whole set with @ghibli/all or any single item by its name)
    ```bash
    pnpm dlx shadcn@latest add @ghibli/button       # one component
    pnpm dlx shadcn@latest add @ghibli/auth-forms   # a pattern block
