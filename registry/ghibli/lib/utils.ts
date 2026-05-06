@@ -13,23 +13,45 @@ export const focusRingClass =
 
 export const fieldFocusClass = cn(
   "outline-none focus:outline-none focus-visible:outline-none",
-  "focus:border-[color:var(--border)] focus-visible:border-[color:var(--border)]",
-  "focus:ring-0 focus-visible:ring-0"
+  "focus:border-[color:var(--theme-field-focus-border)] focus-visible:border-[color:var(--theme-field-focus-border)]",
+  "focus:ring-0 focus-visible:ring-0",
 );
 
-export const paperSurfaceClass = cn(
-  "border-2 border-[color:var(--border)] bg-[color:var(--card)]"
+export const panelSurfaceClass = cn(
+  "rounded-[var(--theme-radius-lg)] border-solid [border-width:var(--theme-panel-border-width)] border-[color:var(--theme-panel-border)] bg-[color:var(--theme-panel-background)]",
 );
 
-export const paperInsetClass = cn(
-  "border border-[color:var(--border-soft)] bg-[color:var(--paper-soft)]"
+export const insetSurfaceClass = cn(
+  "rounded-[var(--theme-radius-md)] border-solid [border-width:var(--theme-inset-border-width)] border-[color:var(--theme-inset-border)] bg-[color:var(--theme-inset-background)]",
 );
 
-export const paperFieldClass = cn(
-  "h-11 w-full border border-[color:var(--border)]",
-  "bg-[color:color-mix(in_oklab,var(--paper-soft)_90%,white)] px-3 py-2 text-sm text-[color:var(--foreground)] transition-colors",
-  "placeholder:text-[color:var(--muted-foreground)] disabled:cursor-not-allowed disabled:opacity-60",
-  fieldFocusClass
+export const paperSurfaceClass = panelSurfaceClass;
+
+export const paperInsetClass = insetSurfaceClass;
+
+export const fieldSurfaceClass = cn(
+  "h-11 w-full rounded-[var(--theme-radius-md)] border-solid [border-width:var(--theme-field-border-width)] border-[color:var(--theme-field-border)]",
+  "bg-[color:var(--theme-field-background)] px-3 py-2 text-sm text-[color:var(--theme-field-foreground)] transition-colors",
+  "placeholder:text-[color:var(--theme-field-placeholder)] disabled:cursor-not-allowed",
+  fieldFocusClass,
+);
+
+export const paperFieldClass = fieldSurfaceClass;
+
+export const dialogFrameSurfaceClass =
+  "[background:var(--theme-dialog-frame-background)]";
+
+export const dialogPrimaryActionClass = cn(
+  "border-[color:var(--theme-dialog-primary-border)]",
+  "[border-width:var(--theme-dialog-primary-border-width)]",
+  "text-[color:var(--theme-dialog-primary-foreground)]",
+  "[font-family:var(--theme-dialog-primary-font-family)]",
+  "shadow-[var(--theme-dialog-primary-shadow)]",
+  "hover:translate-y-[var(--theme-dialog-primary-hover-y)]",
+  "hover:bg-[color:var(--theme-dialog-primary-hover-background)]",
+  "hover:text-[color:var(--theme-dialog-primary-hover-foreground)]",
+  "active:translate-y-[var(--theme-dialog-primary-active-y)]",
+  "active:shadow-[var(--theme-dialog-primary-active-shadow)]",
 );
 
 export const cartoonButtonFrameClass = cn(
