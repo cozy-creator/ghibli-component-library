@@ -1,7 +1,7 @@
 {
   "$schema": "https://ui.shadcn.com/schema/registry.json",
   "name": "ghibli-ui",
-  "homepage": "https://example.com",
+  "homepage": "https://ghibli-component-library.vercel.app",
   "items": [
     {
       "name": "utils",
