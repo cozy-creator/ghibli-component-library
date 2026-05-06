@@ -1,8 +1,9 @@
 export const THEME_IDS = [
   "hand-drawn-paper",
   "ghibli-forest",
+  "modern",
   "sunset",
-  "ocean-breeze",
+  "ocean",
 ] as const;
 
 export type ThemeId = (typeof THEME_IDS)[number];
