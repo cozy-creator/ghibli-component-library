@@ -2,7 +2,7 @@
 
 ## Quick Start
 
-Ghibli UI ships as a shadcn registry, components are installed by copying source into your app, not via npm. Add the namespace below to your app's components.json once, then install either the whole set with @ghibli/all or any single item by its name (e.g. @ghibli/button, @ghibli/auth-forms). Every section on this page shows its own install command with a copy button.
+Ghibli UI ships as a shadcn registry, components are installed by copying source into your app, not via npm. Add the namespace below to your app's components.json once, then install either the whole set with @ghibli/all or any single item by its name (e.g. @ghibli/button, @ghibli/auth-forms). Every section on this page shows its own install command with a copy button..
 
 1. Make sure your app already has shadcn wired up. If not, run `pnpm dlx shadcn@latest init` and follow its prompts.
 2. Add the `@ghibli` namespace to your app's `components.json`:
