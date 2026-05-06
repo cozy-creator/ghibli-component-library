@@ -1,6 +1,6 @@
 {
   "$schema": "https://openapi.vercel.sh/vercel.json",
   "installCommand": "pnpm install",
-  "buildCommand": "pnpm exec shadcn build --output apps/web/public/r && pnpm --filter @ghibli/web build",
+  "buildCommand": "pnpm -w run registry:build && pnpm --filter @ghibli/web build",
   "outputDirectory": "apps/web/dist"
 }
