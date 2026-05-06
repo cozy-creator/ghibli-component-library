@@ -100,7 +100,7 @@ const forestReadableTextClass =
 
 const registrySnippet = `{
   "registries": {
-    "@ghibli": "https://ghibli-component-library.vercel.app//r/{name}.json"
+    "@ghibli": "https://ghibli-component-library.vercel.app/r/{name}.json"
   }
 }`;
 
