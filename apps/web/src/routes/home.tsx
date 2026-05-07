@@ -71,7 +71,9 @@ import {
   ShellHeader,
   Tabs,
   Textarea,
+  THEME_FRAME_VARIANTS,
   THEME_OPTIONS,
+  ThemeFrame,
   useTheme,
 } from "@ghibli/ui";
 
@@ -197,19 +199,18 @@ const repoUrl = "https://github.com/rodrigoluz/ghibli-component-library";
 
 function LibraryMark({ className }: { className?: string }) {
   return (
-    <HandDrawnFrame
+    <ThemeFrame
       className={className ?? "size-12 shrink-0"}
-      contentClassName="p-2.5"
-      surfaceClassName="bg-white/45"
-      strokeColor="var(--border-strong)"
-      strokeWidth={1.85}
-      crookednessIntensity={0.7}
+      contentClassName="p-1.5"
+      surfaceClassName="bg-[color:var(--theme-shell-brand-background)]"
+      strokeColor="var(--theme-shell-brand-border)"
+      variant={THEME_FRAME_VARIANTS.shellBrandMark}
     >
       <Flower2
         aria-hidden="true"
         className="size-full text-[color:var(--ink-strong)]"
       />
-    </HandDrawnFrame>
+    </ThemeFrame>
   );
 }
 

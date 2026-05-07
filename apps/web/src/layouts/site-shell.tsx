@@ -2,7 +2,12 @@ import { useState } from "react";
 import { Flower2, LogOut, Palette, UserRound } from "lucide-react";
 import { Outlet } from "react-router-dom";
 
-import { ChangeThemeModal, HandDrawnFrame, ShellHeader } from "@ghibli/ui";
+import {
+  ChangeThemeModal,
+  ShellHeader,
+  THEME_FRAME_VARIANTS,
+  ThemeFrame,
+} from "@ghibli/ui";
 
 import {
   DiscordHeaderIcon,
@@ -19,19 +24,18 @@ function jumpToAnchor(anchorId: string) {
 
 function BrandMark({ className }: { className?: string }) {
   return (
-    <HandDrawnFrame
+    <ThemeFrame
       className={className ?? "size-12 shrink-0"}
-      contentClassName="p-2.5"
-      surfaceClassName="bg-white/45"
-      strokeColor="var(--border-strong)"
-      strokeWidth={1.85}
-      crookednessIntensity={0.7}
+      contentClassName="p-1.5"
+      surfaceClassName="bg-[color:var(--theme-shell-brand-background)]"
+      strokeColor="var(--theme-shell-brand-border)"
+      variant={THEME_FRAME_VARIANTS.shellBrandMark}
     >
       <Flower2
         aria-hidden="true"
         className="size-full text-[color:var(--ink-strong)]"
       />
-    </HandDrawnFrame>
+    </ThemeFrame>
   );
 }
 
