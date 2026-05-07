@@ -2,7 +2,7 @@
 
 ## Quick Start
 
-Ghibli UI ships as a shadcn registry, components are installed by copying source into your app, not via npm. Add the namespace below to your app's components.json once, then install either the whole set with @ghibli/all or any single item by its name (e.g. @ghibli/button, @ghibli/auth-forms). Every section on this page shows its own install command with a copy button..
+Ghibli UI ships as a shadcn registry, components are installed by copying source into your app, not via npm. Add the namespace below to your app's components.json once, then install either the whole set with @ghibli/all or any single item by its name (e.g. @ghibli/button, @ghibli/form-field). Public registry items are reusable UI primitives, themes, and generic patterns. Product-specific examples in the showcase are not installable registry contracts.
 
 1. Make sure your app already has shadcn wired up. If not, run `pnpm dlx shadcn@latest init` and follow its prompts.
 2. Add the `@ghibli` namespace to your app's `components.json`:
@@ -16,7 +16,7 @@ Ghibli UI ships as a shadcn registry, components are installed by copying source
 3. Install components — pick one or more: install either the whole set with @ghibli/all or any single item by its name)
    ```bash
    pnpm dlx shadcn@latest add @ghibli/button       # one component
-   pnpm dlx shadcn@latest add @ghibli/auth-forms   # a pattern block
+   pnpm dlx shadcn@latest add @ghibli/form-field   # a generic block
    pnpm dlx shadcn@latest add @ghibli/all          # everything
    ```
    Each command writes the TypeScript source into your project (e.g. `src/components/ui/button.tsx`) and installs any npm peer deps (`clsx`, `tailwind-merge`, Radix primitives…).
@@ -26,7 +26,7 @@ Ghibli UI ships as a shadcn registry, components are installed by copying source
    ```
    From here on, that file is yours — edit it freely.
 
-Every showcase section on the docs site displays its own install command with a copy button, so the quickest way to discover what's installable is to browse the live showcase.
+Installable sections on the docs site display an install command with a copy button. Showcase-only examples are there to demonstrate composition and should be copied manually only when you intentionally want the example.
 
 ### Deploying the registry (maintainers)
 
@@ -105,14 +105,16 @@ Replace `<your-domain>` with wherever this registry is deployed.
 # a single component
 pnpm dlx shadcn@latest add @ghibli/button
 
-# a grouped pattern (auth forms, marketing sections, etc.)
-pnpm dlx shadcn@latest add @ghibli/auth-forms
+# a grouped pattern or generic block
+pnpm dlx shadcn@latest add @ghibli/marketing-sections
 
 # everything at once
 pnpm dlx shadcn@latest add @ghibli/all
 ```
 
 `@ghibli/all` is a fileless aggregate item that installs every public component and block in one command. Shadcn resolves peer dependencies (`clsx`, `tailwind-merge`, Radix primitives, etc.) and writes source files into your project's `components/ui/` and sibling paths.
+
+Optional add-ons are installable by name. `@ghibli/theme-sounds` copies the theme-aware sound helpers, but it does not copy audio assets; provide `/audio/modern-sound.mp3`, `/audio/ocean-bubble.mp3`, `/audio/page-flip.mp3`, and `/audio/tree-rustle.mp3` in your app's public assets, or edit `lib/theme/theme-sound-effects.ts` after installation to point at your own files.
 
 ### 3. Use them
 
@@ -122,6 +124,16 @@ Imports follow whatever path alias your app uses — typically:
 import { Button } from "@/components/ui/button";
 import { HandDrawnFrame } from "@/components/ui/hand-drawn-frame";
 ```
+
+---
+
+## Public Registry Boundary
+
+Ghibli owns reusable presentation: primitives, style tokens, themes, generic form/layout/media shells, and small generic blocks. The registry should not encode host-app behavior such as auth policy, account-management rules, generation model semantics, backend routes, validation schemas, or product copy.
+
+The docs app may keep richer showcase examples under `apps/web/src/cozy-examples/`, but those examples are not listed in `registry.json`, are not exported from `@ghibli/ui`, and are not included by `@ghibli/all`. If an example needs Cozy Art terms to make sense, keep it as a non-installable showcase example or move it into Cozy Art.
+
+For Cozy Art syncs, make shared style, primitive, theme, and generic presentation changes in this repo first, then re-install or copy the affected registry item into Cozy Art. Product behavior, content, schema, API, routing, auth, generation, and account-flow changes belong in Cozy Art only.
 
 ---
 
@@ -217,7 +229,7 @@ scripts/                Smoke-test and build helpers
 1. Edit the source in `registry/ghibli/ui/<name>.tsx` (or `blocks/<name>.tsx`).
 2. Add the export to `packages/ui/src/index.ts` so the docs app and Storybook can import it.
 3. Add or update its entry in `registry.json`.
-4. Run `pnpm registry:build` so `apps/web/public/r/` stays in sync.
+4. Run `pnpm registry:build` so `apps/web/public/r/` is regenerated from a clean directory.
 
 ### Path aliases
 
@@ -241,7 +253,7 @@ pnpm test             # vitest unit tests
 pnpm test:e2e         # Playwright, builds + previews first
 pnpm build:web        # registry:build then vite build → apps/web/dist
 pnpm build:storybook  # static Storybook build
-pnpm registry:build   # shadcn build → apps/web/public/r/*.json
+pnpm registry:build   # clean + shadcn build → apps/web/public/r/*.json
 pnpm smoke:registry   # end-to-end: temp project installs @ghibli/all and builds
 ```
 
@@ -273,4 +285,5 @@ pnpm --filter @ghibli/consumer-vite build
 
 - **The public contract is the registry, not `@ghibli/ui`.** `packages/ui` exists only to make local docs, Storybook, and the consumer example ergonomic inside the monorepo. It is not published and should not be imported by external apps.
 - **Nothing is published to npm.** All workspace packages are `private: true` by design. Consumers get source files via `shadcn add`, never an npm dependency.
+- **Keep optional runtime behavior separate.** `@ghibli/theme` is the minimal provider/runtime item; `@ghibli/theme-sounds` is a separate optional add-on because consumers need to provide or customize its audio assets.
 - **The docs app is a single anchored specimen page.** Every component, pattern, and guide lives on one route; legacy per-component URLs redirect to hash anchors.

@@ -1,6 +1,9 @@
 import type { Meta, StoryObj } from "@storybook/react-vite";
 
-import { CommunityImageModal, CommunityVideoModal } from "@ghibli/ui";
+import {
+  CommunityImageModal,
+  CommunityVideoModal,
+} from "@/cozy-examples/community/modals";
 
 import { communityImageItems, communityVideoItems } from "@/apps/web/src/data/demo-fixtures";
 

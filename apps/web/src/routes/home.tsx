@@ -18,64 +18,73 @@ import {
 } from "lucide-react";
 
 import {
-  AccountApiCreditsSection,
-  AccountChangeEmailDialog,
-  AccountChangePasswordDialog,
-  AccountChangeUsernameDialog,
-  AccountProfileSection,
-  AccountSubscriptionSection,
-  AccountUserDisplayBox,
-  AuthDialog,
   AVAILABLE_THEME_IDS,
   Badge,
   Button,
   CartoonButton,
   ChangeThemeModal,
   cn,
-  CommunityImageCard,
-  CommunityImageModal,
-  CommunityTabsList,
-  CommunityVideoCard,
-  CommunityVideoModal,
   contrastIconButtonClass,
-  copyTextToClipboard,
   DocsArticle,
   DocsCallout,
   DocsCodeBlock,
   DocsFaqAccordion,
   DocsH2,
   DocsParagraph,
-  docsCodeBlockButtonClass,
-  docsCodeBlockOverlayClass,
-  docsCodeBlockSurfaceClass,
   EmptyState,
   EmptyStateAction,
   FloatingAction,
   FormField,
-  GenerateAspectRatioSelect,
-  GenerateButton,
-  type GenerateAttachment,
-  GenerateEditorBar,
-  GenerateModeToggle,
-  GenerateModelSelect,
   HandDrawnFrame,
   HandDrawnRule,
   Input,
-  LoginForm,
   NoticeBanner,
   PageHero,
   PageSection,
   PageShell,
-  RegisterForm,
   ShellFooter,
   ShellHeader,
   Tabs,
   Textarea,
+  ThemeFrame,
   THEME_FRAME_VARIANTS,
   THEME_OPTIONS,
-  ThemeFrame,
+  toast,
   useTheme,
 } from "@ghibli/ui";
+import {
+  AccountApiCreditsSection,
+  AccountProfileSection,
+  AccountSubscriptionSection,
+  AccountUserDisplayBox,
+} from "@/cozy-examples/account/sections";
+import {
+  AccountChangeEmailDialog,
+  AccountChangePasswordDialog,
+  AccountChangeUsernameDialog,
+} from "@/cozy-examples/account/dialogs";
+import { AuthDialog } from "@/cozy-examples/auth/dialog";
+import {
+  LoginForm,
+  RegisterForm,
+} from "@/cozy-examples/auth/forms";
+import {
+  CommunityImageCard,
+  CommunityTabsList,
+  CommunityVideoCard,
+} from "@/cozy-examples/community/cards";
+import {
+  CommunityImageModal,
+  CommunityVideoModal,
+} from "@/cozy-examples/community/modals";
+import {
+  GenerateAspectRatioSelect,
+  GenerateButton,
+  type GenerateAttachment,
+  GenerateModeToggle,
+  GenerateModelSelect,
+} from "@/cozy-examples/generate/controls";
+import { GenerateEditorBar } from "@/cozy-examples/generate/editor-bar";
 
 import {
   DiscordHeaderIcon,
@@ -113,7 +122,7 @@ const registrySnippet = `{
 const shadcnInitSnippet = `pnpm dlx shadcn@latest init`;
 
 const installCommandsSnippet = `pnpm dlx shadcn@latest add @ghibli/button       # one component
-pnpm dlx shadcn@latest add @ghibli/auth-forms   # a pattern block
+pnpm dlx shadcn@latest add @ghibli/form-field   # a reusable block
 pnpm dlx shadcn@latest add @ghibli/all          # everything`;
 
 const importSnippet = `import { Button } from "@/components/ui/button";`;
@@ -167,7 +176,7 @@ const frameCrookednessOptions: FrameRulerOption[] = [
   { label: "10", value: 10 },
 ];
 
-const frameThicknessOptions: FrameRulerOption[] = [
+const frameStrokeWidthVariationOptions: FrameRulerOption[] = [
   { label: "0", value: 0 },
   { label: "1", value: 1 },
   { label: "2", value: 2 },
@@ -189,9 +198,9 @@ const frameStrokeWidthOptions: FrameRulerOption[] = [
 
 function CodeBlock({ children }: { children: string }) {
   return (
-    <DocsCodeBlock className="mb-0 max-w-full" codeText={children}>
-      {children}
-    </DocsCodeBlock>
+    <pre className="max-w-full overflow-x-auto border border-[color:var(--border)] bg-[color:rgba(255,255,255,0.42)] px-4 py-3 text-sm leading-7 text-[color:var(--ink-strong)]">
+      <code>{children}</code>
+    </pre>
   );
 }
 
@@ -199,18 +208,19 @@ const repoUrl = "https://github.com/rodrigoluz/ghibli-component-library";
 
 function LibraryMark({ className }: { className?: string }) {
   return (
-    <ThemeFrame
+    <HandDrawnFrame
       className={className ?? "size-12 shrink-0"}
-      contentClassName="p-1.5"
-      surfaceClassName="bg-[color:var(--theme-shell-brand-background)]"
-      strokeColor="var(--theme-shell-brand-border)"
-      variant={THEME_FRAME_VARIANTS.shellBrandMark}
+      contentClassName="p-2.5"
+      surfaceClassName="bg-white/45"
+      strokeColor="var(--border-strong)"
+      strokeWidth={1.85}
+      crookedness={0.7}
     >
       <Flower2
         aria-hidden="true"
         className="size-full text-[color:var(--ink-strong)]"
       />
-    </ThemeFrame>
+    </HandDrawnFrame>
   );
 }
 
@@ -235,6 +245,10 @@ function DemoSurface({
 const forestWoodSurfaceClass =
   "[html[data-theme='ghibli-forest']_&]:bg-[color:var(--surface-shell)] [html[data-theme='ghibli-forest']_&]:bg-[image:var(--surface-shell-background)] [html[data-theme='ghibli-forest']_&]:border-[color:var(--border)] [html[data-theme='ghibli-forest']_&]:shadow-[0_10px_30px_color-mix(in_oklab,var(--ink-strong)_18%,transparent)]";
 
+function formatFrameSliderValue(value: number) {
+  return Number.isInteger(value) ? String(value) : value.toFixed(2).replace(/0+$/, "").replace(/\.$/, "");
+}
+
 function FrameRulerField({
   description,
   label,
@@ -248,165 +262,68 @@ function FrameRulerField({
   options: FrameRulerOption[];
   value: number;
 }) {
-  const activeOption =
-    options.find((option) => option.value === value) ?? options[0]!;
-  const dragStateRef = useRef<{
-    pointerId: number | null;
-    startX: number;
-    suppressClick: boolean;
-  }>({
-    pointerId: null,
-    startX: 0,
-    suppressClick: false,
-  });
-  const trackInset = `${100 / (Math.max(options.length, 1) * 2)}%`;
-
-  const selectClosestOption = (
-    clientX: number,
-    currentTarget: HTMLDivElement,
-  ) => {
-    if (options.length === 0) {
-      return;
-    }
-
-    const rect = currentTarget.getBoundingClientRect();
-
-    if (rect.width <= 0) {
-      return;
-    }
-
-    const offset = Math.min(Math.max(clientX - rect.left, 0), rect.width);
-    const nextIndex =
-      options.length === 1
-        ? 0
-        : Math.round((offset / rect.width) * (options.length - 1));
-    const nextOption = options[nextIndex];
-
-    if (!nextOption || nextOption.value === value) {
-      return;
-    }
-
-    onValueChange(nextOption.value);
-  };
-
-  const resetPointerTracking = () => {
-    dragStateRef.current.pointerId = null;
-  };
-
-  const handlePointerDown = (event: React.PointerEvent<HTMLDivElement>) => {
-    if (event.pointerType === "mouse" && event.button !== 0) {
-      return;
-    }
-
-    dragStateRef.current.pointerId = event.pointerId;
-    dragStateRef.current.startX = event.clientX;
-    dragStateRef.current.suppressClick = false;
-    event.currentTarget.setPointerCapture?.(event.pointerId);
-    selectClosestOption(event.clientX, event.currentTarget);
-  };
-
-  const handlePointerMove = (event: React.PointerEvent<HTMLDivElement>) => {
-    if (dragStateRef.current.pointerId !== event.pointerId) {
-      return;
-    }
-
-    if (Math.abs(event.clientX - dragStateRef.current.startX) > 3) {
-      dragStateRef.current.suppressClick = true;
-    }
-
-    selectClosestOption(event.clientX, event.currentTarget);
-  };
-
-  const handlePointerEnd = (event: React.PointerEvent<HTMLDivElement>) => {
-    if (dragStateRef.current.pointerId !== event.pointerId) {
-      return;
-    }
-
-    if (event.currentTarget.hasPointerCapture?.(event.pointerId)) {
-      event.currentTarget.releasePointerCapture?.(event.pointerId);
-    }
-
-    resetPointerTracking();
-  };
+  const min = options[0]!.value;
+  const max = options[options.length - 1]!.value;
+  const range = max - min;
+  const clampedValue = Math.min(max, Math.max(min, value));
+  const percent = range === 0 ? 0 : ((clampedValue - min) / range) * 100;
+  const fieldId = `frame-${label.toLowerCase().replace(/[^a-z0-9]+/g, "-")}`;
+  const displayValue = formatFrameSliderValue(clampedValue);
 
   return (
     <FormField
       action={
         <span className="text-xs text-muted-foreground">
-          {activeOption.label}
+          {displayValue}
         </span>
       }
       description={description}
+      htmlFor={fieldId}
       label={label}
     >
-      <div className="relative mx-auto w-[97.5%] pb-1">
+      <div className="relative mx-auto w-[97.5%] pt-1 pb-1">
         <div
           aria-hidden="true"
-          className="pointer-events-none absolute top-[3rem] h-px bg-[color:var(--border-strong)]"
-          style={{ left: trackInset, right: trackInset }}
+          className="pointer-events-none absolute top-[2.35rem] right-2 left-2 h-px bg-[color:var(--border-strong)]"
         />
 
         <div
-          aria-label={label}
-          className="grid items-start touch-none"
-          onLostPointerCapture={resetPointerTracking}
-          onPointerCancel={handlePointerEnd}
-          onPointerDown={handlePointerDown}
-          onPointerMove={handlePointerMove}
-          onPointerUp={handlePointerEnd}
-          role="radiogroup"
+          aria-hidden="true"
+          className="pointer-events-none absolute top-[1.05rem] z-10 inline-grid min-w-[3.2rem] -translate-x-1/2 items-center justify-center border border-[color:var(--border)] bg-[color:var(--paper-soft)] px-2 py-1 text-center text-[11px] font-medium leading-none text-[color:var(--ink-strong)] shadow-[0_8px_18px_rgba(0,0,0,0.14)]"
+          style={{ left: `${percent}%` }}
+        >
+          {displayValue}
+        </div>
+
+        <div
+          aria-hidden="true"
+          className="pointer-events-none absolute top-[2rem] right-0 left-0 grid items-start"
           style={{
             gridTemplateColumns: `repeat(${options.length}, minmax(0, 1fr))`,
           }}
         >
-          {options.map((option) => {
-            const isSelected = option.value === value;
-
-            return (
-              <button
-                aria-checked={isSelected}
-                aria-label={`${label} ${option.label}`}
-                className="group/frame-ruler relative flex min-w-0 justify-center rounded-none bg-transparent px-0 py-0 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[color:var(--ring)] focus-visible:ring-offset-2 focus-visible:ring-offset-[color:var(--paper)]"
-                key={`${label}-${option.label}`}
-                onClick={(event) => {
-                  if (dragStateRef.current.suppressClick) {
-                    dragStateRef.current.suppressClick = false;
-                    event.preventDefault();
-                    return;
-                  }
-
-                  onValueChange(option.value);
-                }}
-                role="radio"
-                type="button"
-              >
-                <span className="relative flex h-[4.8rem] w-full items-start justify-center">
-                  {isSelected ? (
-                    <span className="absolute top-0 inline-grid min-w-[3.6rem] items-center justify-center border border-[color:var(--border)] bg-[color:var(--paper-soft)] px-2 py-1 text-center text-[11px] font-medium leading-none text-[color:var(--ink-strong)] shadow-[0_8px_18px_rgba(0,0,0,0.14)]">
-                      {option.label}
-                    </span>
-                  ) : null}
-                  <span
-                    aria-hidden="true"
-                    className={`absolute top-[2.35rem] h-4 w-px transition-opacity ${
-                      isSelected
-                        ? "bg-[color:var(--ink-strong)] opacity-100"
-                        : "bg-[color:var(--border-strong)] opacity-80"
-                    }`}
-                  />
-                  <span
-                    aria-hidden="true"
-                    className={`absolute top-[2.9rem] rounded-full border transition-all ${
-                      isSelected
-                        ? "size-4 border-[color:var(--ink-strong)] bg-[color:var(--paper-soft)] shadow-[0_0_0_2px_color-mix(in_oklab,var(--paper)_80%,transparent)]"
-                        : "size-2 border-[color:var(--border-strong)] bg-[color:var(--ink-strong)]/75 group-hover/frame-ruler:bg-[color:var(--ink-strong)]"
-                    }`}
-                  />
-                </span>
-              </button>
-            );
-          })}
+          {options.map((option) => (
+            <span
+              className="relative flex h-6 justify-center"
+              key={`${label}-${option.label}`}
+            >
+              <span className="h-4 w-px bg-[color:var(--border-strong)] opacity-80" />
+              <span className="absolute top-[1.05rem] size-2 rounded-full border border-[color:var(--border-strong)] bg-[color:var(--ink-strong)]/75" />
+            </span>
+          ))}
         </div>
+
+        <input
+          aria-label={label}
+          className="relative z-20 h-[4.8rem] w-full cursor-grab appearance-none bg-transparent active:cursor-grabbing focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[color:var(--ring)] focus-visible:ring-offset-2 focus-visible:ring-offset-[color:var(--paper)] [&::-moz-range-thumb]:size-5 [&::-moz-range-thumb]:cursor-grab [&::-moz-range-thumb]:rounded-full [&::-moz-range-thumb]:border [&::-moz-range-thumb]:border-[color:var(--ink-strong)] [&::-moz-range-thumb]:bg-[color:var(--paper-soft)] [&::-moz-range-thumb]:shadow-[0_0_0_2px_color-mix(in_oklab,var(--paper)_80%,transparent)] [&::-moz-range-track]:h-px [&::-moz-range-track]:bg-transparent [&::-webkit-slider-runnable-track]:h-px [&::-webkit-slider-runnable-track]:bg-transparent [&::-webkit-slider-thumb]:mt-[-0.6rem] [&::-webkit-slider-thumb]:size-5 [&::-webkit-slider-thumb]:cursor-grab [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:border [&::-webkit-slider-thumb]:border-[color:var(--ink-strong)] [&::-webkit-slider-thumb]:bg-[color:var(--paper-soft)] [&::-webkit-slider-thumb]:shadow-[0_0_0_2px_color-mix(in_oklab,var(--paper)_80%,transparent)]"
+          id={fieldId}
+          max={max}
+          min={min}
+          onChange={(event) => onValueChange(Number(event.currentTarget.value))}
+          step={0.1}
+          type="range"
+          value={clampedValue}
+        />
 
         <div className="mt-1 flex items-center justify-between text-[11px] text-[color:var(--muted-foreground)]">
           <span>{options[0]!.label}</span>
@@ -447,10 +364,10 @@ function Specimen({
       <div className="md:col-span-2">
         <HandDrawnRule
           className="h-4"
-          crookednessIntensity={0.65}
+          crookedness={0.65}
           strokeWidth={1.35}
           svgClassName="opacity-100"
-          thicknessIntensity={7}
+          strokeWidthVariation={7}
         />
       </div>
       <div className="grid content-start gap-2">
@@ -479,39 +396,35 @@ function CopyableInstallLine({ name }: { name: string }) {
   const [copied, setCopied] = useState(false);
   const command = `pnpm dlx shadcn@latest add @ghibli/${name}`;
 
-  const handleCopy = async () => {
-    const didCopy = await copyTextToClipboard(command);
-
-    if (!didCopy) {
-      return;
-    }
-
-    setCopied(true);
-    window.setTimeout(() => setCopied(false), 1500);
+  const handleCopy = () => {
+    navigator.clipboard
+      .writeText(command)
+      .then(() => {
+        setCopied(true);
+        window.setTimeout(() => setCopied(false), 1500);
+      })
+      .catch(() => {
+        // Clipboard unavailable (e.g. insecure context); no-op.
+      });
   };
 
   return (
-    <div className={cn("mb-4 w-fit max-w-full", docsCodeBlockSurfaceClass)}>
-      <div aria-hidden="true" className={docsCodeBlockOverlayClass} />
-      <div className="relative flex items-center gap-2 px-3 py-2">
-        <code className="min-w-0 flex-1 overflow-x-auto whitespace-nowrap pr-1 font-mono text-[0.8rem] text-[color:var(--theme-docs-code-foreground)] [text-shadow:var(--theme-docs-code-text-shadow)]">
-          {command}
-        </code>
-        <button
-          aria-label={
-            copied ? "Copied install command" : "Copy install command"
-          }
-          className={cn(docsCodeBlockButtonClass, "h-7 px-2")}
-          onClick={() => void handleCopy()}
-          type="button"
-        >
-          {copied ? (
-            <Check className="size-3.5" />
-          ) : (
-            <Copy className="size-3.5" />
-          )}
-        </button>
-      </div>
+    <div className="mb-4 flex w-fit max-w-full items-center gap-2 rounded border border-[color:var(--border-soft)] bg-[var(--surface-sunk)] px-3 py-1.5 [html[data-theme='ghibli-forest']_&]:border-[color:var(--border)] [html[data-theme='ghibli-forest']_&]:bg-[color:var(--surface-shell)] [html[data-theme='ghibli-forest']_&]:bg-[image:var(--surface-shell-background)]">
+      <code className="min-w-0 flex-1 overflow-x-auto whitespace-nowrap font-mono text-xs text-[color:var(--ink-strong)]">
+        {command}
+      </code>
+      <button
+        aria-label={copied ? "Copied" : "Copy install command"}
+        className="inline-flex size-6 shrink-0 items-center justify-center rounded text-[color:var(--muted-foreground)] transition-colors hover:bg-[var(--surface-panel-floating)] hover:text-[color:var(--ink-strong)]"
+        onClick={handleCopy}
+        type="button"
+      >
+        {copied ? (
+          <Check className="size-3.5" />
+        ) : (
+          <Copy className="size-3.5" />
+        )}
+      </button>
     </div>
   );
 }
@@ -638,9 +551,8 @@ export function HomePage() {
   const [communityVideoIndex, setCommunityVideoIndex] = useState<number | null>(
     null,
   );
-  const [frameCrookednessIntensity, setFrameCrookednessIntensity] =
-    useState(0.5);
-  const [frameThicknessIntensity, setFrameThicknessIntensity] = useState(4);
+  const [frameCrookedness, setFrameCrookedness] = useState(0.5);
+  const [frameStrokeWidthVariation, setFrameStrokeWidthVariation] = useState(4);
   const [frameStrokeWidth, setFrameStrokeWidth] = useState(1.6);
   const editorAttachmentsRef = useRef<GenerateAttachment[]>([]);
   const editorAttachmentIdRef = useRef(0);
@@ -744,8 +656,8 @@ export function HomePage() {
   };
 
   const framePreviewSnippet = `<HandDrawnFrame
-  crookednessIntensity={${frameCrookednessIntensity}}
-  thicknessIntensity={${frameThicknessIntensity}}
+  crookedness={${frameCrookedness}}
+  strokeWidthVariation={${frameStrokeWidthVariation}}
   strokeWidth={${frameStrokeWidth}}
 >
   ...
@@ -773,7 +685,7 @@ export function HomePage() {
             to your app&apos;s <code>components.json</code> once, then install
             either the whole set with <code>@ghibli/all</code> or any single
             item by its name (e.g. <code>@ghibli/button</code>,{" "}
-            <code>@ghibli/auth-forms</code>). Every section on this page shows
+            <code>@ghibli/form-field</code>). Installable sections show
             its own install command with a copy button.
           </p>
         </div>
@@ -837,9 +749,8 @@ export function HomePage() {
         <p
           className={`max-w-3xl text-sm leading-7 text-[color:var(--muted-foreground)] ${forestReadableTextClass}`}
         >
-          Every showcase section below displays its own install command with a
-          copy button, so the quickest way to discover what&apos;s installable
-          is to browse the sections that follow.
+          Installable sections below display their own install command with a
+          copy button. Cozy examples are showcase-only compositions.
         </p>
       </section>
 
@@ -938,7 +849,7 @@ export function HomePage() {
         <Specimen
           id="component-hand-drawn-frame"
           installName="hand-drawn-frame"
-          note="The frame primitive now mirrors Cozy.art's surface and divider API with crookedness compensation and thickness intensity controls."
+          note="The frame primitive now mirrors Cozy.art's surface and divider API with crookedness compensation and stroke-width variation controls."
           title="Hand Drawn Frame"
         >
           <div className="grid gap-4 lg:grid-cols-[minmax(0,18rem)_minmax(0,1fr)]">
@@ -946,17 +857,17 @@ export function HomePage() {
               <div className="grid gap-3">
                 <FrameRulerField
                   description="Lower values keep the frame closer to a steady surface."
-                  label="Crookedness Intensity"
-                  onValueChange={setFrameCrookednessIntensity}
+                  label="Crookedness"
+                  onValueChange={setFrameCrookedness}
                   options={frameCrookednessOptions}
-                  value={frameCrookednessIntensity}
+                  value={frameCrookedness}
                 />
                 <FrameRulerField
                   description="Higher values add more layered stroke drift."
-                  label="Thickness Intensity"
-                  onValueChange={setFrameThicknessIntensity}
-                  options={frameThicknessOptions}
-                  value={frameThicknessIntensity}
+                  label="Stroke Width Variation"
+                  onValueChange={setFrameStrokeWidthVariation}
+                  options={frameStrokeWidthVariationOptions}
+                  value={frameStrokeWidthVariation}
                 />
                 <FrameRulerField
                   description="Use the ruler to push the base line from fine to bold."
@@ -982,8 +893,8 @@ export function HomePage() {
                   contentClassName="px-5 py-5"
                   surfaceClassName="bg-[color:var(--card)]"
                   strokeWidth={frameStrokeWidth}
-                  thicknessIntensity={frameThicknessIntensity}
-                  crookednessIntensity={frameCrookednessIntensity}
+                  strokeWidthVariation={frameStrokeWidthVariation}
+                  crookedness={frameCrookedness}
                 >
                   <p className="font-[var(--font-heading)] text-xl text-[color:var(--ink-strong)]">
                     Frame preview
@@ -997,6 +908,44 @@ export function HomePage() {
               </div>
             </DemoSurface>
           </div>
+        </Specimen>
+
+        <Specimen
+          id="component-theme-frame"
+          installName="theme-frame"
+          note="Theme-aware presets wrap the lower-level hand-drawn frame so app surfaces can share consistent line weight across themes."
+          title="Theme Frame"
+        >
+          <DemoSurface className={forestWoodSurfaceClass}>
+            <div className="grid gap-4 md:grid-cols-[minmax(0,1fr)_minmax(0,1fr)]">
+              <ThemeFrame
+                contentClassName="px-5 py-4"
+                surfaceClassName="bg-[color:var(--card)]"
+                variant={THEME_FRAME_VARIANTS.dialogPanel}
+              >
+                <p className="font-[var(--font-heading)] text-lg text-[color:var(--ink-strong)]">
+                  Dialog panel preset
+                </p>
+                <p className="mt-2 text-sm leading-7 text-muted-foreground">
+                  The component reads the active theme and applies the matching
+                  frame config.
+                </p>
+              </ThemeFrame>
+              <ThemeFrame
+                contentClassName="px-5 py-4"
+                surfaceClassName="bg-[color:var(--paper-soft)]"
+                variant={THEME_FRAME_VARIANTS.generateControl}
+              >
+                <p className="font-[var(--font-heading)] text-lg text-[color:var(--ink-strong)]">
+                  Control preset
+                </p>
+                <p className="mt-2 text-sm leading-7 text-muted-foreground">
+                  Consumers can reuse the presets or tune the copied config in
+                  their own app.
+                </p>
+              </ThemeFrame>
+            </div>
+          </DemoSurface>
         </Specimen>
       </ShowcaseGroup>
 
@@ -1038,6 +987,44 @@ export function HomePage() {
               text="Try again"
             />
             <CartoonButton color="#7fa8bb" loading text="Uploading" />
+          </div>
+        </Specimen>
+
+        <Specimen
+          id="component-toast"
+          installName="toast"
+          note="Portal-backed feedback primitive for app events. Product copy and event policy stay in the host app."
+          title="Toast"
+        >
+          <div className="flex flex-wrap gap-3">
+            <Button
+              onClick={() =>
+                toast.success("Saved changes.", {
+                  title: "Success",
+                })
+              }
+              type="button"
+            >
+              Success
+            </Button>
+            <Button
+              onClick={() =>
+                toast.error("Unable to save right now.", {
+                  title: "Error",
+                })
+              }
+              type="button"
+              variant="secondary"
+            >
+              Error
+            </Button>
+            <Button
+              onClick={() => toast.info("Draft is still private.")}
+              type="button"
+              variant="outline"
+            >
+              Info
+            </Button>
           </div>
         </Specimen>
 
@@ -1136,9 +1123,8 @@ export function HomePage() {
       <ShowcaseGroup id="auth-flows">
         <Specimen
           id="pattern-auth-forms"
-          installName="auth-forms"
-          note="Cozy-style auth entry points stay button-driven and open the matching modal instead of rendering full forms inline."
-          title="Auth Forms"
+          note="Cozy example only: auth fields, tab labels, and register policy belong to the host app, not the public registry."
+          title="Cozy Auth Example"
         >
           <div className="flex flex-wrap gap-3">
             <CartoonButton
@@ -1195,9 +1181,8 @@ export function HomePage() {
       <ShowcaseGroup id="account-screens">
         <Specimen
           id="pattern-account-user-display"
-          installName="account-sections"
-          note="Primary profile header for the account page: avatar upload, username edit, generation count, and password action."
-          title="Account User Display"
+          note="Cozy example only: account metadata, avatar actions, generation counts, and password policy are app-owned."
+          title="Cozy Account User Display"
         >
           <DemoSurface>
             <AccountUserDisplayBox
@@ -1217,9 +1202,8 @@ export function HomePage() {
 
         <Specimen
           id="pattern-account-profile-summary"
-          installName="account-sections"
-          note="Quiet profile summary for the top of billing pages."
-          title="Account Profile Section"
+          note="Cozy example only: this shows how primitives compose around account data without making account policy installable."
+          title="Cozy Account Profile Section"
         >
           <DemoSurface>
             <AccountProfileSection
@@ -1249,9 +1233,8 @@ export function HomePage() {
 
         <Specimen
           id="pattern-account-subscription"
-          installName="account-sections"
-          note="Summary of current plan plus the available-plans grid with the current plan marked."
-          title="Subscription Section"
+          note="Cozy example only: plan names, billing actions, and credit balances are product-specific."
+          title="Cozy Subscription Section"
         >
           <DemoSurface>
             <AccountSubscriptionSection
@@ -1278,9 +1261,8 @@ export function HomePage() {
 
         <Specimen
           id="pattern-account-credits"
-          installName="account-sections"
-          note="Read-only payments ledger — date, activity, and signed amount."
-          title="Payments Section"
+          note="Cozy example only: ledger semantics and payment copy stay in the host app."
+          title="Cozy Payments Section"
         >
           <DemoSurface>
             <AccountApiCreditsSection ledger={creditLedger} />
@@ -1289,9 +1271,8 @@ export function HomePage() {
 
         <Specimen
           id="pattern-account-dialogs"
-          installName="account-dialogs"
-          note="Change-username, change-email, and change-password dialogs, controlled from the account screens."
-          title="Account Dialogs"
+          note="Cozy example only: username, email, and password change flows are app/auth-provider policy."
+          title="Cozy Account Dialogs"
         >
           <DemoSurface>
             <div className="flex flex-wrap gap-3">
@@ -1321,9 +1302,8 @@ export function HomePage() {
       <ShowcaseGroup id="community-flows">
         <Specimen
           id="pattern-community-cards"
-          installName="community-cards"
-          note="Two Cozy-style image cards with the same click-through gallery viewer."
-          title="Image Card"
+          note="Cozy example only: live-feed media, prompts, model metadata, and X-post semantics are product-owned."
+          title="Cozy Image Card"
         >
           <div className="ghibli-showcase-image-card-grid">
             {featuredCommunityImages.map((item, index) => (
@@ -1363,9 +1343,8 @@ export function HomePage() {
 
         <Specimen
           id="pattern-community-video-card"
-          installName="community-cards"
-          note="Two Cozy-style video cards using the same full-screen viewer and chrome."
-          title="Video Card"
+          note="Cozy example only: video feed behavior and viewer semantics stay outside the installable registry."
+          title="Cozy Video Card"
         >
           <div className="ghibli-showcase-video-card-grid">
             {featuredCommunityVideos.map((item, index) => (
@@ -1407,9 +1386,8 @@ export function HomePage() {
       <ShowcaseGroup id="generate-flows">
         <Specimen
           id="pattern-generate-editor-bar"
-          installName="generate-editor-bar"
-          note="The Cozy `/generate` drawer stays docked at the bottom of the stage, starting collapsed until you tap the prompt preview or pull the handle."
-          title="Generate Editor Bar"
+          note="Cozy example only: prompt submission, attachments, model selection, and generation policy belong to Cozy Art."
+          title="Cozy Generate Editor Bar"
         >
           <div className="ghibli-generate-editor-stage">
             <div className="ghibli-generate-editor-stage-dock">
@@ -1445,9 +1423,8 @@ export function HomePage() {
 
         <Specimen
           id="pattern-generate-controls"
-          installName="generate-controls"
-          note="Individual controls used below the prompt composer."
-          title="Generate Controls"
+          note="Cozy example only: these controls show product-specific generation composition, not a public registry item."
+          title="Cozy Generate Controls"
         >
           <div className="flex flex-wrap items-center gap-3">
             <GenerateModeToggle

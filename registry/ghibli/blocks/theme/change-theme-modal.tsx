@@ -7,14 +7,14 @@ import {
   DialogContent,
   DialogDescription,
   DialogHeader,
-  DialogTitle
+  DialogTitle,
 } from "@/components/ui/dialog";
 import { HandDrawnFrame } from "@/components/ui/hand-drawn-frame";
 import {
   normalizeAvailableThemeId,
   THEME_OPTIONS,
   useTheme,
-  type ThemeOptionId
+  type ThemeOptionId,
 } from "@/lib/theme";
 
 import { ThemeOptionCard } from "./theme-option-card";
@@ -26,10 +26,13 @@ export interface ChangeThemeModalProps {
   open: boolean;
 }
 
-export function ChangeThemeModal({ onOpenChange, open }: ChangeThemeModalProps) {
+export function ChangeThemeModal({
+  onOpenChange,
+  open,
+}: ChangeThemeModalProps) {
   const { setTheme, theme } = useTheme();
   const [pendingThemeId, setPendingThemeId] = React.useState<ThemeOptionId>(
-    normalizeAvailableThemeId(theme)
+    normalizeAvailableThemeId(theme),
   );
   const cardRefs = React.useRef<Array<HTMLButtonElement | null>>([]);
 
@@ -47,12 +50,12 @@ export function ChangeThemeModal({ onOpenChange, open }: ChangeThemeModalProps) 
         }
         return accumulator;
       }, []),
-    []
+    [],
   );
 
   const tabStopThemeId = React.useMemo(() => {
     const pendingIndex = THEME_OPTIONS.findIndex(
-      (option) => option.id === pendingThemeId
+      (option) => option.id === pendingThemeId,
     );
     if (pendingIndex >= 0 && THEME_OPTIONS[pendingIndex]?.available) {
       return pendingThemeId;
@@ -82,12 +85,12 @@ export function ChangeThemeModal({ onOpenChange, open }: ChangeThemeModalProps) 
         focusCardAt(targetIndex);
       }
     },
-    [availableIndexes, focusCardAt]
+    [availableIndexes, focusCardAt],
   );
 
   const handleCardKeyDown = (
     event: React.KeyboardEvent<HTMLButtonElement>,
-    index: number
+    index: number,
   ) => {
     switch (event.key) {
       case "ArrowRight":
@@ -141,7 +144,7 @@ export function ChangeThemeModal({ onOpenChange, open }: ChangeThemeModalProps) 
       >
         <HandDrawnFrame
           contentClassName="px-5 py-5"
-          crookednessIntensity={0.6}
+          crookedness={0.6}
           strokeColor="var(--border)"
           strokeWidth={1.45}
           surfaceClassName="bg-[color:var(--card)]"

@@ -16,21 +16,19 @@ export const Overview: Story = {
         contentClassName="p-5"
         surfaceClassName="bg-white/55"
         strokeWidth={1.6}
-        crookednessIntensity={0.5}
+        crookedness={0.5}
       >
         <div className="grid gap-2">
           <Badge variant="stamp">Surface</Badge>
           <p className="text-sm text-[color:var(--muted-foreground)]">
-            <code>surfaceClassName</code> handles the paper fill and <code>contentClassName</code> holds spacing.
+            <code>surfaceClassName</code> handles the paper fill and{" "}
+            <code>contentClassName</code> holds spacing.
           </p>
         </div>
       </HandDrawnFrame>
       <div className="grid gap-3">
         <Badge variant="stamp">Divider Rule</Badge>
-        <HandDrawnRule
-          crookednessIntensity={0.5}
-          strokeWidth={1.1}
-        />
+        <HandDrawnRule crookedness={0.5} strokeWidth={1.1} />
       </div>
     </div>
   ),

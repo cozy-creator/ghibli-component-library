@@ -1,6 +1,10 @@
 import type { Meta, StoryObj } from "@storybook/react-vite";
 
-import { ForgotPasswordForm, LoginForm, RegisterForm } from "@ghibli/ui";
+import {
+  ForgotPasswordForm,
+  LoginForm,
+  RegisterForm,
+} from "@/cozy-examples/auth/forms";
 
 const meta = {
   title: "Patterns/Auth/Auth Forms"

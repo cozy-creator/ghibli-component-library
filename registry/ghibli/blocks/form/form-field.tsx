@@ -1,5 +1,6 @@
 import * as React from "react";
 
+import { Label } from "@/components/ui/label";
 import { cn } from "@/lib/utils";
 
 interface FormFieldProps {
@@ -18,6 +19,7 @@ export function FormField({
   className,
   description,
   error,
+  htmlFor,
   label
 }: FormFieldProps) {
   return (
@@ -25,7 +27,7 @@ export function FormField({
       {(label || action) ? (
         <div className="flex items-center justify-between gap-3">
           {label ? (
-            <span className="text-sm font-medium text-[color:var(--ink-strong)]">{label}</span>
+            <Label htmlFor={htmlFor}>{label}</Label>
           ) : (
             <span />
           )}

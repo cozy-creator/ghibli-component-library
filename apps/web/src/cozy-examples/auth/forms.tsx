@@ -46,7 +46,7 @@ export function LoginForm({
   password,
   providerActions = [],
   submitting,
-  title
+  title,
 }: LoginFormProps) {
   const [showPassword, setShowPassword] = React.useState(false);
 
@@ -60,7 +60,9 @@ export function LoginForm({
             </h3>
           ) : null}
           {helperText ? (
-            <p className="text-sm leading-7 text-muted-foreground">{helperText}</p>
+            <p className="text-sm leading-7 text-muted-foreground">
+              {helperText}
+            </p>
           ) : null}
         </div>
       ) : null}
@@ -162,7 +164,7 @@ export function RegisterForm({
   password,
   providerActions = [],
   submitting,
-  title
+  title,
 }: RegisterFormProps) {
   const [showPassword, setShowPassword] = React.useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = React.useState(false);
@@ -178,7 +180,9 @@ export function RegisterForm({
             </h3>
           ) : null}
           {helperText ? (
-            <p className="text-sm leading-7 text-muted-foreground">{helperText}</p>
+            <p className="text-sm leading-7 text-muted-foreground">
+              {helperText}
+            </p>
           ) : null}
         </div>
       ) : null}
@@ -243,7 +247,11 @@ export function RegisterForm({
             value={confirmPassword}
           />
           <button
-            aria-label={showConfirmPassword ? "Hide confirm password" : "Show confirm password"}
+            aria-label={
+              showConfirmPassword
+                ? "Hide confirm password"
+                : "Show confirm password"
+            }
             className="absolute right-3 top-1/2 z-30 -translate-y-1/2 text-muted-foreground hover:text-foreground"
             onClick={() => setShowConfirmPassword((previous) => !previous)}
             type="button"
@@ -309,16 +317,16 @@ export function ForgotPasswordForm({
   onEmailChange,
   onSubmit,
   submitting,
-  title = "Reset password"
+  title = "Reset password",
 }: ForgotPasswordFormProps) {
   return (
     <form className={cn("grid gap-4", className)} onSubmit={onSubmit}>
       <div className="grid gap-1">
         <div className="flex items-center justify-between gap-3">
-          <h3 className="font-[var(--font-heading)] text-3xl text-[color:var(--ink-strong)]">{title}</h3>
-          {onBack ? (
-            <ButtonLike onBack={onBack} />
-          ) : null}
+          <h3 className="font-[var(--font-heading)] text-3xl text-[color:var(--ink-strong)]">
+            {title}
+          </h3>
+          {onBack ? <ButtonLike onBack={onBack} /> : null}
         </div>
         <p className="text-sm leading-7 text-muted-foreground">{helperText}</p>
       </div>
@@ -382,22 +390,22 @@ function AuthProviderButton({ provider }: { provider: AuthProviderAction }) {
     <HandDrawnFrame
       className={cn(
         "group/auth-provider-frame w-full transition-colors",
-        disabled && "opacity-60"
+        disabled && "opacity-60",
       )}
       surfaceClassName={cn(
         "bg-[color:var(--paper-soft)]",
-        !disabled && "group-hover/auth-provider-frame:bg-white/50"
+        !disabled && "group-hover/auth-provider-frame:bg-white/50",
       )}
       strokeColor="var(--border)"
       strokeWidth={1.05}
       svgClassName="opacity-80"
-      crookednessIntensity={0.3}
+      crookedness={0.3}
     >
       <button
         className={cn(
           "flex w-full items-center justify-center gap-2 px-3 py-2 text-sm text-[color:var(--foreground)]",
           focusRingClass,
-          disabled && "cursor-not-allowed"
+          disabled && "cursor-not-allowed",
         )}
         disabled={disabled}
         onClick={() => provider.onSelect?.()}

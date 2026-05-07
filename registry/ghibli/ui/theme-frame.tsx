@@ -12,8 +12,8 @@ import {
   type ThemeFrameVariant,
   type ThemeRuleVariant,
 } from "@/lib/theme/theme-frame-config";
+import { ThemeContext } from "@/lib/theme/theme-context";
 import { DEFAULT_AVAILABLE_THEME_ID } from "@/lib/theme/theme-options";
-import { ThemeContext } from "@/lib/theme/theme-provider";
 
 interface ThemeFrameProps extends HandDrawnFrameProps {
   variant: ThemeFrameVariant;

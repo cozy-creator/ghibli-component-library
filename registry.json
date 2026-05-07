@@ -8,7 +8,10 @@
       "title": "Utils",
       "type": "registry:lib",
       "description": "Shared helpers, controllable-state utilities, and scenic tone classes.",
-      "dependencies": ["clsx", "tailwind-merge"],
+      "dependencies": [
+        "clsx",
+        "tailwind-merge"
+      ],
       "files": [
         {
           "path": "registry/ghibli/lib/utils.ts",
@@ -29,6 +32,11 @@
           "target": "lib/theme/index.ts"
         },
         {
+          "path": "registry/ghibli/lib/theme/theme-context.ts",
+          "type": "registry:lib",
+          "target": "lib/theme/theme-context.ts"
+        },
+        {
           "path": "registry/ghibli/lib/theme/theme-dom.ts",
           "type": "registry:lib",
           "target": "lib/theme/theme-dom.ts"
@@ -37,11 +45,6 @@
           "path": "registry/ghibli/lib/theme/theme-options.ts",
           "type": "registry:lib",
           "target": "lib/theme/theme-options.ts"
-        },
-        {
-          "path": "registry/ghibli/lib/theme/theme-frame-config.ts",
-          "type": "registry:lib",
-          "target": "lib/theme/theme-frame-config.ts"
         },
         {
           "path": "registry/ghibli/lib/theme/theme-provider.tsx",
@@ -59,14 +62,30 @@
           "target": "lib/theme/theme-types.ts"
         },
         {
-          "path": "registry/ghibli/lib/theme/theme-sound-effects.ts",
-          "type": "registry:lib",
-          "target": "lib/theme/theme-sound-effects.ts"
-        },
-        {
           "path": "registry/ghibli/lib/theme/use-theme.ts",
           "type": "registry:lib",
           "target": "lib/theme/use-theme.ts"
+        }
+      ]
+    },
+    {
+      "name": "theme-sounds",
+      "title": "Theme Sounds",
+      "type": "registry:lib",
+      "description": "Optional theme-aware UI sound helpers. Consumers must provide the referenced public audio assets or customize the sound source map after installation.",
+      "registryDependencies": [
+        "@ghibli/theme"
+      ],
+      "files": [
+        {
+          "path": "registry/ghibli/lib/theme/theme-sounds.ts",
+          "type": "registry:lib",
+          "target": "lib/theme/theme-sounds.ts"
+        },
+        {
+          "path": "registry/ghibli/lib/theme/theme-sound-effects.ts",
+          "type": "registry:lib",
+          "target": "lib/theme/theme-sound-effects.ts"
         },
         {
           "path": "registry/ghibli/lib/theme/use-ui-sound.ts",
@@ -84,16 +103,11 @@
       "name": "style",
       "title": "Ghibli Paper Theme",
       "type": "registry:style",
-      "description": "Warm paper theme with Cozy.art-style layered washes, global paper texture, and tokenized handcrafted surfaces.",
+      "description": "Warm paper theme with stronger ink borders, flatter surfaces, and handcrafted texture helpers.",
       "extends": "none",
       "dependencies": [
-        "class-variance-authority",
-        "clsx",
-        "lucide-react",
-        "tailwind-merge",
         "tw-animate-css"
       ],
-      "registryDependencies": ["@ghibli/utils"],
       "files": [],
       "cssVars": {
         "theme": {
@@ -119,345 +133,19 @@
           "color-input": "var(--input)"
         },
         "light": {
-          "font-heading": "\"Averia Serif Libre\", Georgia, serif",
-          "font-body": "\"M PLUS Rounded 1c\", \"Trebuchet MS\", system-ui, sans-serif",
-          "spacing": "0.25rem",
-          "shadow-paper": "none",
-          "shadow-soft": "none",
-          "shadow-raised": "none",
-          "theme-radius-sm": "0px",
-          "theme-radius-md": "0px",
-          "theme-radius-lg": "0px",
-          "theme-radius-xl": "0px",
-          "z-toast": "60",
-          "theme-shell-header-background": "var(--surface-shell)",
-          "theme-shell-header-background-image": "var(--surface-shell-background)",
-          "theme-shell-header-border": "var(--border)",
-          "theme-shell-header-shadow": "none",
-          "theme-shell-brand-background": "var(--surface-overlay)",
-          "theme-shell-brand-border": "var(--border-strong)",
-          "theme-shell-nav-link-foreground": "var(--muted-foreground)",
-          "theme-shell-nav-link-hover-background": "var(--surface-overlay)",
-          "theme-shell-nav-link-hover-foreground": "var(--foreground)",
-          "theme-shell-nav-icon-foreground": "var(--muted-foreground)",
-          "theme-shell-nav-icon-hover-background": "var(--surface-overlay)",
-          "theme-shell-nav-icon-hover-foreground": "var(--foreground)",
-          "theme-shell-social-icon-github-foreground": "#181717",
-          "theme-shell-social-icon-github-hover-foreground": "var( --theme-shell-social-icon-github-foreground )",
-          "theme-shell-social-icon-discord-foreground": "#5865f2",
-          "theme-shell-social-icon-discord-hover-foreground": "var( --theme-shell-social-icon-discord-foreground )",
-          "theme-shell-nav-active-background": "var(--theme-nav-item-active-background)",
-          "theme-shell-nav-active-foreground": "var(--theme-nav-item-active-foreground)",
-          "theme-shell-nav-active-border": "var(--border)",
-          "theme-shell-user-chip-background": "var(--surface-overlay)",
-          "theme-shell-user-chip-border": "var(--border)",
-          "theme-shell-user-menu-background": "var(--paper)",
-          "theme-shell-user-menu-border": "var(--border)",
-          "theme-shell-user-menu-item-highlight-background": "var(--ring)",
-          "theme-shell-user-menu-item-highlight-foreground": "var(--ink-strong)",
-          "theme-shell-user-menu-item-destructive-highlight-foreground": "var( --theme-shell-user-menu-item-highlight-foreground )",
-          "theme-shell-mobile-surface-background": "var(--paper-soft)",
-          "theme-shell-mobile-surface-border": "var(--border)",
-          "theme-dialog-overlay-blur": "2px",
-          "theme-dialog-shadow": "none",
-          "theme-dialog-foreground": "var(--card-foreground)",
-          "theme-dialog-title-foreground": "var(--ink-strong)",
-          "theme-dialog-description-foreground": "var(--muted-foreground)",
-          "theme-dialog-frame-background": "var(--card)",
-          "theme-dialog-frame-border": "var(--border)",
-          "theme-dialog-primary-border-width": "2px",
-          "theme-dialog-primary-border": "color-mix( in oklab, var(--border) 58%, var(--ink-strong) )",
-          "theme-dialog-primary-foreground": "var(--primary-foreground)",
-          "theme-dialog-primary-hover-background": "color-mix( in oklab, var(--cartoon-button-bg) 76%, white )",
-          "theme-dialog-primary-hover-foreground": "var(--foreground)",
-          "theme-dialog-primary-shadow": "inset 0 1px 0 color-mix(in oklab, var(--paper-soft) 60%, transparent), 0 3px 0 color-mix(in oklab, var(--ink-strong) 38%, transparent)",
-          "theme-dialog-primary-active-shadow": "inset 0 1px 0 color-mix(in oklab, var(--paper-soft) 48%, transparent), 0 1px 0 color-mix(in oklab, var(--ink-strong) 44%, transparent)",
-          "theme-dialog-primary-hover-y": "-1px",
-          "theme-dialog-primary-active-y": "2px",
-          "theme-dialog-primary-font-family": "\"Comic Sans MS\", \"Chalkboard SE\", cursive",
-          "theme-sheet-overlay-blur": "2px",
-          "theme-sheet-shadow": "none",
-          "theme-sheet-foreground": "var(--card-foreground)",
-          "theme-sheet-title-foreground": "var(--ink-strong)",
-          "theme-sheet-description-foreground": "var(--muted-foreground)",
-          "theme-skeleton-border": "var(--border-soft)",
-          "theme-skeleton-background": "linear-gradient( 110deg, color-mix(in oklab, var(--surface-overlay) 72%, transparent), var(--surface-overlay-strong), color-mix(in oklab, var(--surface-overlay) 72%, transparent) )",
-          "theme-auth-dialog-background": "var(--theme-dialog-frame-background)",
-          "theme-auth-dialog-border": "var(--theme-dialog-frame-border)",
-          "theme-auth-provider-background": "var(--paper-soft)",
-          "theme-auth-provider-hover-background": "var(--surface-overlay)",
-          "theme-auth-provider-border": "var(--border)",
-          "theme-auth-provider-foreground": "var(--foreground)",
-          "theme-account-heading-foreground": "var(--footer-muted-foreground)",
-          "theme-account-heading-text-stroke": "0.5px black",
-          "theme-account-title-foreground": "var(--ink-strong)",
-          "theme-account-body-foreground": "var(--foreground)",
-          "theme-account-muted-foreground": "var(--muted-foreground)",
-          "theme-account-profile-background": "var(--surface-panel-gradient)",
-          "theme-account-profile-border": "var(--border)",
-          "theme-account-profile-skeleton-background": "var( --theme-account-summary-background )",
-          "theme-account-panel-background": "var(--surface-panel-gradient)",
-          "theme-account-panel-border": "var(--border)",
-          "theme-account-panel-skeleton-background": "var( --theme-account-summary-background )",
-          "theme-account-summary-background": "linear-gradient( 180deg, color-mix(in oklab, var(--card) 50%, var(--primary-foreground)), color-mix(in oklab, var(--paper-soft) 96%, var(--primary-foreground)) )",
-          "theme-account-summary-border": "var(--border)",
-          "theme-account-plan-background": "color-mix( in oklab, var(--card) 46%, transparent )",
-          "theme-account-plan-active-background": "var(--primary-soft)",
-          "theme-account-plan-border": "var(--border-soft)",
-          "theme-account-plan-active-border": "var(--primary-edge)",
-          "theme-account-plan-current-action-background": "var(--border-strong)",
-          "theme-account-divider": "var(--border-soft)",
-          "theme-account-table-divider": "var(--border-faint)",
-          "theme-account-avatar-background": "var(--card)",
-          "theme-account-avatar-border": "var(--border-strong)",
-          "theme-account-avatar-overlay-background": "rgba(0, 0, 0, 0.45)",
-          "theme-account-avatar-control-foreground": "#fff",
-          "theme-account-avatar-focus-ring": "rgba(255, 255, 255, 0.8)",
-          "theme-account-avatar-focus-ring-offset": "rgba(0, 0, 0, 0.3)",
-          "theme-account-avatar-remove-shadow": "0 1px 2px rgba(0, 0, 0, 0.85)",
-          "theme-account-primary-border-width": "2px",
-          "theme-account-primary-border": "color-mix( in oklab, var(--border) 58%, var(--ink-strong) )",
-          "theme-account-primary-foreground": "var(--primary-foreground)",
-          "theme-account-primary-hover-background": "color-mix( in oklab, var(--cartoon-button-bg) 76%, white )",
-          "theme-account-primary-hover-foreground": "var(--foreground)",
-          "theme-account-primary-shadow": "inset 0 1px 0 color-mix(in oklab, var(--paper-soft) 60%, transparent), 0 3px 0 color-mix(in oklab, var(--ink-strong) 38%, transparent)",
-          "theme-account-primary-active-shadow": "inset 0 1px 0 color-mix(in oklab, var(--paper-soft) 48%, transparent), 0 1px 0 color-mix(in oklab, var(--ink-strong) 44%, transparent)",
-          "theme-account-primary-hover-y": "-1px",
-          "theme-account-primary-active-y": "2px",
-          "theme-account-primary-font-family": "\"Comic Sans MS\", \"Chalkboard SE\", cursive",
-          "theme-generate-bar-background": "var(--surface-panel-floating)",
-          "theme-generate-bar-border": "var(--border)",
-          "theme-generate-bar-shadow": "none",
-          "theme-generate-bar-handle-background": "var(--border)",
-          "theme-generate-bar-toggle-hover-background": "var(--paper-soft)",
-          "theme-generate-summary-background": "color-mix( in oklab, var(--paper-soft) 90%, white )",
-          "theme-generate-summary-border": "var(--border)",
-          "theme-generate-editor-panel-background": "var(--card)",
-          "theme-generate-editor-panel-border": "var(--border)",
-          "theme-generate-control-background": "var(--paper-soft)",
-          "theme-generate-control-strong-background": "var(--paper)",
-          "theme-generate-control-hover-background": "var(--surface-overlay)",
-          "theme-generate-control-border": "var(--border)",
-          "theme-generate-control-foreground": "var(--foreground)",
-          "theme-generate-control-active-background": "var(--primary)",
-          "theme-generate-control-active-border": "var(--primary-edge)",
-          "theme-generate-control-active-foreground": "var(--primary-foreground)",
-          "theme-generate-menu-background": "var(--popover)",
-          "theme-generate-menu-border": "var(--border)",
-          "theme-generate-menu-foreground": "var(--popover-foreground)",
-          "theme-generate-menu-muted-foreground": "var(--muted-foreground)",
-          "theme-generate-menu-item-hover-background": "var(--paper-soft)",
-          "theme-generate-menu-item-hover-foreground": "var(--foreground)",
-          "theme-generate-ruler-background": "var(--foreground)",
-          "theme-generate-ruler-foreground": "var(--paper-soft)",
-          "theme-generate-ruler-line": "var(--paper)",
-          "theme-generate-ruler-callout-background": "var(--paper-soft)",
-          "theme-generate-ruler-callout-border": "var(--border)",
-          "theme-generate-ruler-callout-foreground": "var(--foreground)",
-          "generate-aspect-selected-label": "var(--theme-generate-ruler-foreground)",
-          "generate-aspect-preview-background": "color-mix( in oklab, var(--paper-soft) 84%, transparent )",
-          "generate-aspect-preview-border": "color-mix( in oklab, var(--theme-generate-ruler-line) 72%, transparent )",
-          "generate-aspect-preview-active-background": "var(--paper-soft)",
-          "generate-aspect-preview-active-border": "var(--theme-generate-ruler-line)",
-          "generate-aspect-slider-track": "color-mix( in oklab, var(--theme-generate-ruler-line) 58%, transparent )",
-          "generate-aspect-slider-thumb": "var(--paper-soft)",
-          "generate-aspect-slider-edge-inset": "calc(100% / 14)",
-          "generate-aspect-slider-dot": "color-mix( in oklab, var(--theme-generate-ruler-line) 70%, transparent )",
-          "generate-aspect-slider-dot-active": "var(--theme-generate-ruler-line)",
-          "theme-generate-composer-background": "color-mix( in oklab, var(--paper-soft) 90%, white )",
-          "theme-generate-composer-active-background": "color-mix( in oklab, var(--paper-soft) 72%, var(--primary) 28% )",
-          "theme-generate-composer-border": "var(--border)",
-          "theme-generate-composer-drag-border": "var(--primary-edge)",
-          "theme-generate-composer-overlay-background": "var( --surface-overlay-strongest )",
-          "theme-generate-chip-background": "var(--surface-overlay-strong)",
-          "theme-generate-chip-border": "var(--border-soft)",
-          "theme-generate-chip-icon-background": "var(--paper-soft)",
-          "theme-generate-feed-card-background": "var(--paper-soft)",
-          "theme-generate-feed-card-border": "var(--theme-inset-border)",
-          "theme-generate-feed-divider": "var(--primary)",
-          "theme-generate-feed-divider-width": "1px",
-          "theme-generate-feed-date-foreground": "var(--foreground)",
-          "theme-generate-feed-meta-foreground": "var(--foreground)",
-          "theme-generate-feed-label-foreground": "var(--ink-strong)",
-          "theme-generate-progress-background": "var(--paper-soft)",
-          "theme-generate-progress-foreground": "var(--primary)",
-          "theme-generate-rerun-radius": "6px",
-          "theme-generate-rerun-border": "color-mix( in oklab, var(--ink-strong) 58%, transparent )",
-          "theme-generate-rerun-background": "color-mix( in oklab, var(--ink-strong) 88%, transparent )",
-          "theme-generate-rerun-background-hover": "color-mix( in oklab, var(--ink-strong) 96%, transparent )",
-          "theme-generate-rerun-foreground": "var(--success)",
-          "theme-generate-primary-border-width": "2px",
-          "theme-generate-primary-border": "color-mix( in oklab, var(--border) 58%, var(--ink-strong) )",
-          "theme-generate-primary-shadow": "inset 0 1px 0 color-mix(in oklab, var(--paper-soft) 60%, transparent), 0 3px 0 color-mix(in oklab, var(--ink-strong) 38%, transparent)",
-          "theme-generate-primary-active-shadow": "inset 0 1px 0 color-mix(in oklab, var(--paper-soft) 48%, transparent), 0 1px 0 color-mix(in oklab, var(--ink-strong) 44%, transparent)",
-          "theme-generate-primary-hover-y": "-1px",
-          "theme-generate-primary-active-y": "2px",
-          "theme-generate-primary-font-family": "\"Comic Sans MS\", \"Chalkboard SE\", cursive",
-          "theme-media-viewer-frame-border": "color-mix( in oklab, var(--primary-foreground) 16%, transparent )",
-          "theme-media-viewer-frame-border-soft": "color-mix( in oklab, var(--primary-foreground) 14%, transparent )",
-          "theme-media-viewer-frame-border-bright": "color-mix( in oklab, var(--primary-foreground) 22%, transparent )",
-          "theme-media-viewer-frame-border-raised": "color-mix( in oklab, var(--primary-foreground) 18%, transparent )",
-          "theme-media-viewer-surface-background": "color-mix( in oklab, var(--foreground) 82%, transparent )",
-          "theme-media-viewer-surface-hover-background": "color-mix( in oklab, var(--primary-foreground) 10%, transparent )",
-          "theme-media-viewer-chrome-border": "color-mix( in oklab, var(--primary-foreground) 12%, transparent )",
-          "theme-media-viewer-chrome-background": "color-mix( in oklab, var(--foreground) 82%, transparent )",
-          "theme-media-viewer-chrome-foreground": "var(--primary-foreground)",
-          "theme-media-viewer-chrome-border-hover": "color-mix( in oklab, var(--primary-foreground) 24%, transparent )",
-          "theme-media-viewer-chrome-background-hover": "color-mix( in oklab, var(--foreground) 90%, transparent )",
-          "theme-media-viewer-stage-background": "var(--texture-paper-overlay-image), radial-gradient(circle at top, rgba(255, 255, 255, 0.08), transparent 44%), linear-gradient( 180deg, color-mix(in oklab, var(--secondary-foreground) 84%, white 4%), color-mix(in oklab, var(--secondary-foreground) 96%, black 10%) )",
-          "theme-media-viewer-stage-background-blend-mode": "multiply, normal, normal",
-          "theme-media-viewer-stage-background-repeat": "repeat, no-repeat, no-repeat",
-          "theme-media-viewer-media-background": "#000",
-          "theme-media-viewer-status-overlay-background": "color-mix( in oklab, var(--ink-strong) 28%, transparent )",
-          "theme-media-viewer-status-gradient-background": "linear-gradient( 180deg, color-mix(in oklab, var(--secondary-foreground) 28%, transparent), color-mix(in oklab, var(--foreground) 82%, transparent) )",
-          "theme-media-viewer-callout-background": "color-mix( in oklab, var(--primary-foreground) 72%, transparent )",
-          "theme-media-viewer-callout-foreground": "var(--ink-strong)",
-          "theme-media-viewer-error-card-background": "color-mix( in oklab, var(--ink-strong) 20%, transparent )",
-          "theme-media-viewer-error-foreground": "var(--primary-foreground)",
-          "theme-media-viewer-error-muted-foreground": "color-mix( in oklab, var(--primary-foreground) 78%, transparent )",
-          "theme-media-viewer-details-background": "color-mix( in oklab, var(--foreground) 82%, transparent )",
-          "theme-media-viewer-details-border": "color-mix( in oklab, var(--primary-foreground) 16%, transparent )",
-          "theme-media-viewer-details-foreground": "var(--primary-foreground)",
-          "theme-media-viewer-details-muted-foreground": "color-mix( in oklab, var(--primary-foreground) 88%, transparent )",
-          "theme-media-viewer-details-meta-foreground": "color-mix( in oklab, var(--primary-foreground) 92%, transparent )",
-          "theme-media-viewer-image-grid-columns": "minmax(0, 1fr) 22rem",
-          "theme-media-viewer-image-grid-columns-wide": "minmax(0, 65fr) minmax(0, 35fr)",
-          "texture-paper-overlay-image-source": "url(\"data:image/jpeg;base64,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\")",
-          "danger": "var(--destructive)",
-          "danger-foreground": "var(--destructive-foreground)",
-          "danger-edge": "var(--destructive-edge)",
           "background": "#f7f1e5",
+          "foreground": "#4d3b2e",
           "card": "#fcf7ed",
           "card-foreground": "#4d3b2e",
           "popover": "#fffaf2",
           "popover-foreground": "#4d3b2e",
           "paper": "#eece84",
           "paper-soft": "#faf4e8",
-          "surface-shell": "#f4e5c3",
-          "surface-shell-background": "none",
-          "surface-highlight": "#f5ead0",
-          "surface-highlight-border": "#e6d3a3",
-          "theme-panel-background": "var(--card)",
-          "theme-panel-border": "var(--border)",
-          "theme-panel-border-width": "2px",
-          "theme-inset-background": "var(--paper-soft)",
-          "theme-inset-border": "var(--border-soft)",
-          "theme-inset-border-width": "1px",
-          "theme-field-background": "color-mix(in oklab, var(--paper-soft) 90%, white)",
-          "theme-field-border": "var(--border)",
-          "theme-field-border-width": "1px",
-          "theme-field-foreground": "var(--foreground)",
-          "theme-field-placeholder": "var(--muted-foreground)",
-          "theme-field-focus-border": "var(--border)",
-          "theme-button-outline-background": "var(--card)",
-          "theme-button-outline-background-hover": "var(--paper-soft)",
-          "theme-button-outline-border": "var(--border-strong)",
-          "theme-button-outline-foreground": "var(--foreground)",
-          "theme-button-secondary-background": "var(--paper)",
-          "theme-button-secondary-background-hover": "var(--paper-soft)",
-          "theme-button-secondary-border": "var(--border)",
-          "theme-button-secondary-foreground": "var(--foreground)",
-          "theme-button-ghost-background-hover": "var(--paper-soft)",
-          "theme-button-ghost-foreground": "var(--foreground)",
-          "theme-button-link-foreground": "var(--ink-strong)",
-          "theme-tabs-list-background": "var(--paper-soft)",
-          "theme-tabs-list-border": "var(--border-soft)",
-          "theme-tabs-list-border-width": "1px",
-          "theme-tabs-trigger-hover-background": "var(--surface-overlay)",
-          "theme-tabs-trigger-hover-foreground": "var(--foreground)",
-          "theme-tabs-trigger-active-background": "var(--card)",
-          "theme-tabs-trigger-active-foreground": "var(--ink-strong)",
-          "theme-community-tabs-shell-background": "color-mix( in oklab, var(--card) 84%, white )",
-          "theme-community-tabs-shell-border": "var(--border)",
-          "theme-community-tabs-active-background": "color-mix( in oklab, var(--ring) 22%, white )",
-          "theme-community-tabs-active-border": "var(--border)",
-          "theme-community-tabs-active-foreground": "var(--primary)",
-          "theme-community-tabs-trigger-foreground": "var(--muted-foreground)",
-          "theme-community-tabs-trigger-hover-foreground": "var(--foreground)",
-          "theme-community-image-grid-gap": "1rem",
-          "theme-community-image-grid-gap-wide": "1.25rem",
-          "theme-community-video-grid-gap": "1.25rem",
-          "theme-community-embed-grid-gap": "1rem",
-          "theme-community-media-card-radius": "0px",
-          "theme-community-media-card-border-width": "0px",
-          "theme-community-media-card-background": "var(--surface-card-gradient)",
-          "theme-community-media-card-border": "var(--border)",
-          "theme-community-media-card-media-background": "var(--surface-highlight)",
-          "theme-community-media-card-divider": "var(--surface-highlight-border)",
-          "theme-community-media-card-divider-width": "2px",
-          "theme-community-media-card-caption-background": "transparent",
-          "theme-community-media-card-caption-foreground": "var(--ink-strong)",
-          "theme-community-media-card-hover-y": "-0.25rem",
-          "theme-community-media-card-image-hover-scale": "1.02",
-          "theme-community-media-card-wash": "linear-gradient( 180deg, color-mix(in oklab, var(--surface-overlay) 12%, transparent), transparent 35%, color-mix(in oklab, var(--ink-strong) 18%, transparent) )",
-          "theme-community-media-card-loading-background": "linear-gradient( 180deg, color-mix(in oklab, var(--surface-overlay-soft) 86%, transparent), color-mix(in oklab, var(--paper) 68%, transparent) )",
-          "theme-community-media-card-loading-panel-background": "var( --surface-overlay-soft )",
-          "theme-community-media-card-loading-panel-border": "var( --surface-highlight-border )",
-          "theme-community-media-card-loading-panel-foreground": "var(--ink-strong)",
-          "theme-community-media-card-error-background": "linear-gradient( 180deg, color-mix(in oklab, var(--ink-strong) 22%, transparent), color-mix(in oklab, var(--foreground) 58%, transparent) )",
-          "theme-community-media-card-error-panel-background": "color-mix( in oklab, var(--foreground) 42%, transparent )",
-          "theme-community-media-card-error-panel-border": "color-mix( in oklab, var(--surface-highlight-border) 88%, transparent )",
-          "theme-community-media-card-error-foreground": "var(--primary-foreground)",
-          "theme-community-media-card-error-muted-foreground": "color-mix( in oklab, var(--primary-foreground) 80%, transparent )",
-          "theme-community-embed-card-background": "var(--card)",
-          "theme-community-embed-card-border": "var(--border)",
-          "theme-community-embed-card-footer-background": "var(--surface-footer)",
-          "theme-community-embed-card-footer-border": "var(--theme-panel-border)",
-          "theme-nav-item-active-background": "var(--paper)",
-          "theme-nav-item-active-foreground": "var(--ink-strong)",
-          "theme-nav-item-hover-background": "var(--surface-overlay)",
-          "theme-nav-item-hover-foreground": "var(--foreground)",
-          "theme-docs-sidebar-background": "var(--card)",
-          "theme-docs-sidebar-border": "var(--border)",
-          "theme-docs-article-background": "var(--surface-overlay-strongest)",
-          "theme-docs-article-border": "var(--border)",
-          "theme-docs-heading-foreground": "var(--ink-strong)",
-          "theme-docs-body-foreground": "var(--card-foreground)",
-          "theme-docs-muted-foreground": "var(--muted-foreground)",
-          "theme-docs-link-foreground": "var(--ink-strong)",
-          "theme-docs-link-hover-foreground": "var(--ink-strong)",
-          "theme-docs-link-decoration": "color-mix( in oklab, var(--accent) 50%, transparent )",
-          "theme-docs-rule": "var(--border)",
-          "theme-docs-callout-background": "color-mix( in oklab, var(--meadow-surface) 78%, transparent )",
-          "theme-docs-callout-border": "var(--meadow-border)",
-          "theme-docs-callout-foreground": "var(--meadow-ink)",
-          "theme-docs-code-background": "linear-gradient( 180deg, color-mix(in oklab, var(--secondary-foreground) 88%, black 8%), color-mix(in oklab, var(--foreground) 92%, black 16%) )",
-          "theme-docs-code-foreground": "var(--paper-soft)",
-          "theme-docs-code-border": "color-mix( in oklab, var(--border) 58%, var(--ink-strong) )",
-          "theme-docs-code-header-background": "color-mix( in oklab, var(--paper-soft) 5%, transparent )",
-          "theme-docs-code-header-border": "color-mix( in oklab, var(--paper-soft) 14%, transparent )",
-          "theme-docs-code-button-background": "color-mix( in oklab, var(--paper-soft) 8%, transparent )",
-          "theme-docs-code-button-background-hover": "color-mix( in oklab, var(--paper-soft) 16%, transparent )",
-          "theme-docs-code-button-border": "color-mix( in oklab, var(--paper-soft) 14%, transparent )",
-          "theme-docs-code-button-foreground": "var(--paper-soft)",
-          "theme-docs-code-button-hover-foreground": "var(--primary-foreground)",
-          "theme-docs-code-focus-ring-offset": "var(--secondary-foreground)",
-          "theme-docs-code-text-shadow": "0 1px 0 rgba(0, 0, 0, 0.14)",
-          "theme-docs-table-background": "transparent",
-          "theme-docs-table-border": "var(--border)",
-          "theme-docs-table-header-background": "var(--surface-overlay-strong)",
-          "theme-docs-table-row-alt-background": "color-mix( in oklab, var(--surface-overlay) 55%, transparent )",
-          "theme-docs-table-row-hover-background": "var(--surface-overlay)",
-          "theme-docs-table-cell-border": "var(--border-soft)",
-          "theme-dialog-background": "var(--card)",
-          "theme-dialog-border": "var(--border)",
-          "theme-dialog-border-width": "1px",
-          "theme-dialog-footer-background": "var(--surface-footer)",
-          "theme-dialog-overlay": "var(--overlay-backdrop)",
-          "theme-sheet-background": "var(--card)",
-          "theme-sheet-border": "var(--border)",
-          "theme-sheet-border-width": "1px",
-          "theme-sheet-overlay": "var(--overlay-backdrop-soft)",
-          "foreground": "#4d3b2e",
-          "ink-strong": "#33241a",
-          "ink-soft": "#7d6552",
           "muted": "#eadfcb",
           "muted-foreground": "#7a6857",
-          "footer-muted-foreground": "var(--ink-soft)",
           "primary": "#587855",
           "primary-foreground": "#faf5ea",
           "primary-edge": "#527054",
-          "primary-soft": "rgba(88, 120, 85, 0.08)",
           "secondary": "#e8dbc0",
           "secondary-foreground": "#554433",
           "accent": "#7fa8bb",
@@ -465,16 +153,12 @@
           "border": "#a16410",
           "border-soft": "#e5d9c8",
           "border-strong": "#a88e70",
-          "border-faint": "rgba(165, 137, 112, 0.18)",
-          "input": "#f1e7d6",
           "ring": "#8fb39a",
-          "success": "#7b9d68",
-          "destructive": "#ca755d",
-          "destructive-foreground": "#fff7f1",
-          "destructive-edge": "#aa5b43",
-          "destructive-soft": "rgba(202, 117, 93, 0.08)",
-          "destructive-soft-strong": "rgba(202, 117, 93, 0.14)",
-          "destructive-soft-border": "rgba(202, 117, 93, 0.28)",
+          "danger": "#ca755d",
+          "danger-foreground": "#fff7f1",
+          "danger-edge": "#aa5b43",
+          "ink-strong": "#33241a",
+          "ink-soft": "#7d6552",
           "cloud-surface": "#eef1e7",
           "cloud-ink": "#536152",
           "cloud-border": "#b9c2ae",
@@ -489,32 +173,21 @@
           "rose-surface": "#edd8d3",
           "rose-ink": "#6c4942",
           "rose-border": "#b68a83",
-          "app-background-image": "radial-gradient(circle at top, rgba(255, 255, 255, 0.48), transparent 34%), linear-gradient(180deg, rgba(127, 168, 187, 0.2), transparent 15rem), linear-gradient( 180deg, rgba(255, 249, 240, 0.86), rgba(247, 241, 229, 0.96) ), var(--background)",
-          "selection-background": "rgba(239, 187, 117, 0.45)",
-          "selection-foreground": "var(--ink-strong)",
-          "prose-inline-code-background": "rgba(255, 255, 255, 0.45)",
-          "surface-wash-background": "linear-gradient(180deg, rgba(255, 255, 255, 0.28), transparent 18rem), color-mix(in oklab, var(--paper) 99%, white)",
-          "texture-paper-overlay-image": "var(--texture-paper-overlay-image-source)",
-          "scrollbar-track": "var(--background)",
-          "scrollbar-thumb": "color-mix(in oklab, var(--border-strong) 72%, transparent)",
-          "scrollbar-thumb-hover": "color-mix( in oklab, var(--primary-edge) 76%, transparent )",
-          "surface-overlay": "rgba(255, 255, 255, 0.45)",
-          "surface-overlay-hover": "rgba(255, 255, 255, 0.68)",
-          "surface-overlay-strong": "rgba(255, 255, 255, 0.85)",
-          "surface-overlay-stronger": "rgba(255, 255, 255, 0.9)",
-          "surface-overlay-soft": "rgba(255, 251, 244, 0.72)",
-          "surface-overlay-soft-strong": "rgba(255, 251, 244, 0.84)",
-          "surface-overlay-strongest": "rgba(255, 251, 244, 0.96)",
-          "surface-footer": "rgba(255, 255, 255, 0.3)",
-          "surface-panel-floating": "rgba(247, 241, 229, 0.95)",
-          "surface-card-gradient": "linear-gradient( 180deg, rgba(249, 243, 226, 0.98), rgba(239, 227, 193, 0.98) )",
-          "surface-panel-gradient": "linear-gradient( 180deg, rgba(255, 255, 255, 0.5), rgba(250, 244, 232, 0.96) )",
-          "theme-floating-action-glow": "linear-gradient(90deg, transparent, rgba(181, 176, 108, 0.36), transparent) bottom / 100% 1px no-repeat, radial-gradient( circle at 50% 94%, rgba(199, 189, 114, 0.34) 0%, rgba(134, 160, 115, 0.22) 38%, rgba(207, 214, 168, 0.08) 68%, transparent 86% ), linear-gradient( to top, rgba(163, 182, 143, 0.46) 0%, rgba(197, 185, 120, 0.28) 38%, rgba(223, 230, 197, 0.12) 62%, transparent 100% )",
-          "overlay-backdrop": "rgba(54, 42, 31, 0.34)",
-          "overlay-backdrop-soft": "rgba(54, 42, 31, 0.28)",
-          "media-overlay-backdrop": "rgba(8, 7, 6, 0.82)",
-          "texture-overlay-opacity": "0.9",
-          "radius": "1rem"
+          "font-heading": "\"Averia Serif Libre\", Georgia, serif",
+          "font-body": "\"M PLUS Rounded 1c\", \"Trebuchet MS\", system-ui, sans-serif",
+          "radius": "1rem",
+          "shadow-paper": "none",
+          "shadow-soft": "none",
+          "shadow-raised": "none",
+          "texture-paper": "radial-gradient(circle at 1px 1px, rgba(87, 65, 46, 0.06) 1px, transparent 0)",
+          "input": "#f1e7d6",
+          "destructive": "#ca755d",
+          "destructive-foreground": "#fff7f1",
+          "destructive-soft-border": "#d8a091",
+          "success": "#6f8f5e",
+          "theme-dialog-shadow": "none",
+          "z-toast": "60",
+          "texture-paper-overlay-image": "radial-gradient(circle at 1px 1px, rgba(87, 65, 46, 0.05) 1px, transparent 0)"
         }
       },
       "css": {
@@ -525,26 +198,24 @@
           },
           "html": {
             "scroll-behavior": "smooth",
-            "background-color": "var(--background)",
-            "font-family": "var(--font-body)"
+            "background-color": "var(--background)"
           },
           "body": {
             "margin": "0",
             "min-height": "100vh",
-            "position": "relative",
+            "font-family": "var(--font-body)",
             "color": "var(--foreground)",
-            "background": "var(--surface-wash-background), var(--app-background-image)"
+            "background-color": "var(--background)"
           },
           "body::before": {
             "position": "fixed",
             "inset": "0",
-            "z-index": "30",
             "pointer-events": "none",
             "content": "\"\"",
-            "opacity": "var(--texture-overlay-opacity)",
+            "opacity": "0.22",
             "background-image": "var(--texture-paper-overlay-image)",
             "background-repeat": "repeat",
-            "mix-blend-mode": "multiply"
+            "background-size": "16px 16px"
           },
           "a": {
             "color": "inherit",
@@ -553,43 +224,10 @@
           "button,input,textarea,select": {
             "font": "inherit"
           },
-          "button,[role=\"button\"],[role=\"tab\"],[role=\"menuitem\"],[role=\"option\"],a,select,label[for]": {
-            "cursor": "pointer"
-          },
           "::selection": {
-            "color": "var(--selection-foreground)",
-            "background": "var(--selection-background)"
+            "color": "var(--ink-strong)",
+            "background": "rgba(239, 187, 117, 0.45)"
           }
-        },
-        ".ghibli-prose": {
-          "max-width": "72ch",
-          "line-height": "1.85",
-          "color": "var(--theme-docs-body-foreground)"
-        },
-        ".ghibli-prose a": {
-          "color": "var(--theme-docs-link-foreground)",
-          "text-decoration": "underline",
-          "text-decoration-color": "var(--theme-docs-link-decoration)",
-          "text-underline-offset": "0.24em"
-        },
-        ".ghibli-prose a:hover": {
-          "color": "var(--theme-docs-link-hover-foreground)"
-        },
-        ".ghibli-prose code": {
-          "display": "inline-flex",
-          "align-items": "center",
-          "border": "1px solid var(--border)",
-          "padding": "0.12rem 0.55rem",
-          "background": "var(--prose-inline-code-background)",
-          "font-family": "\"SFMono-Regular\", ui-monospace, monospace",
-          "font-size": "0.82em",
-          "color": "var(--theme-docs-heading-foreground)"
-        },
-        ".app-backdrop": {
-          "background": "var(--surface-wash-background), var(--app-background-image)"
-        },
-        ".ghibli-wash": {
-          "background": "var(--surface-wash-background)"
         },
         "@layer utilities": {
           ".paper-overlay": {
@@ -613,8 +251,14 @@
       "title": "Button",
       "type": "registry:ui",
       "description": "Soft paper action buttons with raised ink edges.",
-      "dependencies": ["@radix-ui/react-slot", "class-variance-authority"],
-      "registryDependencies": ["@ghibli/style"],
+      "dependencies": [
+        "@radix-ui/react-slot",
+        "class-variance-authority"
+      ],
+      "registryDependencies": [
+        "@ghibli/style",
+        "@ghibli/utils"
+      ],
       "files": [
         {
           "path": "registry/ghibli/ui/button.tsx",
@@ -628,13 +272,19 @@
       "title": "Cartoon Button",
       "type": "registry:ui",
       "description": "Chunkier illustrated CTA button built on top of the scenic button primitive.",
-      "registryDependencies": ["@ghibli/button"],
+      "registryDependencies": [
+        "@ghibli/button",
+        "@ghibli/utils"
+      ],
       "files": [
         {
           "path": "registry/ghibli/ui/cartoon-button.tsx",
           "type": "registry:ui",
           "target": "components/ui/cartoon-button.tsx"
         }
+      ],
+      "dependencies": [
+        "lucide-react"
       ]
     },
     {
@@ -642,8 +292,14 @@
       "title": "Badge",
       "type": "registry:ui",
       "description": "Small scenic badges for states and metadata.",
-      "dependencies": ["@radix-ui/react-slot", "class-variance-authority"],
-      "registryDependencies": ["@ghibli/style"],
+      "dependencies": [
+        "@radix-ui/react-slot",
+        "class-variance-authority"
+      ],
+      "registryDependencies": [
+        "@ghibli/style",
+        "@ghibli/utils"
+      ],
       "files": [
         {
           "path": "registry/ghibli/ui/badge.tsx",
@@ -657,7 +313,10 @@
       "title": "Card",
       "type": "registry:ui",
       "description": "Layered paper card surface pieces.",
-      "registryDependencies": ["@ghibli/style"],
+      "registryDependencies": [
+        "@ghibli/style",
+        "@ghibli/utils"
+      ],
       "files": [
         {
           "path": "registry/ghibli/ui/card.tsx",
@@ -671,7 +330,10 @@
       "title": "Hand Drawn Frame",
       "type": "registry:ui",
       "description": "Reusable Cozy-style hand-drawn frame for surfaces and decorative divider rules.",
-      "registryDependencies": ["@ghibli/style"],
+      "registryDependencies": [
+        "@ghibli/style",
+        "@ghibli/utils"
+      ],
       "files": [
         {
           "path": "registry/ghibli/ui/hand-drawn-frame.tsx",
@@ -684,9 +346,9 @@
           "target": "components/ui/hand-drawn-frame.geometry.ts"
         },
         {
-          "path": "registry/ghibli/ui/hand-drawn-frame.thickness.ts",
+          "path": "registry/ghibli/ui/hand-drawn-frame.stroke-width-variation.ts",
           "type": "registry:ui",
-          "target": "components/ui/hand-drawn-frame.thickness.ts"
+          "target": "components/ui/hand-drawn-frame.stroke-width-variation.ts"
         }
       ]
     },
@@ -694,13 +356,22 @@
       "name": "theme-frame",
       "title": "Theme Frame",
       "type": "registry:ui",
-      "description": "Theme-aware wrapper around hand-drawn frames with Cozy.art-compatible variant configuration.",
-      "registryDependencies": ["@ghibli/theme", "@ghibli/hand-drawn-frame"],
+      "description": "Theme-aware hand-drawn frame wrapper and divider rule presets for reusable app surfaces.",
+      "registryDependencies": [
+        "@ghibli/style",
+        "@ghibli/theme",
+        "@ghibli/hand-drawn-frame"
+      ],
       "files": [
         {
           "path": "registry/ghibli/ui/theme-frame.tsx",
           "type": "registry:ui",
           "target": "components/ui/theme-frame.tsx"
+        },
+        {
+          "path": "registry/ghibli/lib/theme/theme-frame-config.ts",
+          "type": "registry:lib",
+          "target": "lib/theme/theme-frame-config.ts"
         }
       ]
     },
@@ -709,7 +380,11 @@
       "title": "Input",
       "type": "registry:ui",
       "description": "Single-line paper field.",
-      "registryDependencies": ["@ghibli/style", "@ghibli/hand-drawn-frame"],
+      "registryDependencies": [
+        "@ghibli/style",
+        "@ghibli/hand-drawn-frame",
+        "@ghibli/utils"
+      ],
       "files": [
         {
           "path": "registry/ghibli/ui/input.tsx",
@@ -719,11 +394,36 @@
       ]
     },
     {
+      "name": "input-otp",
+      "title": "Input OTP",
+      "type": "registry:ui",
+      "description": "One-time verification code input with grouped digit slots.",
+      "dependencies": [
+        "input-otp"
+      ],
+      "registryDependencies": [
+        "@ghibli/style",
+        "@ghibli/hand-drawn-frame",
+        "@ghibli/utils"
+      ],
+      "files": [
+        {
+          "path": "registry/ghibli/ui/input-otp.tsx",
+          "type": "registry:ui",
+          "target": "components/ui/input-otp.tsx"
+        }
+      ]
+    },
+    {
       "name": "textarea",
       "title": "Textarea",
       "type": "registry:ui",
       "description": "Long-form paper field.",
-      "registryDependencies": ["@ghibli/style", "@ghibli/hand-drawn-frame"],
+      "registryDependencies": [
+        "@ghibli/style",
+        "@ghibli/hand-drawn-frame",
+        "@ghibli/utils"
+      ],
       "files": [
         {
           "path": "registry/ghibli/ui/textarea.tsx",
@@ -737,7 +437,10 @@
       "title": "Label",
       "type": "registry:ui",
       "description": "Form label text with ink contrast.",
-      "registryDependencies": ["@ghibli/style"],
+      "registryDependencies": [
+        "@ghibli/style",
+        "@ghibli/utils"
+      ],
       "files": [
         {
           "path": "registry/ghibli/ui/label.tsx",
@@ -751,8 +454,10 @@
       "title": "Separator",
       "type": "registry:ui",
       "description": "Subtle divider for paper sections.",
-      "dependencies": ["@radix-ui/react-separator"],
-      "registryDependencies": ["@ghibli/style"],
+      "registryDependencies": [
+        "@ghibli/style",
+        "@ghibli/utils"
+      ],
       "files": [
         {
           "path": "registry/ghibli/ui/separator.tsx",
@@ -766,7 +471,10 @@
       "title": "Skeleton",
       "type": "registry:ui",
       "description": "Paper shimmer placeholder.",
-      "registryDependencies": ["@ghibli/style"],
+      "registryDependencies": [
+        "@ghibli/style",
+        "@ghibli/utils"
+      ],
       "files": [
         {
           "path": "registry/ghibli/ui/skeleton.tsx",
@@ -780,7 +488,10 @@
       "title": "Avatar",
       "type": "registry:ui",
       "description": "Soft-framed avatars and avatar groups.",
-      "registryDependencies": ["@ghibli/style"],
+      "registryDependencies": [
+        "@ghibli/style",
+        "@ghibli/utils"
+      ],
       "files": [
         {
           "path": "registry/ghibli/ui/avatar.tsx",
@@ -794,8 +505,14 @@
       "title": "Tabs",
       "type": "registry:ui",
       "description": "Segmented scenic tabs.",
-      "dependencies": ["@radix-ui/react-tabs", "class-variance-authority"],
-      "registryDependencies": ["@ghibli/style"],
+      "dependencies": [
+        "@radix-ui/react-tabs",
+        "class-variance-authority"
+      ],
+      "registryDependencies": [
+        "@ghibli/style",
+        "@ghibli/utils"
+      ],
       "files": [
         {
           "path": "registry/ghibli/ui/tabs.tsx",
@@ -809,8 +526,14 @@
       "title": "Accordion",
       "type": "registry:ui",
       "description": "FAQ-style accordion with simple controllable state.",
-      "dependencies": ["lucide-react"],
-      "registryDependencies": ["@ghibli/style"],
+      "dependencies": [
+        "@radix-ui/react-accordion",
+        "lucide-react"
+      ],
+      "registryDependencies": [
+        "@ghibli/style",
+        "@ghibli/utils"
+      ],
       "files": [
         {
           "path": "registry/ghibli/ui/accordion.tsx",
@@ -826,11 +549,13 @@
       "description": "Paper-framed modal dialog.",
       "dependencies": [
         "@radix-ui/react-dialog",
-        "lucide-react",
-        "@radix-ui/react-slot",
-        "class-variance-authority"
+        "lucide-react"
       ],
-      "registryDependencies": ["@ghibli/style", "@ghibli/button"],
+      "registryDependencies": [
+        "@ghibli/style",
+        "@ghibli/button",
+        "@ghibli/utils"
+      ],
       "files": [
         {
           "path": "registry/ghibli/ui/dialog.tsx",
@@ -846,11 +571,13 @@
       "description": "Side sheet built on the dialog primitive.",
       "dependencies": [
         "@radix-ui/react-dialog",
-        "lucide-react",
-        "@radix-ui/react-slot",
-        "class-variance-authority"
+        "lucide-react"
       ],
-      "registryDependencies": ["@ghibli/style", "@ghibli/button"],
+      "registryDependencies": [
+        "@ghibli/style",
+        "@ghibli/button",
+        "@ghibli/utils"
+      ],
       "files": [
         {
           "path": "registry/ghibli/ui/sheet.tsx",
@@ -864,8 +591,14 @@
       "title": "Dropdown Menu",
       "type": "registry:ui",
       "description": "Popover-backed paper menu for app controls.",
-      "dependencies": ["@radix-ui/react-popover", "lucide-react"],
-      "registryDependencies": ["@ghibli/style"],
+      "dependencies": [
+        "@radix-ui/react-dropdown-menu",
+        "lucide-react"
+      ],
+      "registryDependencies": [
+        "@ghibli/style",
+        "@ghibli/utils"
+      ],
       "files": [
         {
           "path": "registry/ghibli/ui/dropdown-menu.tsx",
@@ -879,8 +612,13 @@
       "title": "Tooltip",
       "type": "registry:ui",
       "description": "Simple hover/focus tooltip backed by popover positioning.",
-      "dependencies": ["@radix-ui/react-popover"],
-      "registryDependencies": ["@ghibli/style"],
+      "dependencies": [
+        "@radix-ui/react-tooltip"
+      ],
+      "registryDependencies": [
+        "@ghibli/style",
+        "@ghibli/utils"
+      ],
       "files": [
         {
           "path": "registry/ghibli/ui/tooltip.tsx",
@@ -890,83 +628,22 @@
       ]
     },
     {
-      "name": "auth-forms",
-      "title": "Auth Forms",
-      "type": "registry:block",
-      "description": "Presentational login, register, and password recovery forms.",
+      "name": "toast",
+      "title": "Toast",
+      "type": "registry:ui",
+      "description": "Small portal-backed toast notifications for success, error, and informational feedback.",
+      "dependencies": [
+        "lucide-react"
+      ],
       "registryDependencies": [
         "@ghibli/style",
-        "@ghibli/cartoon-button",
-        "@ghibli/form-field",
-        "@ghibli/input",
-        "@ghibli/notice-banner"
+        "@ghibli/utils"
       ],
       "files": [
         {
-          "path": "registry/ghibli/blocks/auth/forms.tsx",
-          "type": "registry:block",
-          "target": "components/blocks/auth/forms.tsx"
-        }
-      ]
-    },
-    {
-      "name": "auth-dialog",
-      "title": "Auth Dialog",
-      "type": "registry:block",
-      "description": "Tabbed auth dialog shell with provider action slots.",
-      "registryDependencies": [
-        "@ghibli/style",
-        "@ghibli/dialog",
-        "@ghibli/hand-drawn-frame",
-        "@ghibli/separator",
-        "@ghibli/tabs"
-      ],
-      "files": [
-        {
-          "path": "registry/ghibli/blocks/auth/dialog.tsx",
-          "type": "registry:block",
-          "target": "components/blocks/auth/dialog.tsx"
-        }
-      ]
-    },
-    {
-      "name": "community-cards",
-      "title": "Community Cards",
-      "type": "registry:block",
-      "description": "Image, video, and social post cards for creative feeds.",
-      "registryDependencies": [
-        "@ghibli/style",
-        "@ghibli/avatar",
-        "@ghibli/badge",
-        "@ghibli/card",
-        "@ghibli/hand-drawn-frame",
-        "@ghibli/tabs"
-      ],
-      "files": [
-        {
-          "path": "registry/ghibli/blocks/community/cards.tsx",
-          "type": "registry:block",
-          "target": "components/blocks/community/cards.tsx"
-        }
-      ]
-    },
-    {
-      "name": "community-modals",
-      "title": "Community Modals",
-      "type": "registry:block",
-      "description": "Large image and video detail overlays for feed browsing.",
-      "registryDependencies": [
-        "@ghibli/style",
-        "@ghibli/theme",
-        "@ghibli/badge",
-        "@ghibli/button",
-        "@ghibli/dialog"
-      ],
-      "files": [
-        {
-          "path": "registry/ghibli/blocks/community/modals.tsx",
-          "type": "registry:block",
-          "target": "components/blocks/community/modals.tsx"
+          "path": "registry/ghibli/ui/toast.tsx",
+          "type": "registry:ui",
+          "target": "components/ui/toast.tsx"
         }
       ]
     },
@@ -975,7 +652,11 @@
       "title": "Form Field",
       "type": "registry:block",
       "description": "Presentational field wrapper for labels, descriptions, actions, and validation copy.",
-      "registryDependencies": ["@ghibli/style"],
+      "registryDependencies": [
+        "@ghibli/label",
+        "@ghibli/style",
+        "@ghibli/utils"
+      ],
       "files": [
         {
           "path": "registry/ghibli/blocks/form/form-field.tsx",
@@ -989,13 +670,19 @@
       "title": "Notice Banner",
       "type": "registry:block",
       "description": "Scenic advisory banner for guidance, status updates, and inline product notices.",
-      "registryDependencies": ["@ghibli/badge"],
+      "registryDependencies": [
+        "@ghibli/badge",
+        "@ghibli/utils"
+      ],
       "files": [
         {
           "path": "registry/ghibli/blocks/feedback/notice-banner.tsx",
           "type": "registry:block",
           "target": "components/blocks/feedback/notice-banner.tsx"
         }
+      ],
+      "dependencies": [
+        "lucide-react"
       ]
     },
     {
@@ -1003,7 +690,11 @@
       "title": "Floating Action",
       "type": "registry:block",
       "description": "Sticky or fixed scenic action dock for persistent editor and page actions.",
-      "registryDependencies": ["@ghibli/style", "@ghibli/theme"],
+      "registryDependencies": [
+        "@ghibli/style",
+        "@ghibli/theme",
+        "@ghibli/utils"
+      ],
       "files": [
         {
           "path": "registry/ghibli/blocks/feedback/floating-action.tsx",
@@ -1013,72 +704,14 @@
       ]
     },
     {
-      "name": "generate-controls",
-      "title": "Generate Controls",
-      "type": "registry:block",
-      "description": "Cozy-style mode toggle, grouped model select, aspect ratio ruler, and generate CTA.",
-      "registryDependencies": [
-        "@ghibli/style",
-        "@ghibli/theme",
-        "@ghibli/button",
-        "@ghibli/cartoon-button",
-        "@ghibli/dropdown-menu",
-        "@ghibli/hand-drawn-frame"
-      ],
-      "files": [
-        {
-          "path": "registry/ghibli/blocks/generate/controls.tsx",
-          "type": "registry:block",
-          "target": "components/blocks/generate/controls.tsx"
-        }
-      ]
-    },
-    {
-      "name": "generate-editor-bar",
-      "title": "Generate Editor Bar",
-      "type": "registry:block",
-      "description": "Prompt editor bar composed from the generation controls.",
-      "registryDependencies": [
-        "@ghibli/style",
-        "@ghibli/generate-controls",
-        "@ghibli/button",
-        "@ghibli/dropdown-menu",
-        "@ghibli/hand-drawn-frame",
-        "@ghibli/notice-banner"
-      ],
-      "files": [
-        {
-          "path": "registry/ghibli/blocks/generate/editor-bar.tsx",
-          "type": "registry:block",
-          "target": "components/blocks/generate/editor-bar.tsx"
-        }
-      ]
-    },
-    {
-      "name": "generate-job-card",
-      "title": "Generate Job Card",
-      "type": "registry:block",
-      "description": "Generation history card with progress and outputs.",
-      "registryDependencies": [
-        "@ghibli/style",
-        "@ghibli/badge",
-        "@ghibli/button",
-        "@ghibli/card"
-      ],
-      "files": [
-        {
-          "path": "registry/ghibli/blocks/generate/job-card.tsx",
-          "type": "registry:block",
-          "target": "components/blocks/generate/job-card.tsx"
-        }
-      ]
-    },
-    {
       "name": "page-shell",
       "title": "Page Shell",
       "type": "registry:block",
       "description": "Page-level shell primitives for consistent heroes, sections, and loading states.",
-      "registryDependencies": ["@ghibli/skeleton"],
+      "registryDependencies": [
+        "@ghibli/skeleton",
+        "@ghibli/utils"
+      ],
       "files": [
         {
           "path": "registry/ghibli/blocks/layout/page-shell.tsx",
@@ -1092,7 +725,10 @@
       "title": "Sidebar Nav",
       "type": "registry:block",
       "description": "Grouped scenic sidebar navigation for docs, dashboards, and settings layouts.",
-      "registryDependencies": ["@ghibli/button"],
+      "registryDependencies": [
+        "@ghibli/button",
+        "@ghibli/utils"
+      ],
       "files": [
         {
           "path": "registry/ghibli/blocks/navigation/sidebar-nav.tsx",
@@ -1112,8 +748,9 @@
         "@ghibli/avatar",
         "@ghibli/button",
         "@ghibli/dropdown-menu",
+        "@ghibli/hand-drawn-frame",
         "@ghibli/sheet",
-        "@ghibli/theme-frame"
+        "@ghibli/utils"
       ],
       "files": [
         {
@@ -1121,6 +758,9 @@
           "type": "registry:block",
           "target": "components/blocks/layout/shell.tsx"
         }
+      ],
+      "dependencies": [
+        "lucide-react"
       ]
     },
     {
@@ -1128,56 +768,20 @@
       "title": "Empty State",
       "type": "registry:block",
       "description": "Calm empty state with optional action.",
-      "registryDependencies": ["@ghibli/style", "@ghibli/button"],
+      "registryDependencies": [
+        "@ghibli/style",
+        "@ghibli/button",
+        "@ghibli/utils"
+      ],
       "files": [
         {
           "path": "registry/ghibli/blocks/shared/empty-state.tsx",
           "type": "registry:block",
           "target": "components/blocks/shared/empty-state.tsx"
         }
-      ]
-    },
-    {
-      "name": "account-sections",
-      "title": "Account Sections",
-      "type": "registry:block",
-      "description": "Profile, linked account, subscription, and API credit sections.",
-      "registryDependencies": [
-        "@ghibli/style",
-        "@ghibli/avatar",
-        "@ghibli/badge",
-        "@ghibli/button",
-        "@ghibli/card",
-        "@ghibli/cartoon-button",
-        "@ghibli/hand-drawn-frame",
-        "@ghibli/skeleton"
       ],
-      "files": [
-        {
-          "path": "registry/ghibli/blocks/account/sections.tsx",
-          "type": "registry:block",
-          "target": "components/blocks/account/sections.tsx"
-        }
-      ]
-    },
-    {
-      "name": "account-dialogs",
-      "title": "Account Dialogs",
-      "type": "registry:block",
-      "description": "Email and password change dialog forms.",
-      "registryDependencies": [
-        "@ghibli/style",
-        "@ghibli/button",
-        "@ghibli/dialog",
-        "@ghibli/input",
-        "@ghibli/label"
-      ],
-      "files": [
-        {
-          "path": "registry/ghibli/blocks/account/dialogs.tsx",
-          "type": "registry:block",
-          "target": "components/blocks/account/dialogs.tsx"
-        }
+      "dependencies": [
+        "lucide-react"
       ]
     },
     {
@@ -1197,6 +801,9 @@
           "type": "registry:block",
           "target": "components/blocks/marketing/sections.tsx"
         }
+      ],
+      "dependencies": [
+        "lucide-react"
       ]
     },
     {
@@ -1204,7 +811,10 @@
       "title": "Docs Article",
       "type": "registry:block",
       "description": "Prose-friendly article wrapper with callouts, code blocks, and heading helpers.",
-      "registryDependencies": ["@ghibli/style"],
+      "registryDependencies": [
+        "@ghibli/style",
+        "@ghibli/utils"
+      ],
       "files": [
         {
           "path": "registry/ghibli/blocks/docs/docs-article.tsx",
@@ -1218,7 +828,10 @@
       "title": "Docs FAQ Accordion",
       "type": "registry:block",
       "description": "FAQ presentation block for docs and info pages.",
-      "registryDependencies": ["@ghibli/style", "@ghibli/accordion"],
+      "registryDependencies": [
+        "@ghibli/style",
+        "@ghibli/accordion"
+      ],
       "files": [
         {
           "path": "registry/ghibli/blocks/docs/faq-accordion.tsx",
@@ -1232,13 +845,20 @@
       "title": "Theme Option Card",
       "type": "registry:block",
       "description": "Swatch-preview theme card with radio semantics, keyboard focus, and selected/unavailable states.",
-      "registryDependencies": ["@ghibli/style", "@ghibli/theme"],
+      "registryDependencies": [
+        "@ghibli/style",
+        "@ghibli/theme",
+        "@ghibli/utils"
+      ],
       "files": [
         {
           "path": "registry/ghibli/blocks/theme/theme-option-card.tsx",
           "type": "registry:block",
           "target": "components/blocks/theme/theme-option-card.tsx"
         }
+      ],
+      "dependencies": [
+        "lucide-react"
       ]
     },
     {
@@ -1271,12 +891,15 @@
       "registryDependencies": [
         "@ghibli/style",
         "@ghibli/theme",
+        "@ghibli/theme-sounds",
         "@ghibli/button",
         "@ghibli/cartoon-button",
         "@ghibli/badge",
         "@ghibli/card",
         "@ghibli/hand-drawn-frame",
+        "@ghibli/theme-frame",
         "@ghibli/input",
+        "@ghibli/input-otp",
         "@ghibli/textarea",
         "@ghibli/label",
         "@ghibli/separator",
@@ -1288,22 +911,14 @@
         "@ghibli/sheet",
         "@ghibli/dropdown-menu",
         "@ghibli/tooltip",
-        "@ghibli/auth-forms",
-        "@ghibli/auth-dialog",
-        "@ghibli/community-cards",
-        "@ghibli/community-modals",
+        "@ghibli/toast",
         "@ghibli/form-field",
         "@ghibli/notice-banner",
         "@ghibli/floating-action",
-        "@ghibli/generate-controls",
-        "@ghibli/generate-editor-bar",
-        "@ghibli/generate-job-card",
         "@ghibli/page-shell",
         "@ghibli/sidebar-nav",
         "@ghibli/layout-shell",
         "@ghibli/empty-state",
-        "@ghibli/account-sections",
-        "@ghibli/account-dialogs",
         "@ghibli/marketing-sections",
         "@ghibli/docs-article",
         "@ghibli/docs-faq-accordion",
