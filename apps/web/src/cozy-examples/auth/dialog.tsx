@@ -4,7 +4,7 @@ import {
   Dialog,
   DialogContent,
   DialogHeader,
-  DialogTitle
+  DialogTitle,
 } from "@/components/ui/dialog";
 import { HandDrawnFrame } from "@/components/ui/hand-drawn-frame";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -41,7 +41,7 @@ export function AuthDialog({
   registerContent,
   showForgotPassword = false,
   tab = "login",
-  title = "Welcome back"
+  title = "Welcome back",
 }: AuthDialogProps) {
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
@@ -52,7 +52,7 @@ export function AuthDialog({
             "--dialog-background": "transparent",
             "--dialog-border-color": "transparent",
             "--dialog-max-width": "28rem",
-            "--dialog-padding": "0px"
+            "--dialog-padding": "0px",
           } as React.CSSProperties
         }
       >
@@ -63,27 +63,32 @@ export function AuthDialog({
           strokeColor="var(--border)"
           strokeWidth={1.45}
           svgClassName="opacity-70"
-          crookednessIntensity={0.6}
+          crookedness={0.6}
         >
           <DialogHeader style={{ paddingRight: "2.5rem" }}>
-            <DialogTitle>{showForgotPassword ? "Recover your password" : title}</DialogTitle>
+            <DialogTitle>
+              {showForgotPassword ? "Recover your password" : title}
+            </DialogTitle>
           </DialogHeader>
           {showForgotPassword && forgotPasswordContent ? (
             forgotPasswordContent
           ) : (
             <div className="grid gap-4">
-              <Tabs onValueChange={(value) => onTabChange?.(value as AuthDialogTab)} value={tab}>
+              <Tabs
+                onValueChange={(value) => onTabChange?.(value as AuthDialogTab)}
+                value={tab}
+              >
                 <TabsList style={{ width: "100%" }}>
                   <TabsTrigger className="flex-1" value="login">
                     Sign in
                   </TabsTrigger>
-                <TabsTrigger className="flex-1" value="register">
-                  Register
-                </TabsTrigger>
-              </TabsList>
-              <TabsContent value="login">{loginContent}</TabsContent>
-              <TabsContent value="register">{registerContent}</TabsContent>
-            </Tabs>
+                  <TabsTrigger className="flex-1" value="register">
+                    Register
+                  </TabsTrigger>
+                </TabsList>
+                <TabsContent value="login">{loginContent}</TabsContent>
+                <TabsContent value="register">{registerContent}</TabsContent>
+              </Tabs>
             </div>
           )}
         </HandDrawnFrame>

@@ -1,6 +1,10 @@
 import type { Meta, StoryObj } from "@storybook/react-vite";
 
-import { AuthDialog, LoginForm, RegisterForm } from "@ghibli/ui";
+import { AuthDialog } from "@/cozy-examples/auth/dialog";
+import {
+  LoginForm,
+  RegisterForm,
+} from "@/cozy-examples/auth/forms";
 
 import {
   AppleAuthIcon,

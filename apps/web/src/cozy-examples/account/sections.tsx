@@ -1,9 +1,22 @@
 import * as React from "react";
-import { Camera, Link2, Loader2, Pencil, Trash2, UserRound } from "lucide-react";
+import {
+  Camera,
+  Link2,
+  Loader2,
+  Pencil,
+  Trash2,
+  UserRound,
+} from "lucide-react";
 
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { CartoonButton } from "@/components/ui/cartoon-button";
 import { HandDrawnFrame } from "@/components/ui/hand-drawn-frame";
@@ -14,7 +27,7 @@ function SectionShell({
   children,
   description,
   icon: Icon,
-  title
+  title,
 }: {
   children: React.ReactNode;
   description: string;
@@ -76,7 +89,7 @@ export function AccountUserDisplayBox({
   onPasswordAction,
   onRemoveAvatar,
   onUploadAvatar,
-  passwordActionLabel
+  passwordActionLabel,
 }: AccountUserDisplayBoxProps) {
   const displayName = name || "Account";
   const initial = displayName[0]?.toUpperCase() ?? "?";
@@ -94,7 +107,7 @@ export function AccountUserDisplayBox({
         surfaceClassName="bg-[linear-gradient(180deg,rgba(255,255,255,0.5),rgba(250,244,232,0.96))]"
         strokeColor="var(--border)"
         strokeWidth={1.65}
-        crookednessIntensity={0.35}
+        crookedness={0.35}
       >
         <Card className="border-0 bg-transparent shadow-none">
           <CardContent className="space-y-4">
@@ -110,7 +123,7 @@ export function AccountUserDisplayBox({
                             "transition duration-200",
                             isUploadingAvatar
                               ? "brightness-[0.45]"
-                              : "group-hover:brightness-[0.45] group-focus-within:brightness-[0.45]"
+                              : "group-hover:brightness-[0.45] group-focus-within:brightness-[0.45]",
                           )}
                           src={avatarUrl}
                         />
@@ -120,7 +133,7 @@ export function AccountUserDisplayBox({
                             "text-3xl transition duration-200",
                             isUploadingAvatar
                               ? "brightness-[0.45]"
-                              : "group-hover:brightness-[0.45] group-focus-within:brightness-[0.45]"
+                              : "group-hover:brightness-[0.45] group-focus-within:brightness-[0.45]",
                           )}
                         >
                           {initial}
@@ -134,7 +147,7 @@ export function AccountUserDisplayBox({
                         "pointer-events-none absolute inset-0 bg-black/45 transition duration-200",
                         isUploadingAvatar
                           ? "opacity-100"
-                          : "opacity-0 group-hover:opacity-100 group-focus-within:opacity-100"
+                          : "opacity-0 group-hover:opacity-100 group-focus-within:opacity-100",
                       )}
                     />
 
@@ -143,11 +156,15 @@ export function AccountUserDisplayBox({
                         "pointer-events-none absolute inset-0 flex items-center justify-center transition duration-200",
                         isUploadingAvatar
                           ? "opacity-100"
-                          : "opacity-0 group-hover:opacity-100 group-focus-within:opacity-100"
+                          : "opacity-0 group-hover:opacity-100 group-focus-within:opacity-100",
                       )}
                     >
                       <button
-                        aria-label={hasCustomAvatar ? "Change profile photo" : "Upload profile photo"}
+                        aria-label={
+                          hasCustomAvatar
+                            ? "Change profile photo"
+                            : "Upload profile photo"
+                        }
                         className="pointer-events-auto flex size-12 items-center justify-center text-white transition duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/80 focus-visible:ring-offset-2 focus-visible:ring-offset-black/30"
                         disabled={avatarBusy !== null}
                         onClick={onUploadAvatar}
@@ -223,13 +240,18 @@ export function AccountUserDisplayBox({
                   color="#7b9d68"
                   onClick={onPasswordAction ?? null}
                   size="sm"
-                  text={passwordActionLabel ?? (hasPassword ? "Change password" : "Set password")}
+                  text={
+                    passwordActionLabel ??
+                    (hasPassword ? "Change password" : "Set password")
+                  }
                   type="button"
                 />
               </div>
             </div>
 
-            {avatarError ? <p className="text-xs text-destructive">{avatarError}</p> : null}
+            {avatarError ? (
+              <p className="text-xs text-destructive">{avatarError}</p>
+            ) : null}
           </CardContent>
         </Card>
       </HandDrawnFrame>
@@ -252,7 +274,7 @@ export function AccountProfileSection({
   email,
   headline = "Use this section as the quiet account summary at the top of billing pages.",
   name,
-  planLabel
+  planLabel,
 }: AccountProfileSectionProps) {
   return (
     <SectionShell description={headline} icon={UserRound} title="Profile">
@@ -269,7 +291,9 @@ export function AccountProfileSection({
             <h3 className="font-[var(--font-heading)] text-2xl text-[color:var(--ink-strong)]">
               {name}
             </h3>
-            <p className="text-sm text-[color:var(--muted-foreground)]">{email}</p>
+            <p className="text-sm text-[color:var(--muted-foreground)]">
+              {email}
+            </p>
           </div>
         </div>
         <div className="flex flex-wrap items-center gap-2">
@@ -295,7 +319,7 @@ export interface AccountLinkedAccountsSectionProps {
 }
 
 export function AccountLinkedAccountsSection({
-  accounts
+  accounts,
 }: AccountLinkedAccountsSectionProps) {
   return (
     <SectionShell
@@ -311,13 +335,20 @@ export function AccountLinkedAccountsSection({
           >
             <div className="grid gap-1">
               <div className="flex items-center gap-2">
-                <span className="font-medium text-[color:var(--ink-strong)]">{account.name}</span>
-                <Badge tone={account.state === "connected" ? "meadow" : "cloud"} variant="soft">
+                <span className="font-medium text-[color:var(--ink-strong)]">
+                  {account.name}
+                </span>
+                <Badge
+                  tone={account.state === "connected" ? "meadow" : "cloud"}
+                  variant="soft"
+                >
                   {account.state}
                 </Badge>
               </div>
               {account.meta ? (
-                <span className="text-sm text-[color:var(--muted-foreground)]">{account.meta}</span>
+                <span className="text-sm text-[color:var(--muted-foreground)]">
+                  {account.meta}
+                </span>
               ) : null}
             </div>
             {account.actionLabel ? (
@@ -353,7 +384,7 @@ export interface AccountSubscriptionSectionProps {
 
 function SubscriptionSummaryRow({
   label,
-  value
+  value,
 }: {
   label: string;
   value: React.ReactNode;
@@ -361,7 +392,9 @@ function SubscriptionSummaryRow({
   return (
     <div className="flex items-center justify-between gap-4">
       <p className="text-sm text-muted-foreground">{label}</p>
-      <div className="text-right text-sm text-[color:var(--ink-strong)]">{value}</div>
+      <div className="text-right text-sm text-[color:var(--ink-strong)]">
+        {value}
+      </div>
     </div>
   );
 }
@@ -369,7 +402,7 @@ function SubscriptionSummaryRow({
 function SubscriptionOfferCard({
   actionLabel,
   isActive,
-  offer
+  offer,
 }: {
   actionLabel: string;
   isActive: boolean;
@@ -379,7 +412,7 @@ function SubscriptionOfferCard({
     <HandDrawnFrame
       className="h-full"
       contentClassName="flex h-full flex-col p-5"
-      crookednessIntensity={3}
+      crookedness={3}
       strokeColor={isActive ? "var(--primary-edge)" : "var(--border-soft)"}
       strokeWidth={1.1}
       surfaceClassName={
@@ -390,7 +423,9 @@ function SubscriptionOfferCard({
       svgClassName="opacity-90"
     >
       <div className="flex-1 space-y-1">
-        <p className="text-sm font-semibold text-[color:var(--ink-strong)]">{offer.name}</p>
+        <p className="text-sm font-semibold text-[color:var(--ink-strong)]">
+          {offer.name}
+        </p>
         <div className="mt-3 flex items-end gap-2">
           <span className="font-[var(--font-heading)] text-4xl text-[color:var(--ink-strong)]">
             {offer.priceLabel}
@@ -421,7 +456,7 @@ export function AccountSubscriptionSection({
   planName,
   priceName,
   renewalLabel = "Renews on",
-  renewalText
+  renewalText,
 }: AccountSubscriptionSectionProps) {
   const hasActive = Boolean(activeOfferId);
   const accountSurfaceClass =
@@ -430,7 +465,7 @@ export function AccountSubscriptionSection({
   return (
     <div className="space-y-6">
       <HandDrawnFrame
-        crookednessIntensity={0.35}
+        crookedness={0.35}
         strokeColor="var(--border)"
         strokeWidth={1.65}
         surfaceClassName={accountSurfaceClass}
@@ -520,11 +555,11 @@ export interface AccountApiCreditsSectionProps {
 export function AccountApiCreditsSection({
   emptyMessage = "You have not bought GPU time yet.",
   ledger,
-  title = "Payments"
+  title = "Payments",
 }: AccountApiCreditsSectionProps) {
   return (
     <HandDrawnFrame
-      crookednessIntensity={0.35}
+      crookedness={0.35}
       strokeColor="var(--border)"
       strokeWidth={1.65}
       surfaceClassName="bg-[image:var(--surface-panel-gradient)]"
@@ -552,14 +587,18 @@ export function AccountApiCreditsSection({
                       className="border-b border-[color:var(--border-faint)] last:border-b-0"
                       key={entry.id}
                     >
-                      <td className="py-3 pr-6 text-[color:var(--foreground)]">{entry.date}</td>
-                      <td className="py-3 pr-6 text-[color:var(--foreground)]">{entry.activity}</td>
+                      <td className="py-3 pr-6 text-[color:var(--foreground)]">
+                        {entry.date}
+                      </td>
+                      <td className="py-3 pr-6 text-[color:var(--foreground)]">
+                        {entry.activity}
+                      </td>
                       <td
                         className={cn(
                           "py-3 text-right font-medium",
                           entry.direction === "debit"
                             ? "text-destructive"
-                            : "text-primary"
+                            : "text-primary",
                         )}
                       >
                         {entry.amountLabel}

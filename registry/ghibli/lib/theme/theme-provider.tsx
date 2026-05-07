@@ -1,5 +1,6 @@
 import * as React from "react";
 
+import { ThemeContext } from "./theme-context";
 import { applyThemeToDocument } from "./theme-dom";
 import {
   DEFAULT_AVAILABLE_THEME_ID,
@@ -8,13 +9,6 @@ import {
 } from "./theme-options";
 import { readStoredTheme, writeStoredTheme } from "./theme-storage";
 import type { ThemeId } from "./theme-types";
-
-export interface ThemeContextValue {
-  setTheme: (theme: ThemeId) => void;
-  theme: AvailableThemeId;
-}
-
-export const ThemeContext = React.createContext<ThemeContextValue | null>(null);
 
 function resolveInitialTheme(): AvailableThemeId {
   if (typeof document !== "undefined") {

@@ -13,10 +13,12 @@ import {
   THEME_FRAME_VARIANTS,
   ThemeFrame,
   type FaqItem,
-  type GenerateAspectRatioOption,
-  type GenerateModelItem,
-  type GenerateModelsByBase,
 } from "@ghibli/ui";
+import type {
+  GenerateAspectRatioOption,
+  GenerateModelItem,
+  GenerateModelsByBase,
+} from "@/cozy-examples/generate/controls";
 
 import {
   DocsHeaderIcon,

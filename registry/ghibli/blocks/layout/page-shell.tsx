@@ -71,7 +71,7 @@ export function PageHeroSkeleton({ className }: PageHeroSkeletonProps) {
     <section
       className={cn(
         paperSurfaceClass,
-        "ghibli-wash relative overflow-hidden px-6 py-7 md:px-8 md:py-9",
+        "relative overflow-hidden bg-[linear-gradient(180deg,rgba(255,255,255,0.28),transparent_18rem),color-mix(in_oklab,var(--paper)_99%,white)] px-6 py-7 md:px-8 md:py-9",
         className
       )}
     >

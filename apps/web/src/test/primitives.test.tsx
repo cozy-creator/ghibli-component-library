@@ -1,7 +1,7 @@
 import { fireEvent, render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 
-import { Accordion, AccordionContent, AccordionItem, AccordionTrigger, Button, Tabs, TabsContent, TabsList, TabsTrigger } from "@ghibli/ui";
+import { Accordion, AccordionContent, AccordionItem, AccordionTrigger, Button, InputOTP, InputOTPGroup, InputOTPSlot, Tabs, TabsContent, TabsList, TabsTrigger, normalizeOneTimeCode } from "@ghibli/ui";
 
 describe("primitives", () => {
   it("renders buttons as buttons and links", () => {
@@ -49,5 +49,24 @@ describe("primitives", () => {
 
     fireEvent.click(screen.getByRole("button", { name: "Question" }));
     expect(screen.getByText("Answer")).toBeInTheDocument();
+  });
+
+  it("renders OTP slots and normalizes pasted verification codes", () => {
+    render(
+      <InputOTP maxLength={6} value="849043">
+        <InputOTPGroup>
+          <InputOTPSlot index={0} />
+          <InputOTPSlot index={1} />
+          <InputOTPSlot index={2} />
+          <InputOTPSlot index={3} />
+          <InputOTPSlot index={4} />
+          <InputOTPSlot index={5} />
+        </InputOTPGroup>
+      </InputOTP>
+    );
+
+    expect(screen.getByText("8")).toBeInTheDocument();
+    expect(screen.getByText("3")).toBeInTheDocument();
+    expect(normalizeOneTimeCode("code: 849043 extra")).toBe("849043");
   });
 });
