@@ -1,6 +1,7 @@
 {
   "name": "@ghibli/ui",
   "version": "0.0.0",
+  "description": "Private monorepo-only re-export layer for registry sources; not a public package API.",
   "private": true,
   "type": "module",
   "exports": {
@@ -11,9 +12,10 @@
     "react-dom": "latest"
   },
   "dependencies": {
+    "@radix-ui/react-accordion": "latest",
     "@radix-ui/react-checkbox": "latest",
     "@radix-ui/react-dialog": "latest",
-    "@radix-ui/react-popover": "latest",
+    "@radix-ui/react-dropdown-menu": "latest",
     "@radix-ui/react-radio-group": "latest",
     "@radix-ui/react-scroll-area": "latest",
     "@radix-ui/react-select": "latest",
@@ -21,8 +23,10 @@
     "@radix-ui/react-slot": "latest",
     "@radix-ui/react-switch": "latest",
     "@radix-ui/react-tabs": "latest",
+    "@radix-ui/react-tooltip": "latest",
     "class-variance-authority": "latest",
     "clsx": "latest",
+    "input-otp": "^1.4.2",
     "lucide-react": "latest",
     "react": "latest",
     "react-dom": "latest",

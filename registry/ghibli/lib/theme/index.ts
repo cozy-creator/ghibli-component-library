@@ -1,3 +1,7 @@
+export {
+  ThemeContext,
+  type ThemeContextValue,
+} from "./theme-context";
 export { applyThemeToDocument } from "./theme-dom";
 export {
   AVAILABLE_THEME_IDS,
@@ -10,19 +14,7 @@ export {
   type ThemeOption,
   type ThemeOptionId,
 } from "./theme-options";
-export {
-  THEME_FRAME_VARIANTS,
-  THEME_RULE_VARIANTS,
-  getThemeFrameStyleConfig,
-  getThemeRuleStyleConfig,
-  type ThemeFrameVariant,
-  type ThemeRuleVariant,
-} from "./theme-frame-config";
-export {
-  ThemeContext,
-  ThemeProvider,
-  type ThemeContextValue,
-} from "./theme-provider";
+export { ThemeProvider } from "./theme-provider";
 export {
   THEME_STORAGE_KEY,
   readStoredTheme,
@@ -34,14 +26,4 @@ export {
   isThemeId,
   type ThemeId,
 } from "./theme-types";
-export {
-  SOUND_EFFECT_IDS,
-  THEME_SOUND_CATEGORIES,
-  getThemeSoundEffectId,
-  getThemeSoundEffectSrc,
-  type SoundEffectId,
-  type ThemeSoundCategory,
-} from "./theme-sound-effects";
 export { useTheme } from "./use-theme";
-export { useUiSound, type UseUiSoundOptions } from "./use-ui-sound";
-export { useThemeSoundEffect } from "./use-theme-sound-effect";

@@ -2,9 +2,9 @@ import * as React from "react";
 
 import { cn } from "@/lib/utils";
 import {
-  createThicknessVariationStrokeLayers,
+  createStrokeWidthVariationLayers,
   type HandDrawnFrameStrokeLayer,
-} from "./hand-drawn-frame.thickness";
+} from "./hand-drawn-frame.stroke-width-variation";
 import {
   clamp,
   interpolatePath,
@@ -115,17 +115,16 @@ const HAND_DRAWN_FRAME_SHAPES: Record<
   },
 };
 
-export interface HandDrawnFrameProps
-  extends React.HTMLAttributes<HTMLDivElement> {
+export interface HandDrawnFrameProps extends React.HTMLAttributes<HTMLDivElement> {
   contentClassName?: string;
   pathClassName?: string;
   shape?: HandDrawnFrameShape;
   surfaceClassName?: string;
   strokeColor?: string;
-  thicknessIntensity?: number;
+  crookedness?: number;
+  strokeWidthVariation?: number;
   strokeWidth?: number | string;
   svgClassName?: string;
-  crookednessIntensity?: number;
 }
 
 export function HandDrawnFrame({
@@ -136,10 +135,10 @@ export function HandDrawnFrame({
   shape = "surface",
   surfaceClassName,
   strokeColor = "var(--border)",
-  thicknessIntensity = 4,
+  crookedness = 5,
+  strokeWidthVariation = 4,
   strokeWidth = 2.4,
   svgClassName,
-  crookednessIntensity = 5,
   ...props
 }: HandDrawnFrameProps) {
   const { defaultIntensity, jitter, paths, viewBox } =
@@ -150,8 +149,8 @@ export function HandDrawnFrame({
     null,
   );
   const resolvedIntensity = React.useMemo(
-    () => clamp(crookednessIntensity ?? defaultIntensity, 0, 10),
-    [defaultIntensity, crookednessIntensity],
+    () => clamp(crookedness ?? defaultIntensity, 0, 10),
+    [defaultIntensity, crookedness],
   );
 
   React.useEffect(() => {
@@ -249,38 +248,41 @@ export function HandDrawnFrame({
     viewBox,
     shape,
   ]);
-  const strokeLayersByPath = React.useMemo<HandDrawnFrameStrokeLayer[][]>(
-    () => {
-      if (
-        resolvedNumericStrokeWidth === null ||
-        resolvedNumericStrokeWidth <= 0
-      ) {
-        return generatedPaths.map(() => [{ strokeWidth }]);
-      }
+  const strokeLayersByPath = React.useMemo<
+    HandDrawnFrameStrokeLayer[][]
+  >(() => {
+    if (
+      resolvedNumericStrokeWidth === null ||
+      resolvedNumericStrokeWidth <= 0
+    ) {
+      return generatedPaths.map(() => [{ strokeWidth }]);
+    }
 
-      return generatedPaths.map((_, index) =>
-        createThicknessVariationStrokeLayers(
-          resolvedNumericStrokeWidth,
-          `${shape}:${frameId}:thickness:${index}`,
-          thicknessIntensity,
-        ),
-      );
-    },
-    [
-      generatedPaths,
-      resolvedNumericStrokeWidth,
-      frameId,
-      shape,
-      strokeWidth,
-      thicknessIntensity,
-    ],
-  );
+    return generatedPaths.map((_, index) =>
+      createStrokeWidthVariationLayers(
+        resolvedNumericStrokeWidth,
+        `${shape}:${frameId}:stroke-width-variation:${index}`,
+        strokeWidthVariation,
+      ),
+    );
+  }, [
+    generatedPaths,
+    resolvedNumericStrokeWidth,
+    frameId,
+    shape,
+    strokeWidth,
+    strokeWidthVariation,
+  ]);
   const clipPathId = React.useMemo(
     () => `hand-drawn-frame-clip-${frameId.replace(/[^a-zA-Z0-9_-]/g, "")}`,
     [frameId],
   );
   const clipPath = React.useMemo(
-    () => normalizePathToObjectBoundingBox(generatedPaths[0] ?? paths[0]!.crooked, viewBox),
+    () =>
+      normalizePathToObjectBoundingBox(
+        generatedPaths[0] ?? paths[0]!.crooked,
+        viewBox,
+      ),
     [generatedPaths, paths, viewBox],
   );
   const clippedLayerStyle = React.useMemo(
@@ -359,10 +361,10 @@ export type HandDrawnRuleProps = Omit<
 export function HandDrawnRule({
   className,
   strokeColor = "var(--border)",
-  thicknessIntensity = 5,
+  crookedness = 0.5,
+  strokeWidthVariation = 5,
   strokeWidth = 1.1,
   svgClassName = "opacity-90",
-  crookednessIntensity = 0.5,
   ...props
 }: HandDrawnRuleProps) {
   return (
@@ -372,10 +374,10 @@ export function HandDrawnRule({
       className={cn("pointer-events-none h-3 w-full", className)}
       shape="divider"
       strokeColor={strokeColor}
-      thicknessIntensity={thicknessIntensity}
+      strokeWidthVariation={strokeWidthVariation}
       strokeWidth={strokeWidth}
       svgClassName={svgClassName}
-      crookednessIntensity={crookednessIntensity}
+      crookedness={crookedness}
     />
   );
 }

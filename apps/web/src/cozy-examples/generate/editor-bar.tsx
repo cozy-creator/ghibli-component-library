@@ -1,16 +1,32 @@
 import * as React from "react";
-import { ChevronDown, ChevronUp, FileText, Film, Loader2, Paperclip, Sparkles, Upload, X } from "lucide-react";
+import {
+  ChevronDown,
+  ChevronUp,
+  FileText,
+  Film,
+  Loader2,
+  Paperclip,
+  Sparkles,
+  Upload,
+  X,
+} from "lucide-react";
 
 import { FormField } from "@/components/blocks/form/form-field";
 import { NoticeBanner } from "@/components/blocks/feedback/notice-banner";
 import { Button } from "@/components/ui/button";
 import { CartoonButton } from "@/components/ui/cartoon-button";
-import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
-  DropdownMenuTrigger
+  DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { HandDrawnFrame } from "@/components/ui/hand-drawn-frame";
 import { cn, type SelectOption } from "@/lib/utils";
@@ -22,8 +38,8 @@ import {
   GenerateModeToggle,
   type GenerateModelItem,
   type GenerateModelsByBase,
-  GenerateModelSelect
-} from "@/components/blocks/generate/controls";
+  GenerateModelSelect,
+} from "./controls";
 
 const ACCEPTED_MIME_TYPES = new Set([
   "application/json",
@@ -45,7 +61,7 @@ const ACCEPTED_MIME_TYPES = new Set([
   "text/plain",
   "video/mp4",
   "video/quicktime",
-  "video/webm"
+  "video/webm",
 ]);
 
 const ACCEPTED_EXTENSIONS = new Set([
@@ -68,10 +84,12 @@ const ACCEPTED_EXTENSIONS = new Set([
   ".webp",
   ".xls",
   ".xlsx",
-  ".zip"
+  ".zip",
 ]);
 
-const FILE_PICKER_ACCEPT_ATTR = Array.from(new Set([...ACCEPTED_MIME_TYPES, ...ACCEPTED_EXTENSIONS])).join(",");
+const FILE_PICKER_ACCEPT_ATTR = Array.from(
+  new Set([...ACCEPTED_MIME_TYPES, ...ACCEPTED_EXTENSIONS]),
+).join(",");
 const ATTACHMENT_PREVIEW_MIN_LOADING_MS = 1000;
 const DRAG_THRESHOLD = 40;
 const PROMPT_COMPOSER_MIN_HEIGHT = 104;
@@ -141,7 +159,9 @@ function getFileExtension(fileName: string) {
 function isImageFile(file: File) {
   return (
     file.type.startsWith("image/") ||
-    [".gif", ".jpeg", ".jpg", ".png", ".webp"].includes(getFileExtension(file.name))
+    [".gif", ".jpeg", ".jpg", ".png", ".webp"].includes(
+      getFileExtension(file.name),
+    )
   );
 }
 
@@ -175,7 +195,11 @@ function isSupportedAttachmentFile(file: File) {
 }
 
 function getIncomingAttachmentKey(file: File) {
-  const kind = isImageFile(file) ? "image" : isVideoFile(file) ? "video" : "file";
+  const kind = isImageFile(file)
+    ? "image"
+    : isVideoFile(file)
+      ? "video"
+      : "file";
 
   return [kind, file.name.trim().toLowerCase()].join(":");
 }
@@ -190,7 +214,10 @@ function getExistingAttachmentKey(attachment: GenerateAttachment) {
   return [kind, attachment.name.trim().toLowerCase()].join(":");
 }
 
-function buildAttachmentFeedback(duplicates: number, unsupported: number): AttachmentFeedback | null {
+function buildAttachmentFeedback(
+  duplicates: number,
+  unsupported: number,
+): AttachmentFeedback | null {
   if (duplicates === 0 && unsupported === 0) {
     return null;
   }
@@ -198,21 +225,21 @@ function buildAttachmentFeedback(duplicates: number, unsupported: number): Attac
   if (duplicates > 0 && unsupported > 0) {
     return {
       message: `Skipped ${duplicates} duplicate and ${unsupported} unsupported attachment${duplicates + unsupported > 1 ? "s" : ""}.`,
-      tone: "muted"
+      tone: "muted",
     };
   }
 
   if (duplicates > 0) {
     return {
       message: `Skipped ${duplicates} duplicate attachment${duplicates > 1 ? "s" : ""}.`,
-      tone: "muted"
+      tone: "muted",
     };
   }
 
   return {
     message:
       "Unsupported files were ignored. Try images, video, PDF, text, or office files instead.",
-    tone: "error"
+    tone: "error",
   };
 }
 
@@ -233,7 +260,7 @@ function createFileList(files: File[]) {
 function DuplicateImageModal({
   duplicateCount = 1,
   onOpenChange,
-  open
+  open,
 }: {
   duplicateCount?: number;
   onOpenChange: (open: boolean) => void;
@@ -253,7 +280,7 @@ function DuplicateImageModal({
           strokeColor="var(--border)"
           strokeWidth={1.45}
           svgClassName="opacity-70"
-          crookednessIntensity={0.6}
+          crookedness={0.6}
         >
           <DialogHeader>
             <DialogTitle>
@@ -262,7 +289,9 @@ function DuplicateImageModal({
                 : "This image is already attached."}
             </DialogTitle>
             <DialogDescription>
-              {isPlural ? "Try dropping different images." : "Try dropping a different image."}
+              {isPlural
+                ? "Try dropping different images."
+                : "Try dropping a different image."}
             </DialogDescription>
           </DialogHeader>
 
@@ -282,16 +311,26 @@ function DuplicateImageModal({
 
 function AttachmentChip({
   attachment,
-  onRemove
+  onRemove,
 }: {
   attachment: GenerateAttachment;
   onRemove?: (() => void) | undefined;
 }) {
   const isImage = isImageAttachment(attachment);
   const isVideo = isVideoAttachment(attachment);
-  const [previewStatus, setPreviewStatus] = React.useState<AttachmentPreviewStatus>(
-    isImage ? "loading" : "ready"
-  );
+  const previewKey = isImage ? (attachment.previewUrl ?? "") : "";
+  const [previewState, setPreviewState] = React.useState<{
+    key: string;
+    status: AttachmentPreviewStatus;
+  }>(() => ({
+    key: previewKey,
+    status: isImage ? "loading" : "ready",
+  }));
+  const visiblePreviewStatus: AttachmentPreviewStatus = isImage
+    ? previewState.key === previewKey
+      ? previewState.status
+      : "loading"
+    : "ready";
   const loadingStartedAtRef = React.useRef<number | null>(null);
   const readyTimeoutRef = React.useRef<number | null>(null);
 
@@ -301,7 +340,6 @@ function AttachmentChip({
         window.clearTimeout(readyTimeoutRef.current);
         readyTimeoutRef.current = null;
       }
-      setPreviewStatus("ready");
       return;
     }
 
@@ -311,12 +349,10 @@ function AttachmentChip({
     }
 
     if (!attachment.previewUrl) {
-      setPreviewStatus("loading");
       return;
     }
 
     loadingStartedAtRef.current = performance.now();
-    setPreviewStatus("loading");
 
     return () => {
       if (readyTimeoutRef.current !== null) {
@@ -330,7 +366,7 @@ function AttachmentChip({
     const loadingStartedAt = loadingStartedAtRef.current;
 
     if (loadingStartedAt === null) {
-      setPreviewStatus("ready");
+      setPreviewState({ key: previewKey, status: "ready" });
       return;
     }
 
@@ -338,15 +374,15 @@ function AttachmentChip({
     const remaining = Math.max(0, ATTACHMENT_PREVIEW_MIN_LOADING_MS - elapsed);
 
     if (remaining === 0) {
-      setPreviewStatus("ready");
+      setPreviewState({ key: previewKey, status: "ready" });
       return;
     }
 
     readyTimeoutRef.current = window.setTimeout(() => {
       readyTimeoutRef.current = null;
-      setPreviewStatus("ready");
+      setPreviewState({ key: previewKey, status: "ready" });
     }, remaining);
-  }, []);
+  }, [previewKey]);
 
   const handlePreviewError = React.useCallback(() => {
     if (readyTimeoutRef.current !== null) {
@@ -354,8 +390,8 @@ function AttachmentChip({
       readyTimeoutRef.current = null;
     }
 
-    setPreviewStatus("error");
-  }, []);
+    setPreviewState({ key: previewKey, status: "error" });
+  }, [previewKey]);
 
   if (isImage) {
     return (
@@ -366,9 +402,9 @@ function AttachmentChip({
             aria-hidden
             className={cn(
               "size-full object-cover transition duration-300",
-              previewStatus === "ready"
+              visiblePreviewStatus === "ready"
                 ? "scale-100 opacity-100 blur-0"
-                : "scale-110 opacity-70 blur-md"
+                : "scale-110 opacity-70 blur-md",
             )}
             onError={handlePreviewError}
             onLoad={handlePreviewLoad}
@@ -376,13 +412,13 @@ function AttachmentChip({
           />
         ) : null}
 
-        {previewStatus === "loading" ? (
+        {visiblePreviewStatus === "loading" ? (
           <span className="absolute inset-0 grid place-items-center bg-[color:rgba(255,251,244,0.72)]">
             <Loader2 className="size-4 animate-spin text-muted-foreground" />
           </span>
         ) : null}
 
-        {previewStatus === "error" ? (
+        {visiblePreviewStatus === "error" ? (
           <span className="absolute inset-0 inline-flex items-center justify-center bg-[color:rgba(255,251,244,0.84)] text-muted-foreground">
             <FileText className="size-4" />
           </span>
@@ -405,7 +441,11 @@ function AttachmentChip({
   return (
     <div className="inline-flex max-w-full items-center gap-2 border border-[color:var(--border-soft)] bg-white/80 px-1.5 py-1 text-xs">
       <span className="inline-flex size-10 shrink-0 items-center justify-center bg-[color:var(--paper-soft)] text-muted-foreground">
-        {isVideo ? <Film className="size-3.5" /> : <FileText className="size-3.5" />}
+        {isVideo ? (
+          <Film className="size-3.5" />
+        ) : (
+          <FileText className="size-3.5" />
+        )}
       </span>
 
       <div className="min-w-0">
@@ -437,21 +477,29 @@ export function GeneratePromptComposer({
   onPromptChange,
   onRemoveAttachment,
   placeholder = "Text, image or video",
-  prompt
+  prompt,
 }: GeneratePromptComposerProps) {
   const attachmentsRef = React.useRef<HTMLDivElement | null>(null);
   const footerRef = React.useRef<HTMLDivElement | null>(null);
   const fileInputRef = React.useRef<HTMLInputElement | null>(null);
   const textareaRef = React.useRef<HTMLTextAreaElement | null>(null);
   const dragDepthRef = React.useRef(0);
-  const [composerHeight, setComposerHeight] = React.useState(PROMPT_COMPOSER_MIN_HEIGHT);
-  const [feedback, setFeedback] = React.useState<AttachmentFeedback | null>(null);
+  const [composerHeight, setComposerHeight] = React.useState(
+    PROMPT_COMPOSER_MIN_HEIGHT,
+  );
+  const [feedback, setFeedback] = React.useState<AttachmentFeedback | null>(
+    null,
+  );
   const [duplicateImageCount, setDuplicateImageCount] = React.useState(0);
-  const [isDuplicateImageModalOpen, setIsDuplicateImageModalOpen] = React.useState(false);
+  const [isDuplicateImageModalOpen, setIsDuplicateImageModalOpen] =
+    React.useState(false);
   const [isAttachmentMenuOpen, setIsAttachmentMenuOpen] = React.useState(false);
   const [isDraggingOver, setIsDraggingOver] = React.useState(false);
-  const [isTextareaOverflowing, setIsTextareaOverflowing] = React.useState(false);
-  const [textareaHeight, setTextareaHeight] = React.useState(PROMPT_TEXTAREA_MIN_HEIGHT);
+  const [isTextareaOverflowing, setIsTextareaOverflowing] =
+    React.useState(false);
+  const [textareaHeight, setTextareaHeight] = React.useState(
+    PROMPT_TEXTAREA_MIN_HEIGHT,
+  );
 
   const syncComposerLayout = React.useCallback(() => {
     const textarea = textareaRef.current;
@@ -469,20 +517,31 @@ export function GeneratePromptComposer({
     const maxComposerHeight = hasAttachments
       ? Math.max(
           PROMPT_COMPOSER_MAX_HEIGHT_WITH_ATTACHMENTS,
-          attachmentsHeight + footerHeight + PROMPT_TEXTAREA_MAX_HEIGHT_WITH_ATTACHMENTS
+          attachmentsHeight +
+            footerHeight +
+            PROMPT_TEXTAREA_MAX_HEIGHT_WITH_ATTACHMENTS,
         )
       : PROMPT_COMPOSER_MAX_HEIGHT;
     const maxTextareaHeight = Math.max(
       minTextareaHeight,
       hasAttachments
         ? PROMPT_TEXTAREA_MAX_HEIGHT_WITH_ATTACHMENTS
-        : maxComposerHeight - attachmentsHeight - footerHeight
+        : maxComposerHeight - attachmentsHeight - footerHeight,
     );
-    const desiredTextareaHeight = Math.max(textarea.scrollHeight, minTextareaHeight);
-    const nextTextareaHeight = Math.min(desiredTextareaHeight, maxTextareaHeight);
+    const desiredTextareaHeight = Math.max(
+      textarea.scrollHeight,
+      minTextareaHeight,
+    );
+    const nextTextareaHeight = Math.min(
+      desiredTextareaHeight,
+      maxTextareaHeight,
+    );
     const nextComposerHeight = Math.min(
       maxComposerHeight,
-      Math.max(PROMPT_COMPOSER_MIN_HEIGHT, attachmentsHeight + footerHeight + nextTextareaHeight)
+      Math.max(
+        PROMPT_COMPOSER_MIN_HEIGHT,
+        attachmentsHeight + footerHeight + nextTextareaHeight,
+      ),
     );
 
     textarea.style.height = `${nextTextareaHeight}px`;
@@ -532,7 +591,9 @@ export function GeneratePromptComposer({
         nextFiles.push(file);
       }
 
-      setFeedback(buildAttachmentFeedback(duplicateOtherTotal, unsupportedTotal));
+      setFeedback(
+        buildAttachmentFeedback(duplicateOtherTotal, unsupportedTotal),
+      );
       setDuplicateImageCount(duplicateImageTotal);
       setIsDuplicateImageModalOpen(duplicateImageTotal > 0);
       setIsAttachmentMenuOpen(false);
@@ -541,7 +602,12 @@ export function GeneratePromptComposer({
         return;
       }
 
-      if (duplicateImageTotal === 0 && duplicateOtherTotal === 0 && unsupportedTotal === 0 && nativeFileList) {
+      if (
+        duplicateImageTotal === 0 &&
+        duplicateOtherTotal === 0 &&
+        unsupportedTotal === 0 &&
+        nativeFileList
+      ) {
         onAttachmentsSelected(nativeFileList);
         return;
       }
@@ -552,7 +618,7 @@ export function GeneratePromptComposer({
         onAttachmentsSelected(filteredFileList);
       }
     },
-    [attachments, onAttachmentsSelected]
+    [attachments, onAttachmentsSelected],
   );
 
   const handleFileInput = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -609,7 +675,7 @@ export function GeneratePromptComposer({
       setFeedback(null);
       onRemoveAttachment?.(attachmentId);
     },
-    [onRemoveAttachment]
+    [onRemoveAttachment],
   );
 
   return (
@@ -625,18 +691,18 @@ export function GeneratePromptComposer({
           surfaceClassName={cn(
             "bg-[color:color-mix(in_oklab,var(--paper-soft)_90%,white)] transition-colors",
             isDraggingOver &&
-              "bg-[color:color-mix(in_oklab,var(--paper-soft)_72%,var(--primary)_28%)]"
+              "bg-[color:color-mix(in_oklab,var(--paper-soft)_72%,var(--primary)_28%)]",
           )}
           strokeColor={isDraggingOver ? "var(--primary-edge)" : "var(--border)"}
           strokeWidth={1.25}
           svgClassName="opacity-85"
-          crookednessIntensity={0.3}
+          crookedness={0.3}
         >
           <div
             className="flex flex-col overflow-hidden"
             style={{
               height: `${composerHeight}px`,
-              minHeight: `${PROMPT_COMPOSER_MIN_HEIGHT}px`
+              minHeight: `${PROMPT_COMPOSER_MIN_HEIGHT}px`,
             }}
           >
             {attachments.length > 0 ? (
@@ -662,7 +728,7 @@ export function GeneratePromptComposer({
               <textarea
                 className={cn(
                   "scrollbar-hidden w-full resize-none bg-transparent px-0 py-2 text-sm leading-7 text-[color:var(--foreground)] outline-none placeholder:text-[color:var(--muted-foreground)]",
-                  isTextareaOverflowing ? "overflow-y-auto" : "overflow-hidden"
+                  isTextareaOverflowing ? "overflow-y-auto" : "overflow-hidden",
                 )}
                 maxLength={maxLength}
                 onChange={(event) => onPromptChange?.(event.target.value)}
@@ -680,14 +746,17 @@ export function GeneratePromptComposer({
               ref={footerRef}
             >
               <div>
-                <DropdownMenu onOpenChange={setIsAttachmentMenuOpen} open={isAttachmentMenuOpen}>
+                <DropdownMenu
+                  onOpenChange={setIsAttachmentMenuOpen}
+                  open={isAttachmentMenuOpen}
+                >
                   <HandDrawnFrame
                     className="inline-flex shrink-0"
                     contentClassName="p-0.5"
                     surfaceClassName="bg-white/45"
                     strokeColor="var(--border-strong)"
                     strokeWidth={1.85}
-                    crookednessIntensity={0.7}
+                    crookedness={0.7}
                   >
                     <DropdownMenuTrigger asChild>
                       <Button
@@ -713,7 +782,7 @@ export function GeneratePromptComposer({
                       surfaceClassName="bg-popover"
                       strokeColor="var(--border)"
                       strokeWidth={1.6}
-                      crookednessIntensity={0.9}
+                      crookedness={0.9}
                     >
                       <DropdownMenuItem
                         className="gap-3 px-3 py-2 focus:bg-[color:var(--ring)] focus:text-[color:var(--ink-strong)] data-[highlighted]:bg-[color:var(--ring)] data-[highlighted]:text-[color:var(--ink-strong)]"
@@ -724,7 +793,9 @@ export function GeneratePromptComposer({
                       >
                         <Paperclip className="size-4 text-muted-foreground" />
                         <div className="grid gap-0.5">
-                          <span className="font-medium">Add photos or files</span>
+                          <span className="font-medium">
+                            Add photos or files
+                          </span>
                           <span className="text-xs text-muted-foreground">
                             Images, video, PDF, text, and office docs
                           </span>
@@ -772,7 +843,9 @@ export function GeneratePromptComposer({
           <p
             className={cn(
               "text-xs",
-              feedback.tone === "error" ? "text-destructive" : "text-muted-foreground"
+              feedback.tone === "error"
+                ? "text-destructive"
+                : "text-muted-foreground",
             )}
           >
             {feedback.message}
@@ -811,7 +884,7 @@ export function GenerateEditorBar({
   onPromptChange,
   onRemoveAttachment,
   prompt,
-  selectedModel
+  selectedModel,
 }: GenerateEditorBarProps) {
   const [isExpanded, setIsExpanded] = React.useState(defaultExpanded);
   const dragStartY = React.useRef<number | null>(null);
@@ -827,7 +900,7 @@ export function GenerateEditorBar({
         handleGenerate();
       }
     },
-    [handleGenerate]
+    [handleGenerate],
   );
 
   const handleDragStart = React.useCallback((clientY: number) => {
@@ -855,7 +928,7 @@ export function GenerateEditorBar({
 
       handleDragStart(touch.clientY);
     },
-    [handleDragStart]
+    [handleDragStart],
   );
   const handleTouchEnd = React.useCallback(
     (event: React.TouchEvent) => {
@@ -865,15 +938,15 @@ export function GenerateEditorBar({
 
       handleDragEnd(touch.clientY);
     },
-    [handleDragEnd]
+    [handleDragEnd],
   );
   const handleMouseDown = React.useCallback(
     (event: React.MouseEvent) => handleDragStart(event.clientY),
-    [handleDragStart]
+    [handleDragStart],
   );
   const handleMouseUp = React.useCallback(
     (event: React.MouseEvent) => handleDragEnd(event.clientY),
-    [handleDragEnd]
+    [handleDragEnd],
   );
 
   const generateDisabled = disabled || isGenerating || !prompt.trim();
@@ -882,7 +955,7 @@ export function GenerateEditorBar({
     <div
       className={cn(
         "border-t border-[color:var(--border)] bg-[color:rgba(247,241,229,0.95)] backdrop-blur-md",
-        className
+        className,
       )}
     >
       <button
@@ -896,7 +969,11 @@ export function GenerateEditorBar({
         type="button"
       >
         <span className="h-1 w-8 bg-[color:var(--border)]" />
-        {isExpanded ? <ChevronDown className="size-3.5" /> : <ChevronUp className="size-3.5" />}
+        {isExpanded ? (
+          <ChevronDown className="size-3.5" />
+        ) : (
+          <ChevronUp className="size-3.5" />
+        )}
       </button>
 
       {!isExpanded ? (
@@ -908,7 +985,7 @@ export function GenerateEditorBar({
               strokeColor="var(--border)"
               strokeWidth={1.25}
               svgClassName="opacity-85"
-              crookednessIntensity={0.3}
+              crookedness={0.3}
             >
               <button
                 className="flex min-h-11 w-full min-w-0 items-center gap-2 bg-transparent px-4 text-left text-sm text-muted-foreground transition-colors hover:bg-white/40"
@@ -938,7 +1015,7 @@ export function GenerateEditorBar({
             surfaceClassName="bg-[color:var(--card)]"
             strokeColor="var(--border)"
             strokeWidth={2.1}
-            crookednessIntensity={0.9}
+            crookedness={0.9}
           >
             <div className="grid gap-4">
               <FormField action={<></>}>
@@ -954,7 +1031,11 @@ export function GenerateEditorBar({
               <div className="flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
                 <div className="grid flex-1 gap-3 sm:grid-cols-[auto_auto_auto] sm:items-center sm:justify-start">
                   <div className="w-full sm:w-auto">
-                    <GenerateModeToggle onValueChange={onModeChange} options={modeOptions} value={mode} />
+                    <GenerateModeToggle
+                      onValueChange={onModeChange}
+                      options={modeOptions}
+                      value={mode}
+                    />
                   </div>
                   <div className="w-full sm:w-auto">
                     <GenerateModelSelect

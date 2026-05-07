@@ -6,7 +6,7 @@ import {
   AccountProfileSection,
   AccountSubscriptionSection,
   AccountUserDisplayBox
-} from "@ghibli/ui";
+} from "@/cozy-examples/account/sections";
 
 describe("account sections", () => {
   it("renders grouped account content", () => {

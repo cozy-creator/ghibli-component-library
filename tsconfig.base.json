@@ -16,8 +16,10 @@
     "noFallthroughCasesInSwitch": true,
     "forceConsistentCasingInFileNames": true,
     "jsx": "react-jsx",
+    "ignoreDeprecations": "6.0",
     "baseUrl": ".",
     "paths": {
+      "@/cozy-examples/*": ["./apps/web/src/cozy-examples/*"],
       "@/components/ui/*": ["./registry/ghibli/ui/*"],
       "@/components/blocks/*": ["./registry/ghibli/blocks/*"],
       "@/lib/*": ["./registry/ghibli/lib/*"],

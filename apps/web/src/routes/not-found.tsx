@@ -16,7 +16,7 @@ export function NotFoundPage() {
         className="w-fit"
         contentClassName="px-4 py-4"
         surfaceClassName="bg-[color:rgba(255,255,255,0.55)]"
-        crookednessIntensity={0.6}
+        crookedness={0.6}
       >
         <div className="flex flex-wrap gap-3">
           <Button asChild>

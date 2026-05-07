@@ -6,7 +6,7 @@ import {
   AccountProfileSection,
   AccountSubscriptionSection,
   AccountUserDisplayBox
-} from "@ghibli/ui";
+} from "@/cozy-examples/account/sections";
 
 import { creditLedger, linkedAccounts, subscriptionOffers } from "@/apps/web/src/data/demo-fixtures";
 

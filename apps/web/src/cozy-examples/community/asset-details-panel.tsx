@@ -34,7 +34,7 @@ export function CommunityAssetDetailsPanel({
   createdAtLabel,
   modelLabel,
   negativePromptText,
-  promptText
+  promptText,
 }: CommunityAssetDetailsPanelProps) {
   return (
     <HandDrawnFrame
@@ -42,15 +42,17 @@ export function CommunityAssetDetailsPanel({
       surfaceClassName={detailsPanelFillClass}
       contentClassName={cn(
         "relative h-full px-4 py-4 backdrop-blur-sm sm:px-5",
-        detailsPanelStrongTextClass
+        detailsPanelStrongTextClass,
       )}
       strokeColor={detailsPanelStrokeColor}
       strokeWidth={1.15}
       svgClassName="opacity-90"
-      crookednessIntensity={0.3}
+      crookedness={0.3}
     >
       {action ? (
-        <div className={cn("absolute top-2 right-2 z-10", actionWrapperClassName)}>
+        <div
+          className={cn("absolute top-2 right-2 z-10", actionWrapperClassName)}
+        >
           {action}
         </div>
       ) : null}
@@ -59,7 +61,7 @@ export function CommunityAssetDetailsPanel({
         <p
           className={cn(
             "font-[var(--font-body)] text-sm leading-6 font-semibold sm:text-[0.95rem]",
-            detailsPanelMetaTextClass
+            detailsPanelMetaTextClass,
           )}
         >
           {authorName} - {createdAtLabel}
@@ -67,7 +69,7 @@ export function CommunityAssetDetailsPanel({
         <p
           className={cn(
             "mt-2.5 font-[var(--font-body)] text-sm leading-6 sm:text-[0.95rem]",
-            detailsPanelStrongTextClass
+            detailsPanelStrongTextClass,
           )}
         >
           <span className="font-semibold">Model:</span> {modelLabel}
@@ -75,7 +77,7 @@ export function CommunityAssetDetailsPanel({
         <p
           className={cn(
             "mt-2.5 font-[var(--font-body)] text-sm leading-6 sm:text-[0.95rem]",
-            detailsPanelMutedTextClass
+            detailsPanelMutedTextClass,
           )}
         >
           <span className={cn("font-semibold", detailsPanelStrongTextClass)}>
@@ -87,7 +89,7 @@ export function CommunityAssetDetailsPanel({
           <p
             className={cn(
               "mt-2.5 font-[var(--font-body)] text-sm leading-6 sm:text-[0.95rem]",
-              detailsPanelMutedTextClass
+              detailsPanelMutedTextClass,
             )}
           >
             <span className={cn("font-semibold", detailsPanelStrongTextClass)}>

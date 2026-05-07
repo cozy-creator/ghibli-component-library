@@ -17,7 +17,7 @@ export function Input({
       strokeColor="var(--theme-field-border)"
       strokeWidth={1.25}
       svgClassName="opacity-85"
-      crookednessIntensity={0.3}
+      crookedness={0.3}
     >
       <input
         className={cn(

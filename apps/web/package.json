@@ -16,10 +16,11 @@
   },
   "dependencies": {
     "@ghibli/ui": "workspace:*",
+    "@radix-ui/react-accordion": "latest",
     "@radix-ui/react-checkbox": "latest",
     "@radix-ui/react-dialog": "latest",
+    "@radix-ui/react-dropdown-menu": "latest",
     "@radix-ui/react-label": "latest",
-    "@radix-ui/react-popover": "latest",
     "@radix-ui/react-radio-group": "latest",
     "@radix-ui/react-scroll-area": "latest",
     "@radix-ui/react-select": "latest",
@@ -27,6 +28,7 @@
     "@radix-ui/react-slot": "latest",
     "@radix-ui/react-switch": "latest",
     "@radix-ui/react-tabs": "latest",
+    "@radix-ui/react-tooltip": "latest",
     "@tailwindcss/vite": "latest",
     "class-variance-authority": "latest",
     "clsx": "latest",
@@ -34,9 +36,9 @@
     "react": "latest",
     "react-dom": "latest",
     "react-router-dom": "latest",
+    "tailwind-merge": "latest",
     "tailwindcss": "latest",
-    "tw-animate-css": "latest",
-    "tailwind-merge": "latest"
+    "tw-animate-css": "latest"
   },
   "devDependencies": {
     "@ghibli/eslint-config": "workspace:*",
