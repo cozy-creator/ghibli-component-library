@@ -57,10 +57,6 @@ export function SiteShell() {
         aria-hidden="true"
         className="app-backdrop pointer-events-none fixed inset-0 z-0"
       />
-      <div
-        aria-hidden="true"
-        className="paper-overlay pointer-events-none absolute inset-0 z-0 opacity-70 mix-blend-multiply"
-      />
       <div className="relative z-10 mx-auto flex min-h-screen w-full max-w-7xl flex-col px-4 pt-4 md:px-6">
         <ShellHeader
           brand={<SiteBrand />}
@@ -140,6 +136,11 @@ export function SiteShell() {
           <Outlet />
         </main>
       </div>
+      <div
+        aria-hidden="true"
+        className="paper-overlay pointer-events-none absolute inset-0 z-30 mix-blend-multiply"
+        style={{ opacity: "var(--texture-overlay-opacity)" }}
+      />
 
       <ChangeThemeModal
         onOpenChange={setIsChangeThemeOpen}
