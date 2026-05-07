@@ -39,6 +39,11 @@
           "target": "lib/theme/theme-options.ts"
         },
         {
+          "path": "registry/ghibli/lib/theme/theme-frame-config.ts",
+          "type": "registry:lib",
+          "target": "lib/theme/theme-frame-config.ts"
+        },
+        {
           "path": "registry/ghibli/lib/theme/theme-provider.tsx",
           "type": "registry:lib",
           "target": "lib/theme/theme-provider.tsx"
@@ -686,6 +691,20 @@
       ]
     },
     {
+      "name": "theme-frame",
+      "title": "Theme Frame",
+      "type": "registry:ui",
+      "description": "Theme-aware wrapper around hand-drawn frames with Cozy.art-compatible variant configuration.",
+      "registryDependencies": ["@ghibli/theme", "@ghibli/hand-drawn-frame"],
+      "files": [
+        {
+          "path": "registry/ghibli/ui/theme-frame.tsx",
+          "type": "registry:ui",
+          "target": "components/ui/theme-frame.tsx"
+        }
+      ]
+    },
+    {
       "name": "input",
       "title": "Input",
       "type": "registry:ui",
@@ -1092,8 +1111,8 @@
         "@ghibli/avatar",
         "@ghibli/button",
         "@ghibli/dropdown-menu",
-        "@ghibli/hand-drawn-frame",
-        "@ghibli/sheet"
+        "@ghibli/sheet",
+        "@ghibli/theme-frame"
       ],
       "files": [
         {

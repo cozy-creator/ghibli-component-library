@@ -7,19 +7,22 @@ import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
-  DropdownMenuTrigger
+  DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { HandDrawnFrame, HandDrawnRule } from "@/components/ui/hand-drawn-frame";
 import {
   Sheet,
   SheetClose,
   SheetContent,
   SheetHeader,
   SheetTitle,
-  SheetTrigger
+  SheetTrigger,
 } from "@/components/ui/sheet";
-import { useTheme } from "@/lib/theme";
+import { ThemeFrame, ThemeRule } from "@/components/ui/theme-frame";
 import { cn, focusRingClass, type NavItem } from "@/lib/utils";
+import {
+  THEME_FRAME_VARIANTS,
+  THEME_RULE_VARIANTS,
+} from "@/lib/theme/theme-frame-config";
 
 export interface ShellNavItem extends NavItem {
   active?: boolean;
@@ -48,7 +51,7 @@ export interface ShellUser {
 type RenderLink = (
   item: ShellNavItem,
   className: string,
-  children: React.ReactNode
+  children: React.ReactNode,
 ) => React.ReactNode;
 
 type HeaderLinkLayout = "desktop" | "sheet";
@@ -81,7 +84,7 @@ function HeaderLink({
   closeOnActivate = false,
   item,
   layout = "desktop",
-  renderLink
+  renderLink,
 }: {
   closeOnActivate?: boolean;
   item: ShellNavItem;
@@ -90,43 +93,54 @@ function HeaderLink({
 }) {
   const isSheet = layout === "sheet";
   const linkClassName = isSheet
-    ? "block w-full text-[color:var(--ink-strong)]"
-    : cn(
-        "inline-flex text-sm transition-colors",
-        item.active
-          ? "text-[color:var(--ink-strong)]"
-          : "items-center gap-2 px-3 py-2 text-muted-foreground hover:bg-white/45 hover:text-foreground",
-        item.iconOnly && !item.active && "justify-center gap-0 px-1.5"
-      );
+    ? "block w-full text-[color:var(--theme-shell-nav-link-foreground)]"
+    : item.active
+      ? cn(
+          "inline-flex text-sm font-medium transition-colors",
+          item.iconOnly
+            ? "items-center justify-center rounded-[var(--theme-radius-sm)] px-2.5 py-2 text-[color:var(--theme-shell-nav-active-foreground)]"
+            : "text-[color:var(--theme-shell-nav-active-foreground)]",
+        )
+      : cn(
+          "inline-flex items-center rounded-[var(--theme-radius-sm)] text-sm font-medium transition-colors",
+          item.iconOnly
+            ? "justify-center px-2.5 py-2 text-[color:var(--theme-shell-nav-icon-foreground)] hover:bg-[color:var(--theme-shell-nav-icon-hover-background)] hover:text-[color:var(--theme-shell-nav-icon-hover-foreground)]"
+            : "gap-2 px-3 py-2 text-[color:var(--theme-shell-nav-link-foreground)] hover:bg-[color:var(--theme-shell-nav-link-hover-background)] hover:text-[color:var(--theme-shell-nav-link-hover-foreground)]",
+        );
   const inlineContent = (
     <>
       {item.icon}
-      {item.iconOnly ? <span className="sr-only">{item.label}</span> : item.label}
-      {item.external && !item.iconOnly ? <ExternalLink className="size-3.5" /> : null}
+      {item.iconOnly ? (
+        <span className="sr-only">{item.label}</span>
+      ) : (
+        item.label
+      )}
+      {item.external && !item.iconOnly ? (
+        <ExternalLink className="size-3.5" />
+      ) : null}
     </>
   );
   const content =
     item.active && !item.iconOnly ? (
-      <HandDrawnFrame
+      <ThemeFrame
         className={cn(isSheet ? "w-full" : undefined)}
+        surfaceClassName="bg-[color:var(--theme-shell-nav-active-background)]"
         contentClassName={cn(
           isSheet
-            ? "flex items-center gap-2.5 px-3 py-3 text-[0.95rem] leading-none"
-            : "inline-flex items-center gap-2 px-3 py-2"
+            ? "flex items-center gap-2.5 px-3 py-3 text-[0.95rem] leading-none text-[color:var(--theme-shell-nav-active-foreground)]"
+            : "inline-flex items-center gap-2 px-3 py-2 text-[color:var(--theme-shell-nav-active-foreground)]",
         )}
-        surfaceClassName="bg-[color:var(--paper)]"
-        strokeColor="var(--border)"
-        strokeWidth={1.1}
-        crookednessIntensity={0.69}
+        strokeColor="var(--theme-shell-nav-active-border)"
+        variant={THEME_FRAME_VARIANTS.shellNavActive}
       >
         {inlineContent}
-      </HandDrawnFrame>
+      </ThemeFrame>
     ) : isSheet ? (
       <div
         className={cn(
           item.iconOnly
-            ? "flex min-h-12 w-full items-center justify-center border border-[color:var(--border)] bg-white/45 px-3 py-2.5 text-[color:var(--ink-strong)] transition-colors hover:bg-[color:var(--paper-soft)]"
-            : "flex min-h-12 w-full items-center gap-2.5 px-3 py-3 text-[0.95rem] leading-none text-muted-foreground transition-colors hover:bg-white/45 hover:text-[color:var(--ink-strong)]"
+            ? "flex min-h-12 w-full items-center justify-center rounded-[var(--theme-radius-md)] border border-[color:var(--theme-shell-mobile-surface-border)] bg-[color:var(--theme-shell-mobile-surface-background)] px-3 py-2.5 text-[color:var(--theme-shell-nav-icon-foreground)] transition-colors hover:bg-[color:var(--theme-shell-nav-icon-hover-background)] hover:text-[color:var(--theme-shell-nav-icon-hover-foreground)]"
+            : "flex min-h-12 w-full items-center gap-2.5 rounded-[var(--theme-radius-md)] px-3 py-3 text-[0.95rem] leading-none text-[color:var(--theme-shell-nav-link-foreground)] transition-colors hover:bg-[color:var(--theme-shell-nav-link-hover-background)] hover:text-[color:var(--theme-shell-nav-link-hover-foreground)]",
         )}
       >
         {inlineContent}
@@ -156,7 +170,10 @@ function renderSheetPrimaryAction(primaryAction: React.ReactNode) {
   }
 
   return React.cloneElement(primaryAction, {
-    className: cn(primaryAction.props.className, "w-full justify-center sm:w-full")
+    className: cn(
+      primaryAction.props.className,
+      "w-full justify-center sm:w-full",
+    ),
   });
 }
 
@@ -168,46 +185,53 @@ export function ShellHeader({
   primaryAction,
   renderLink,
   socialItems = [],
-  user
+  user,
 }: ShellHeaderProps) {
   const hasNavItems = navItems.length > 0;
   const sheetPrimaryAction = primaryAction
     ? renderSheetPrimaryAction(primaryAction)
     : null;
-  const { theme } = useTheme();
-  const isForestTheme = theme === "ghibli-forest";
 
   return (
     <header className="sticky top-4 z-40">
-      <HandDrawnFrame
+      <ThemeFrame
         className={className}
-        contentClassName="px-4 py-3"
-        surfaceClassName={cn(
-          "bg-[color:var(--surface-shell)] bg-[image:var(--surface-shell-background)] backdrop-blur-md",
-          isForestTheme &&
-            "shadow-[0_10px_30px_color-mix(in_oklab,var(--ink-strong)_18%,transparent)]"
-        )}
-        strokeColor="var(--border)"
-        strokeWidth={isForestTheme ? 1.9 : 2.1}
-        crookednessIntensity={isForestTheme ? 0 : 0.5}
-        thicknessIntensity={isForestTheme ? 0 : 4}
+        contentClassName="px-4 py-3 md:px-5"
+        surfaceClassName="bg-[color:var(--theme-shell-header-background)] bg-[image:var(--theme-shell-header-background-image)] backdrop-blur-md"
+        strokeColor="var(--theme-shell-header-border)"
+        style={{ boxShadow: "var(--theme-shell-header-shadow)" }}
+        variant={THEME_FRAME_VARIANTS.shellHeader}
       >
         <div
-          className="shell-header-layout"
-          data-has-nav={hasNavItems ? "true" : "false"}
+          className={cn(
+            "flex items-center gap-3 lg:grid lg:gap-4",
+            hasNavItems
+              ? "lg:grid-cols-[minmax(0,1fr)_auto_minmax(0,1fr)]"
+              : "lg:grid-cols-[minmax(0,1fr)_auto]",
+          )}
         >
-          <div className="shell-header-brand">{brand}</div>
+          <div className="min-w-0 flex-1 lg:flex-none lg:justify-self-start lg:pl-1">
+            {brand}
+          </div>
           {hasNavItems ? (
-            <nav className="shell-header-desktop-nav items-center gap-1 lg:justify-self-center">
+            <nav className="hidden items-center gap-1 lg:flex lg:justify-self-center">
               {navItems.map((item) => (
-                <HeaderLink item={item} key={item.href} renderLink={renderLink} />
+                <HeaderLink
+                  item={item}
+                  key={item.href}
+                  renderLink={renderLink}
+                />
               ))}
             </nav>
           ) : null}
-          <div className="shell-header-desktop-actions items-center gap-2 lg:justify-self-end">
-            <div className="flex items-center gap-2">
+          <div className="hidden items-center gap-2 lg:flex lg:justify-self-end lg:pr-1">
+            <div className="flex items-center gap-0">
               {socialItems.map((item) => (
-                <HeaderLink item={item} key={item.href} renderLink={renderLink} />
+                <HeaderLink
+                  item={item}
+                  key={item.href}
+                  renderLink={renderLink}
+                />
               ))}
             </div>
             {user ? <ShellHeaderUser user={user} /> : null}
@@ -215,12 +239,16 @@ export function ShellHeader({
           </div>
           <Sheet>
             <SheetTrigger asChild>
-              <Button className="shell-header-mobile-trigger" size="icon" variant="secondary">
+              <Button
+                className="lg:hidden rounded-[var(--theme-radius-sm)] border-transparent bg-transparent text-[color:var(--theme-shell-nav-icon-foreground)] shadow-none hover:bg-[color:var(--theme-shell-nav-icon-hover-background)] hover:text-[color:var(--theme-shell-nav-icon-hover-foreground)]"
+                size="icon"
+                variant="ghost"
+              >
                 <Menu className="size-4" />
               </Button>
             </SheetTrigger>
-            <SheetContent className="shell-header-sheet">
-              <SheetHeader className="px-5 pt-5 pb-4">
+            <SheetContent className="w-[min(90vw,24rem)] gap-0 border-[color:var(--theme-shell-mobile-surface-border)]">
+              <SheetHeader className="border-b border-[color:var(--theme-shell-mobile-surface-border)] px-5 pt-5 pb-4">
                 <SheetTitle>{mobileTitle}</SheetTitle>
               </SheetHeader>
               <div className="flex min-h-0 flex-1 flex-col gap-6 px-4 pb-5">
@@ -238,14 +266,15 @@ export function ShellHeader({
                   </nav>
                 ) : null}
                 {user ? (
-                  <div className="grid gap-3 border border-[color:var(--border)] bg-[color:var(--paper-soft)] p-3">
+                  <div className="grid gap-3 rounded-[var(--theme-radius-lg)] border border-[color:var(--theme-shell-mobile-surface-border)] bg-[color:var(--theme-shell-mobile-surface-background)] p-3">
                     <div className="flex min-w-0 items-center gap-3">
                       <Avatar size="sm">
                         {user.avatarUrl ? (
                           <AvatarImage alt={user.name} src={user.avatarUrl} />
                         ) : (
                           <AvatarFallback>
-                            {user.initials ?? user.name.slice(0, 2).toUpperCase()}
+                            {user.initials ??
+                              user.name.slice(0, 2).toUpperCase()}
                           </AvatarFallback>
                         )}
                       </Avatar>
@@ -312,7 +341,7 @@ export function ShellHeader({
             </SheetContent>
           </Sheet>
         </div>
-      </HandDrawnFrame>
+      </ThemeFrame>
     </header>
   );
 }
@@ -324,17 +353,16 @@ function ShellHeaderUser({ user }: { user: ShellUser }) {
         <button
           aria-label={user.name}
           className={cn(
-            "inline-flex max-w-[16rem] items-center rounded-none align-middle",
-            focusRingClass
+            "inline-flex max-w-[16rem] items-center rounded-[var(--theme-radius-md)] align-middle",
+            focusRingClass,
           )}
         >
-          <HandDrawnFrame
+          <ThemeFrame
             className="min-w-0"
-            contentClassName="shell-header-user-trigger px-3 py-2"
-            surfaceClassName="bg-white/45"
-            strokeColor="var(--border)"
-            strokeWidth={1.9}
-            crookednessIntensity={0.45}
+            contentClassName="grid min-w-0 grid-cols-[auto_minmax(0,1fr)] items-center gap-3 px-2.5 py-2"
+            surfaceClassName="bg-[color:var(--theme-shell-user-chip-background)]"
+            strokeColor="var(--theme-shell-user-chip-border)"
+            variant={THEME_FRAME_VARIANTS.shellUserChip}
           >
             <Avatar size="sm">
               {user.avatarUrl ? (
@@ -351,40 +379,38 @@ function ShellHeaderUser({ user }: { user: ShellUser }) {
             >
               {user.name}
             </span>
-          </HandDrawnFrame>
+          </ThemeFrame>
         </button>
       </DropdownMenuTrigger>
       <DropdownMenuContent
         align="end"
         sideOffset={4}
-        className="shell-header-user-menu overflow-visible border-0 bg-transparent p-0 ring-0"
-        style={{
-          minWidth: "var(--radix-popover-trigger-width)",
-          width: "var(--radix-popover-trigger-width)"
-        }}
+        className="w-max min-w-[10rem] overflow-visible border-0 bg-transparent p-0 ring-0"
       >
-        <HandDrawnFrame
+        <ThemeFrame
           className="w-full"
-          contentClassName="grid gap-1 px-3 py-2"
-          surfaceClassName="bg-[color:var(--paper)]"
-          strokeColor="var(--border)"
-          strokeWidth={1.6}
-          crookednessIntensity={0.8}
+          contentClassName="grid gap-0.5 px-1.5 py-1.5"
+          surfaceClassName="bg-[color:var(--theme-shell-user-menu-background)]"
+          strokeColor="var(--theme-shell-user-menu-border)"
+          variant={THEME_FRAME_VARIANTS.shellUserMenu}
         >
           {user.menuItems?.map((item) => (
             <DropdownMenuItem
               className={cn(
-                "gap-1.5 px-0 py-1.5 whitespace-nowrap focus:bg-[color:var(--ring)] focus:text-[color:var(--ink-strong)] data-[highlighted]:bg-[color:var(--ring)] data-[highlighted]:text-[color:var(--ink-strong)]",
-                item.destructive && "text-destructive"
+                "px-2 py-1.5 whitespace-nowrap hover:bg-[color:var(--theme-shell-user-menu-item-highlight-background)] hover:text-[color:var(--theme-shell-user-menu-item-highlight-foreground)] focus:bg-[color:var(--theme-shell-user-menu-item-highlight-background)] focus:text-[color:var(--theme-shell-user-menu-item-highlight-foreground)] data-[highlighted]:bg-[color:var(--theme-shell-user-menu-item-highlight-background)] data-[highlighted]:text-[color:var(--theme-shell-user-menu-item-highlight-foreground)]",
+                item.destructive
+                  ? "text-destructive hover:text-[color:var(--theme-shell-user-menu-item-destructive-highlight-foreground)] focus:text-[color:var(--theme-shell-user-menu-item-destructive-highlight-foreground)] data-[highlighted]:text-[color:var(--theme-shell-user-menu-item-destructive-highlight-foreground)]"
+                  : "text-[color:var(--foreground)]",
               )}
               key={item.id}
               onClick={item.onSelect}
             >
-              {item.icon ?? (item.destructive ? <LogOut className="size-4" /> : null)}
+              {item.icon ??
+                (item.destructive ? <LogOut className="size-4" /> : null)}
               {item.label}
             </DropdownMenuItem>
           ))}
-        </HandDrawnFrame>
+        </ThemeFrame>
       </DropdownMenuContent>
     </DropdownMenu>
   );
@@ -395,23 +421,19 @@ export function ShellFooter({
   brand,
   className,
   text,
-  columns
+  columns,
 }: ShellFooterProps) {
   return (
     <footer
-      className={cn(
-        "py-7 text-sm text-[color:var(--foreground)]",
-        className
-      )}
+      className={cn("py-7 text-sm text-[color:var(--foreground)]", className)}
       data-site-footer
     >
       <div className="relative pt-8 md:pt-10">
-        <HandDrawnRule
+        <ThemeRule
           className="absolute inset-x-0 top-0 h-3"
-          crookednessIntensity={9}
           strokeColor="var(--foreground)"
-          strokeWidth={1.4}
           svgClassName="opacity-85"
+          variant={THEME_RULE_VARIANTS.footerDivider}
         />
         <div className="flex flex-wrap items-center justify-center gap-x-5 gap-y-4 md:gap-x-6">
           {brand}
@@ -454,14 +476,15 @@ export function Header({
   navItems,
   primaryAction,
   socialItems = [],
-  user
+  user,
 }: HeaderProps) {
   return (
     <ShellHeader
       brand={brand}
       navItems={navItems.map((item) => ({
         ...item,
-        active: item.active ?? (currentPath ? currentPath === item.href : false)
+        active:
+          item.active ?? (currentPath ? currentPath === item.href : false),
       }))}
       primaryAction={primaryAction}
       socialItems={socialItems}
@@ -489,11 +512,13 @@ export function Footer({ columns, note, title }: FooterProps) {
         <h2 className="font-[var(--font-heading)] text-3xl text-[color:var(--ink-strong)]">
           {title}
         </h2>
-        <p className="text-sm leading-7 text-[color:var(--muted-foreground)]">{note}</p>
+        <p className="text-sm leading-7 text-[color:var(--muted-foreground)]">
+          {note}
+        </p>
       </div>
       <ShellFooter
         columns={columns.flatMap((column) =>
-          column.links.map((link) => ({ href: link.href, text: link.label }))
+          column.links.map((link) => ({ href: link.href, text: link.label })),
         )}
         text=""
       />

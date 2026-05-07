@@ -11,6 +11,14 @@ export {
   type ThemeOptionId,
 } from "./theme-options";
 export {
+  THEME_FRAME_VARIANTS,
+  THEME_RULE_VARIANTS,
+  getThemeFrameStyleConfig,
+  getThemeRuleStyleConfig,
+  type ThemeFrameVariant,
+  type ThemeRuleVariant,
+} from "./theme-frame-config";
+export {
   ThemeContext,
   ThemeProvider,
   type ThemeContextValue,

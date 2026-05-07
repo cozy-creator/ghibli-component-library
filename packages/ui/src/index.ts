@@ -17,6 +17,7 @@ export * from "../../../registry/ghibli/ui/sheet";
 export * from "../../../registry/ghibli/ui/skeleton";
 export * from "../../../registry/ghibli/ui/tabs";
 export * from "../../../registry/ghibli/ui/textarea";
+export * from "../../../registry/ghibli/ui/theme-frame";
 export * from "../../../registry/ghibli/ui/tooltip";
 
 export * from "../../../registry/ghibli/blocks/account/dialogs";

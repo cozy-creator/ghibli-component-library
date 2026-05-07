@@ -6,20 +6,22 @@ import {
   MessageSquareText,
   Paintbrush2,
   ShieldCheck,
-  Wand2
+  Wand2,
 } from "lucide-react";
 
-import type {
-  FaqItem,
-  GenerateAspectRatioOption,
-  GenerateModelItem,
-  GenerateModelsByBase
+import {
+  THEME_FRAME_VARIANTS,
+  ThemeFrame,
+  type FaqItem,
+  type GenerateAspectRatioOption,
+  type GenerateModelItem,
+  type GenerateModelsByBase,
 } from "@ghibli/ui";
 
 import {
   DocsHeaderIcon,
   GitHubHeaderIcon,
-  mockHeaderAvatarUrl
+  mockHeaderAvatarUrl,
 } from "@/apps/web/src/components/site-header-icons";
 import { SceneArt } from "@/apps/web/src/components/docs/scene-art";
 
@@ -27,7 +29,7 @@ function scenicDataUri({
   accent,
   label,
   skyBottom,
-  skyTop
+  skyTop,
 }: {
   accent: string;
   label: string;
@@ -57,7 +59,7 @@ export const libraryNavItems = [
   { href: "#component-button", label: "Components" },
   { href: "#pattern-generate-editor-bar", label: "Generate" },
   { href: "#component-footer", label: "Footer" },
-  { href: "#storybook", label: "Storybook" }
+  { href: "#storybook", label: "Storybook" },
 ];
 
 export const footerColumns = [
@@ -66,28 +68,28 @@ export const footerColumns = [
     links: [
       { href: "#install", label: "Getting started" },
       { href: "#component-button", label: "Components" },
-      { href: "#storybook", label: "Storybook" }
+      { href: "#storybook", label: "Storybook" },
     ],
-    title: "Guides"
+    title: "Guides",
   },
   {
     id: "library",
     links: [
       { href: "#component-button", label: "Buttons" },
       { href: "#pattern-generate-editor-bar", label: "Generate bar" },
-      { href: "#pattern-community-cards", label: "Cards" }
+      { href: "#pattern-community-cards", label: "Cards" },
     ],
-    title: "Library"
+    title: "Library",
   },
   {
     id: "tools",
     links: [
       { href: "https://ui.shadcn.com/docs/registry", label: "shadcn registry" },
       { href: "https://storybook.js.org", label: "Storybook" },
-      { href: "https://vite.dev", label: "Vite" }
+      { href: "https://vite.dev", label: "Vite" },
     ],
-    title: "Tools"
-  }
+    title: "Tools",
+  },
 ];
 
 export const socialItems = [
@@ -96,21 +98,27 @@ export const socialItems = [
     href: "https://github.com/rodrigoluz/ghibli-component-library",
     icon: <GitHubHeaderIcon />,
     iconOnly: true,
-    label: "GitHub"
+    label: "GitHub",
   },
   {
     href: "/guides/getting-started",
     icon: <DocsHeaderIcon />,
     iconOnly: true,
-    label: "Docs"
-  }
+    label: "Docs",
+  },
 ];
 
 export const headerBrand = (
   <a className="inline-flex items-center gap-3" href="/">
-    <div className="inline-flex size-11 items-center justify-center rounded-full border border-[color:var(--border-strong)] bg-[color:var(--paper)] shadow-[var(--shadow-soft)]">
-      <Flower2 className="size-5 text-[color:var(--ink-strong)]" />
-    </div>
+    <ThemeFrame
+      className="size-12 shrink-0"
+      contentClassName="p-1.5"
+      surfaceClassName="bg-[color:var(--theme-shell-brand-background)]"
+      strokeColor="var(--theme-shell-brand-border)"
+      variant={THEME_FRAME_VARIANTS.shellBrandMark}
+    >
+      <Flower2 className="size-full text-[color:var(--ink-strong)]" />
+    </ThemeFrame>
     <div className="grid gap-0.5">
       <span className="font-[var(--font-heading)] text-3xl text-[color:var(--ink-strong)]">
         Ghibli UI
@@ -127,52 +135,58 @@ export const headerUser = {
   initials: "MS",
   menuItems: [
     { id: "docs", label: "Open docs" },
-    { destructive: true, id: "exit", label: "Close panel" }
+    { destructive: true, id: "exit", label: "Close panel" },
   ],
   name: "User",
-  subtitle: "Preview mode"
+  subtitle: "Preview mode",
 };
 
 export const featureItems = [
   {
-    description: "One paper-and-ink baseline theme with registry-ready primitives and calm defaults.",
+    description:
+      "One paper-and-ink baseline theme with registry-ready primitives and calm defaults.",
     icon: <Leaf className="size-5" />,
     id: "theme",
-    title: "Single scenic theme"
+    title: "Single scenic theme",
   },
   {
-    description: "Components, patterns, examples, and guides organized for actual library adoption.",
+    description:
+      "Components, patterns, examples, and guides organized for actual library adoption.",
     icon: <ShieldCheck className="size-5" />,
     id: "docs",
-    title: "Docs-first structure"
+    title: "Docs-first structure",
   },
   {
-    description: "Install only the parts you need with `shadcn add`, then customize the copied source.",
+    description:
+      "Install only the parts you need with `shadcn add`, then customize the copied source.",
     icon: <Paintbrush2 className="size-5" />,
     id: "registry",
-    title: "Registry-friendly delivery"
-  }
+    title: "Registry-friendly delivery",
+  },
 ];
 
 export const featureVisualItems = [
   {
-    description: "Input, button, overlay, and navigation surfaces share the same soft spacing rhythm.",
+    description:
+      "Input, button, overlay, and navigation surfaces share the same soft spacing rhythm.",
     icon: <Wand2 className="size-5" />,
     id: "components",
-    title: "Component primitives"
+    title: "Component primitives",
   },
   {
-    description: "Grouped patterns give teams larger building blocks without turning the library into a template pack.",
+    description:
+      "Grouped patterns give teams larger building blocks without turning the library into a template pack.",
     icon: <ImageIcon className="size-5" />,
     id: "patterns",
-    title: "Composable patterns"
+    title: "Composable patterns",
   },
   {
-    description: "Guides, examples, and Storybook work together so consumers can install with confidence.",
+    description:
+      "Guides, examples, and Storybook work together so consumers can install with confidence.",
     icon: <MessageSquareText className="size-5" />,
     id: "guidance",
-    title: "Practical guidance"
-  }
+    title: "Practical guidance",
+  },
 ];
 
 export const faqItems: FaqItem[] = [
@@ -180,61 +194,64 @@ export const faqItems: FaqItem[] = [
     answer:
       "Add the `style` item first so the theme variables, base typography, and paper surfaces are available before installing any other item.",
     id: "install-style",
-    question: "What should I install first?"
+    question: "What should I install first?",
   },
   {
     answer:
       "Use the component pages for quick preview, install, usage, and notes. Use Storybook when you want to inspect multiple states interactively.",
     id: "docs-vs-storybook",
-    question: "How should I use the docs app and Storybook together?"
+    question: "How should I use the docs app and Storybook together?",
   },
   {
     answer:
       "The registry copies source into your app. You can rename, restyle, or refactor installed files after they land in your project.",
     id: "ownership",
-    question: "Do I own the installed source?"
-  }
+    question: "Do I own the installed source?",
+  },
 ];
 
 export const communityImageItems = [
   {
     authorName: "Mina Journal",
     createdAtLabel: "2 hours ago",
-    description: "Painterly landscape card with room for title, meta, and short supporting copy.",
+    description:
+      "Painterly landscape card with room for title, meta, and short supporting copy.",
     id: "forest",
     imageUrl: "https://picsum.photos/seed/ghibli-forest-lantern/1200/800",
     meta: "Updated 2h ago",
     negativePromptText: "harsh contrast, oversharpening, cluttered skyline",
     promptText:
       "Painterly forest path lit by paper lanterns, soft evening haze, mossy stones, gentle watercolor blending.",
-    title: "Forest lantern walk"
+    title: "Forest lantern walk",
   },
   {
     authorName: "Jun Atelier",
     createdAtLabel: "Yesterday",
-    description: "Warm editorial postcard treatment that still reads like a reusable UI card.",
+    description:
+      "Warm editorial postcard treatment that still reads like a reusable UI card.",
     id: "coast",
     imageUrl: "https://picsum.photos/seed/ghibli-harbor-tea/1200/800",
     meta: "Updated yesterday",
     negativePromptText: "busy crowds, modern signage, noisy reflections",
     promptText:
       "Quiet harbor cafe terrace at golden hour, warm tea steam, seaside breeze, hand-painted postcard mood.",
-    title: "Harbor tea break"
+    title: "Harbor tea break",
   },
   {
     authorName: "Aki Field Notes",
     createdAtLabel: "3 days ago",
-    description: "Nature-heavy visual that works for galleries, changelogs, or editorial lists.",
+    description:
+      "Nature-heavy visual that works for galleries, changelogs, or editorial lists.",
     id: "mountain",
     imageUrl: scenicDataUri({
       accent: "#d8d299",
       label: "Cloud Pass Lookout",
       skyBottom: "#dfe5c8",
-      skyTop: "#aac4dc"
+      skyTop: "#aac4dc",
     }),
     meta: "Updated 3 days ago",
-    title: "Cloud pass lookout"
-  }
+    title: "Cloud pass lookout",
+  },
 ];
 
 export const communityVideoItems = [
@@ -250,12 +267,13 @@ export const communityVideoItems = [
       "Slow ferry drifting through lantern reflections at dusk, watercolor ripples, quiet cinematic motion.",
     title: "Lantern ferry glide",
     videoUrl:
-      "https://test-videos.co.uk/vids/bigbuckbunny/mp4/h264/360/Big_Buck_Bunny_360_10s_1MB.mp4"
+      "https://test-videos.co.uk/vids/bigbuckbunny/mp4/h264/360/Big_Buck_Bunny_360_10s_1MB.mp4",
   },
   {
     authorName: "Jun Atelier",
     createdAtLabel: "Yesterday",
-    description: "Reference video modal with enough metadata for richer gallery flows.",
+    description:
+      "Reference video modal with enough metadata for richer gallery flows.",
     id: "video-2",
     meta: "Preview loop • 8s",
     negativePromptText: "compression artifacts, flicker, oversaturated lights",
@@ -264,28 +282,27 @@ export const communityVideoItems = [
       "Rain tracing a train window at night, dim interior reflections, soft hand-painted movement and muted city glow.",
     title: "Window rain study",
     videoUrl:
-      "https://test-videos.co.uk/vids/sintel/mp4/h264/360/Sintel_360_10s_1MB.mp4"
-  }
+      "https://test-videos.co.uk/vids/sintel/mp4/h264/360/Sintel_360_10s_1MB.mp4",
+  },
 ];
 
 export const xPostDemo = {
   author: "Mina Journal",
-  body:
-    "Reorganized the library around installable primitives, grouped patterns, and a cleaner documentation flow so teams can adopt it without reverse-engineering the repo.",
+  body: "Reorganized the library around installable primitives, grouped patterns, and a cleaner documentation flow so teams can adopt it without reverse-engineering the repo.",
   handle: "minajournal",
   mediaUrl: scenicDataUri({
     accent: "#e6a772",
     label: "Release Notes",
     skyBottom: "#e8ddc2",
-    skyTop: "#b7d2db"
+    skyTop: "#b7d2db",
   }),
   metrics: { likes: "1.6k", replies: "84", reposts: "220" },
-  note: "Useful for release notes, changelog cards, or editorial-style updates."
+  note: "Useful for release notes, changelog cards, or editorial-style updates.",
 };
 
 export const modeOptions = [
   { label: "Image", value: "image" },
-  { label: "Video", value: "video" }
+  { label: "Video", value: "video" },
 ];
 
 export const generateModelItems: GenerateModelItem[] = [
@@ -296,7 +313,7 @@ export const generateModelItems: GenerateModelItem[] = [
     expectedTimeSec: 30,
     expertise: ["photo", "hyper-real", "classical-art"],
     name: "flux-dev",
-    supportsVideo: true
+    supportsVideo: true,
   },
   {
     baseModel: "Flux",
@@ -305,7 +322,7 @@ export const generateModelItems: GenerateModelItem[] = [
     expectedTimeSec: 10,
     expertise: ["photo", "cartoon"],
     name: "flux-schnell",
-    supportsVideo: false
+    supportsVideo: false,
   },
   {
     baseModel: "SDXL",
@@ -314,7 +331,7 @@ export const generateModelItems: GenerateModelItem[] = [
     expectedTimeSec: 20,
     expertise: ["pixar", "3d-game", "cartoon"],
     name: "playground-v2",
-    supportsVideo: false
+    supportsVideo: false,
   },
   {
     baseModel: "SDXL",
@@ -323,17 +340,15 @@ export const generateModelItems: GenerateModelItem[] = [
     expectedTimeSec: 25,
     expertise: ["anime", "videogame", "physical-art"],
     name: "pony-v6",
-    supportsVideo: false
-  }
+    supportsVideo: false,
+  },
 ];
 
-export const generateModelsByBase: GenerateModelsByBase = generateModelItems.reduce<GenerateModelsByBase>(
-  (accumulator, item) => {
+export const generateModelsByBase: GenerateModelsByBase =
+  generateModelItems.reduce<GenerateModelsByBase>((accumulator, item) => {
     (accumulator[item.baseModel] ??= []).push(item);
     return accumulator;
-  },
-  {}
-);
+  }, {});
 
 export const aspectRatioOptions: GenerateAspectRatioOption[] = [
   { description: "Ultra wide", label: "21:9", value: "21/9" },
@@ -342,7 +357,7 @@ export const aspectRatioOptions: GenerateAspectRatioOption[] = [
   { description: "Square", label: "1:1", value: "1/1" },
   { description: "Tall", label: "3:4", value: "3/4" },
   { description: "Portrait", label: "9:16", value: "9/16" },
-  { description: "Ultra Tall", label: "9:21", value: "9/21" }
+  { description: "Ultra Tall", label: "9:21", value: "9/21" },
 ];
 
 export const sampleAttachments = [
@@ -354,9 +369,9 @@ export const sampleAttachments = [
       accent: "#f0b970",
       label: "Lantern Moodboard",
       skyBottom: "#e6d5ad",
-      skyTop: "#aac9d9"
+      skyTop: "#aac9d9",
     }),
-    sizeLabel: "1.4 MB"
+    sizeLabel: "1.4 MB",
   },
   {
     id: "att-2",
@@ -366,10 +381,10 @@ export const sampleAttachments = [
       accent: "#d6d18f",
       label: "Cloud Palette",
       skyBottom: "#dce4c4",
-      skyTop: "#9fbed8"
+      skyTop: "#9fbed8",
     }),
-    sizeLabel: "820 KB"
-  }
+    sizeLabel: "820 KB",
+  },
 ];
 
 export const sampleJobs = [
@@ -381,8 +396,8 @@ export const sampleJobs = [
           accent: "#f0bb70",
           label: "Breakfast Study A",
           skyBottom: "#ded8c2",
-          skyTop: "#c3d9df"
-        })
+          skyTop: "#c3d9df",
+        }),
       },
       {
         id: "job-1b",
@@ -390,16 +405,16 @@ export const sampleJobs = [
           accent: "#d6a37b",
           label: "Breakfast Study B",
           skyBottom: "#e8d3b7",
-          skyTop: "#9fc2d5"
-        })
-      }
+          skyTop: "#9fc2d5",
+        }),
+      },
     ],
     progress: 100,
     prompt:
       "A mountain inn breakfast scene, soft window light, watercolor backgrounds, hand-inked details, gentle steam from tea cups.",
     status: "done" as const,
     subtitle: "Completed 14 minutes ago",
-    title: "Breakfast studies"
+    title: "Breakfast studies",
   },
   {
     progress: 62,
@@ -407,8 +422,8 @@ export const sampleJobs = [
       "A quiet ferry deck at dusk, paper lantern reflections across the water, quiet travelers wrapped in blankets.",
     status: "processing" as const,
     subtitle: "Estimated 18 seconds left",
-    title: "Ferry dusk set"
-  }
+    title: "Ferry dusk set",
+  },
 ];
 
 export const linkedAccounts = [
@@ -417,15 +432,15 @@ export const linkedAccounts = [
     id: "github",
     meta: "Connected as paper-demos",
     name: "GitHub",
-    state: "connected" as const
+    state: "connected" as const,
   },
   {
     actionLabel: "Connect",
     id: "discord",
     meta: "Use for release notifications",
     name: "Discord",
-    state: "disconnected" as const
-  }
+    state: "disconnected" as const,
+  },
 ];
 
 export const subscriptionOffers = [
@@ -433,20 +448,20 @@ export const subscriptionOffers = [
     id: "free",
     name: "Free",
     priceLabel: "$0",
-    subtitle: "Limited to 100 generations"
+    subtitle: "Limited to 100 generations",
   },
   {
     id: "monthly",
     name: "Monthly Studio",
     priceLabel: "$24",
-    subtitle: "Billed monthly"
+    subtitle: "Billed monthly",
   },
   {
     id: "yearly",
     name: "Yearly Atelier",
     priceLabel: "$240",
-    subtitle: "Billed yearly"
-  }
+    subtitle: "Billed yearly",
+  },
 ];
 
 export const creditLedger = [
@@ -455,29 +470,29 @@ export const creditLedger = [
     amountLabel: "+$24.00",
     date: "Apr 20, 2026",
     direction: "credit" as const,
-    id: "ledger-1"
+    id: "ledger-1",
   },
   {
     activity: "Generation batch · API",
     amountLabel: "-$1.20",
     date: "Apr 18, 2026",
     direction: "debit" as const,
-    id: "ledger-2"
+    id: "ledger-2",
   },
   {
     activity: "Credit top-up · Stripe",
     amountLabel: "+$50.00",
     date: "Apr 12, 2026",
     direction: "credit" as const,
-    id: "ledger-3"
+    id: "ledger-3",
   },
   {
     activity: "Variation run · API",
     amountLabel: "-$0.80",
     date: "Apr 10, 2026",
     direction: "debit" as const,
-    id: "ledger-4"
-  }
+    id: "ledger-4",
+  },
 ];
 
 export const marketingVisual = (
