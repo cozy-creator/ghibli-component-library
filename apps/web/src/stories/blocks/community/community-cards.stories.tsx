@@ -1,6 +1,11 @@
 import type { Meta, StoryObj } from "@storybook/react-vite";
 
-import { CommunityImageCard, CommunityTabsList, CommunityVideoCard, Tabs } from "@ghibli/ui";
+import { Tabs } from "@ghibli/ui";
+import {
+  CommunityImageCard,
+  CommunityTabsList,
+  CommunityVideoCard,
+} from "@/cozy-examples/community/cards";
 
 import { communityImageItems, communityVideoItems } from "@/apps/web/src/data/demo-fixtures";
 

@@ -5,7 +5,7 @@ import {
   GenerateButton,
   GenerateModeToggle,
   GenerateModelSelect
-} from "@ghibli/ui";
+} from "@/cozy-examples/generate/controls";
 
 import {
   aspectRatioOptions,

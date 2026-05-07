@@ -1,6 +1,12 @@
 import { render, screen } from "@testing-library/react";
 
-import { CommunityImageCard, CommunityTabsList, CommunityVideoCard, CommunityXPostCard, Tabs } from "@ghibli/ui";
+import { Tabs } from "@ghibli/ui";
+import {
+  CommunityImageCard,
+  CommunityTabsList,
+  CommunityVideoCard,
+  CommunityXPostCard,
+} from "@/cozy-examples/community/cards";
 
 describe("community cards", () => {
   it("renders image, video, and x-post cards", () => {

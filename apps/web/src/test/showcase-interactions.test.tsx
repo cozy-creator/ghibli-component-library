@@ -93,7 +93,7 @@ describe("showcase interactions", () => {
     expect(editorSection).not.toBeNull();
     expect(generateControlsSection).not.toBeNull();
 
-    expect(screen.getByRole("heading", { name: "Generate Editor Bar" })).toBeInTheDocument();
+    expect(screen.getByRole("heading", { name: "Cozy Generate Editor Bar" })).toBeInTheDocument();
     expect(
       screen.queryByRole("heading", { name: "Dropdown, Model, Aspect Controls" })
     ).not.toBeInTheDocument();
@@ -135,8 +135,6 @@ describe("showcase interactions", () => {
   }, 10000);
 
   it("updates the hand-drawn frame playground with the new Cozy frame controls", async () => {
-    const user = userEvent.setup();
-
     window.history.pushState({}, "", "/");
 
     const { container } = render(<App />);
@@ -146,10 +144,10 @@ describe("showcase interactions", () => {
     expect(within(frameSection as HTMLElement).queryByText("Variant")).not.toBeInTheDocument();
     expect(within(frameSection as HTMLElement).queryByText("Variation")).not.toBeInTheDocument();
     expect(
-      within(frameSection as HTMLElement).getByText("Crookedness Intensity")
+      within(frameSection as HTMLElement).getByText("Crookedness")
     ).toBeInTheDocument();
     expect(
-      within(frameSection as HTMLElement).getByText("Thickness Intensity")
+      within(frameSection as HTMLElement).getByText("Stroke Width Variation")
     ).toBeInTheDocument();
     expect(
       within(frameSection as HTMLElement).queryByText("Organic callout")
@@ -157,65 +155,37 @@ describe("showcase interactions", () => {
     expect(
       within(frameSection as HTMLElement).queryByRole("button", { name: "Shape" })
     ).not.toBeInTheDocument();
-    expect(
-      within(frameSection as HTMLElement).getByRole("radiogroup", {
-        name: "Crookedness Intensity"
-      })
-    ).toBeInTheDocument();
-    expect(
-      within(frameSection as HTMLElement).getByRole("radiogroup", {
-        name: "Thickness Intensity"
-      })
-    ).toBeInTheDocument();
-    expect(
-      within(frameSection as HTMLElement).getByRole("radiogroup", {
-        name: "Stroke Width"
-      })
-    ).toBeInTheDocument();
+    const crookednessSlider = within(frameSection as HTMLElement).getByRole("slider", {
+      name: "Crookedness"
+    });
+    const strokeWidthVariationSlider = within(frameSection as HTMLElement).getByRole("slider", {
+      name: "Stroke Width Variation"
+    });
+    const strokeWidthSlider = within(frameSection as HTMLElement).getByRole("slider", {
+      name: "Stroke Width"
+    });
 
-    await user.click(
-      within(frameSection as HTMLElement).getByRole("radio", {
-        name: "Thickness Intensity 8"
-      })
-    );
+    expect(crookednessSlider).toBeInTheDocument();
+    expect(strokeWidthVariationSlider).toBeInTheDocument();
+    expect(strokeWidthSlider).toBeInTheDocument();
+
+    fireEvent.change(strokeWidthVariationSlider, { target: { value: "8" } });
 
     expect(
       within(frameSection as HTMLElement).getByText("Frame preview")
     ).toBeInTheDocument();
     expect(
-      within(frameSection as HTMLElement).getAllByText(/thicknessIntensity=\{8\}/).length
+      within(frameSection as HTMLElement).getAllByText(/strokeWidthVariation=\{8\}/).length
     ).toBeGreaterThan(0);
     expect(
       within(frameSection as HTMLElement).queryByText(/shape="/)
     ).not.toBeInTheDocument();
 
-    const crookednessRuler = within(frameSection as HTMLElement).getByRole("radiogroup", {
-      name: "Crookedness Intensity"
-    });
-
-    Object.defineProperty(crookednessRuler, "getBoundingClientRect", {
-      configurable: true,
-      value: () =>
-        ({
-          bottom: 76,
-          height: 76,
-          left: 0,
-          right: 210,
-          top: 0,
-          width: 210,
-          x: 0,
-          y: 0,
-          toJSON: () => ({})
-        }) as DOMRect
-    });
-
-    fireEvent.pointerDown(crookednessRuler, { button: 0, clientX: 0, pointerId: 1 });
-    fireEvent.pointerMove(crookednessRuler, { clientX: 210, pointerId: 1 });
-    fireEvent.pointerUp(crookednessRuler, { clientX: 210, pointerId: 1 });
+    fireEvent.change(crookednessSlider, { target: { value: "10" } });
 
     await waitFor(() => {
       expect(
-        within(frameSection as HTMLElement).getAllByText(/crookednessIntensity=\{10\}/).length
+        within(frameSection as HTMLElement).getAllByText(/crookedness=\{10\}/).length
       ).toBeGreaterThan(0);
     });
   }, 10000);

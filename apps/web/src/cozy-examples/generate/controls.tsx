@@ -79,7 +79,7 @@ export function GenerateModeToggle({
       strokeColor="var(--border)"
       strokeWidth={1.25}
       svgClassName="opacity-85"
-      crookednessIntensity={0.3}
+      crookedness={0.3}
     >
       <div
         aria-label="Generation mode"
@@ -394,7 +394,7 @@ export function GenerateModelSelect({
         strokeColor="var(--border)"
         strokeWidth={1.25}
         svgClassName="opacity-85"
-        crookednessIntensity={0.3}
+        crookedness={0.3}
       >
         <DropdownMenuTrigger asChild>
           <button className="flex h-11 w-full items-center gap-1.5 overflow-hidden bg-transparent px-3 text-sm transition-colors hover:bg-white/40">

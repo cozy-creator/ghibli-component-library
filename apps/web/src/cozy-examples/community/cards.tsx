@@ -1,12 +1,25 @@
 import * as React from "react";
-import { AlertCircle, Heart, Loader2, MessageCircle, Repeat2, Sparkles } from "lucide-react";
+import {
+  AlertCircle,
+  Heart,
+  Loader2,
+  MessageCircle,
+  Repeat2,
+  Sparkles,
+} from "lucide-react";
 
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+  Card,
+  CardContent,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
 import { HandDrawnFrame } from "@/components/ui/hand-drawn-frame";
 import { TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { cn } from "@/lib/utils";
-import { CommunityVideoPlayer } from "@/components/blocks/community/video-player";
+import { CommunityVideoPlayer } from "./video-player";
 
 export interface CommunityTabsListItem {
   disabled?: boolean;
@@ -24,26 +37,26 @@ export interface CommunityTabsListProps {
 const defaultCommunityTabs = [
   { label: "Live Feed", value: "live-feed" },
   { label: "Video", value: "video" },
-  { label: "X Posts", value: "x-posts" }
+  { label: "X Posts", value: "x-posts" },
 ] satisfies CommunityTabsListItem[];
 
 export function CommunityTabsList({
   activeTab,
   className,
   disabled = false,
-  tabs = defaultCommunityTabs
+  tabs = defaultCommunityTabs,
 }: CommunityTabsListProps) {
   return (
     <HandDrawnFrame
       className={cn(
         "ghibli-community-tabs-frame mx-auto w-fit max-w-full max-[424px]:w-full",
-        className
+        className,
       )}
       contentClassName="px-1.5 py-1.5"
       surfaceClassName="bg-[color:color-mix(in_oklab,var(--card)_84%,white)]"
       strokeColor="var(--border)"
       strokeWidth={1.5}
-      crookednessIntensity={0.45}
+      crookedness={0.45}
     >
       <TabsList className="ghibli-community-tabs-list gap-1 border-0 bg-transparent p-0 shadow-none max-[424px]:grid max-[424px]:w-full max-[424px]:grid-cols-3 max-[424px]:gap-1">
         {tabs.map((tab) => {
@@ -64,9 +77,11 @@ export function CommunityTabsList({
                   strokeColor="var(--border)"
                   strokeWidth={1.35}
                   svgClassName="size-full"
-                  crookednessIntensity={0.9}
+                  crookedness={0.9}
                 >
-                  <span className="ghibli-community-tabs-text whitespace-nowrap">{tab.label}</span>
+                  <span className="ghibli-community-tabs-text whitespace-nowrap">
+                    {tab.label}
+                  </span>
                 </HandDrawnFrame>
               ) : (
                 <span className="ghibli-community-tabs-label inline-flex items-center justify-center whitespace-nowrap px-4 py-2 max-[424px]:px-2">
@@ -103,13 +118,13 @@ interface CommunityImageLoadState {
 
 function createCommunityImageLoadState(
   sourceKey: string,
-  hasPrimarySource: boolean
+  hasPrimarySource: boolean,
 ): CommunityImageLoadState {
   return {
     hasError: !hasPrimarySource,
     readySrc: null,
     sourceKey,
-    useFallback: false
+    useFallback: false,
   };
 }
 
@@ -120,7 +135,7 @@ export function CommunityImageCard({
   meta,
   onClick,
   summary,
-  title
+  title,
 }: CommunityImageCardProps) {
   const primarySrc = imageUrl;
   const fallbackSrc =
@@ -128,8 +143,8 @@ export function CommunityImageCard({
   const sourceKey = `${primarySrc ?? ""}|${fallbackSrc ?? ""}`;
   const modelLabel = title;
   const altText = imageAlt ?? title;
-  const [loadState, setLoadState] = React.useState<CommunityImageLoadState>(() =>
-    createCommunityImageLoadState(sourceKey, Boolean(primarySrc))
+  const [loadState, setLoadState] = React.useState<CommunityImageLoadState>(
+    () => createCommunityImageLoadState(sourceKey, Boolean(primarySrc)),
   );
   const currentLoadState =
     loadState.sourceKey === sourceKey
@@ -159,7 +174,7 @@ export function CommunityImageCard({
       return {
         ...nextState,
         hasError: false,
-        readySrc: resolvedImageSrc
+        readySrc: resolvedImageSrc,
       };
     });
   };
@@ -176,14 +191,14 @@ export function CommunityImageCard({
           ...nextState,
           hasError: false,
           readySrc: null,
-          useFallback: true
+          useFallback: true,
         };
       }
 
       return {
         ...nextState,
         hasError: true,
-        readySrc: null
+        readySrc: null,
       };
     });
   };
@@ -203,7 +218,7 @@ export function CommunityImageCard({
           surfaceClassName="bg-[linear-gradient(180deg,rgba(249,243,226,0.98),rgba(239,227,193,0.98))]"
           strokeColor="var(--border)"
           strokeWidth={1.55}
-          crookednessIntensity={1.5}
+          crookedness={1.5}
         >
           <Card className="gap-0 overflow-hidden border-0 bg-transparent py-0 shadow-none max-[402px]:flex max-[402px]:h-full max-[402px]:flex-col">
             <div className="relative aspect-[4/5] overflow-hidden border-b-2 border-[color:var(--surface-highlight-border)] bg-[color:var(--surface-highlight)] max-[402px]:shrink-0">
@@ -270,7 +285,7 @@ export function CommunityVideoCard({
   posterAlt,
   posterUrl,
   title,
-  videoUrl
+  videoUrl,
 }: CommunityVideoCardProps) {
   const handleOpen = onClick ?? onPlay;
 
@@ -295,7 +310,7 @@ export function CommunityVideoCard({
         surfaceClassName="bg-[linear-gradient(180deg,rgba(249,243,226,0.98),rgba(239,227,193,0.98))]"
         strokeColor="var(--border)"
         strokeWidth={1.55}
-        crookednessIntensity={0.8}
+        crookedness={0.8}
       >
         <Card className="gap-0 overflow-hidden border-0 bg-transparent py-0 shadow-none">
           <div className="border-b-2 border-[color:var(--surface-highlight-border)] bg-[color:var(--surface-highlight)]">
@@ -339,7 +354,7 @@ export interface CommunityXPostCardProps {
 
 function Metric({
   children,
-  icon: Icon
+  icon: Icon,
 }: {
   children: React.ReactNode;
   icon: typeof Heart;
@@ -360,17 +375,23 @@ export function CommunityXPostCard({
   handle,
   mediaUrl,
   metrics,
-  note
+  note,
 }: CommunityXPostCardProps) {
   return (
     <CommunityEmbedCard
       author={author}
       embed={
         <div className="grid gap-4">
-          <p className="text-sm leading-7 text-[color:var(--foreground)]">{body}</p>
+          <p className="text-sm leading-7 text-[color:var(--foreground)]">
+            {body}
+          </p>
           {mediaUrl ? (
             <div className="overflow-hidden rounded-[calc(var(--radius)-0.25rem)] border border-[color:var(--border)]">
-              <img alt="" className="aspect-[16/9] w-full object-cover" src={mediaUrl} />
+              <img
+                alt=""
+                className="aspect-[16/9] w-full object-cover"
+                src={mediaUrl}
+              />
             </div>
           ) : null}
           {note ? (
@@ -413,7 +434,7 @@ export function CommunityEmbedCard({
   embed,
   footer,
   handle,
-  title
+  title,
 }: CommunityEmbedCardProps) {
   return (
     <HandDrawnFrame
@@ -421,17 +442,21 @@ export function CommunityEmbedCard({
       surfaceClassName="bg-[color:var(--card)]"
       strokeColor="var(--border)"
       strokeWidth={1.55}
-      crookednessIntensity={0.6}
+      crookedness={0.6}
     >
       <Card className="border-0 bg-transparent shadow-none">
         <CardHeader className="grid grid-cols-[auto_1fr_auto] items-start gap-3">
           <Avatar>
             {avatarUrl ? <AvatarImage alt={author} src={avatarUrl} /> : null}
-            <AvatarFallback>{avatarFallback ?? author.slice(0, 2).toUpperCase()}</AvatarFallback>
+            <AvatarFallback>
+              {avatarFallback ?? author.slice(0, 2).toUpperCase()}
+            </AvatarFallback>
           </Avatar>
           <div className="grid gap-1">
             <CardTitle className="text-xl">{title ?? author}</CardTitle>
-            {handle ? <p className="text-sm text-muted-foreground">{handle}</p> : null}
+            {handle ? (
+              <p className="text-sm text-muted-foreground">{handle}</p>
+            ) : null}
           </div>
         </CardHeader>
         <CardContent className="grid gap-4">{embed}</CardContent>

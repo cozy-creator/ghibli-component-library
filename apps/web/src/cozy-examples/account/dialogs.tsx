@@ -6,17 +6,13 @@ import {
   Dialog,
   DialogContent,
   DialogHeader,
-  DialogTitle
+  DialogTitle,
 } from "@/components/ui/dialog";
 import { HandDrawnFrame } from "@/components/ui/hand-drawn-frame";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 
-function Field({
-  children
-}: {
-  children: React.ReactNode;
-}) {
+function Field({ children }: { children: React.ReactNode }) {
   return <div className="space-y-1.5">{children}</div>;
 }
 
@@ -37,7 +33,7 @@ export function AccountChangeEmailDialog({
   onOpenChange,
   onSubmit,
   open,
-  submitting
+  submitting,
 }: AccountChangeEmailDialogProps) {
   return (
     <Dialog onOpenChange={onOpenChange} open={open}>
@@ -48,7 +44,7 @@ export function AccountChangeEmailDialog({
             "--dialog-background": "transparent",
             "--dialog-border-color": "transparent",
             "--dialog-max-width": "24rem",
-            "--dialog-padding": "0px"
+            "--dialog-padding": "0px",
           } as React.CSSProperties
         }
       >
@@ -59,7 +55,7 @@ export function AccountChangeEmailDialog({
           strokeColor="var(--border)"
           strokeWidth={1.45}
           svgClassName="opacity-70"
-          crookednessIntensity={0.6}
+          crookedness={0.6}
         >
           <DialogHeader className="pr-10">
             <DialogTitle>Change email</DialogTitle>
@@ -68,7 +64,11 @@ export function AccountChangeEmailDialog({
             {currentEmail ? (
               <Field>
                 <Label>Current email</Label>
-                <Input className="bg-background" disabled value={currentEmail} />
+                <Input
+                  className="bg-background"
+                  disabled
+                  value={currentEmail}
+                />
               </Field>
             ) : null}
             <Field>
@@ -91,7 +91,12 @@ export function AccountChangeEmailDialog({
                 text="Save email"
                 type="submit"
               />
-              <Button onClick={() => onOpenChange(false)} size="sm" type="button" variant="ghost">
+              <Button
+                onClick={() => onOpenChange(false)}
+                size="sm"
+                type="button"
+                variant="ghost"
+              >
                 Cancel
               </Button>
             </div>
@@ -125,7 +130,7 @@ export function AccountChangePasswordDialog({
   onOpenChange,
   onSubmit,
   open,
-  submitting
+  submitting,
 }: AccountChangePasswordDialogProps) {
   return (
     <Dialog onOpenChange={onOpenChange} open={open}>
@@ -136,7 +141,7 @@ export function AccountChangePasswordDialog({
             "--dialog-background": "transparent",
             "--dialog-border-color": "transparent",
             "--dialog-max-width": "24rem",
-            "--dialog-padding": "0px"
+            "--dialog-padding": "0px",
           } as React.CSSProperties
         }
       >
@@ -147,7 +152,7 @@ export function AccountChangePasswordDialog({
           strokeColor="var(--border)"
           strokeWidth={1.45}
           svgClassName="opacity-70"
-          crookednessIntensity={0.6}
+          crookedness={0.6}
         >
           <DialogHeader className="pr-10">
             <DialogTitle>Change password</DialogTitle>
@@ -157,7 +162,9 @@ export function AccountChangePasswordDialog({
               <Label>Current password</Label>
               <Input
                 className="bg-background"
-                onChange={(event) => onCurrentPasswordChange(event.target.value)}
+                onChange={(event) =>
+                  onCurrentPasswordChange(event.target.value)
+                }
                 placeholder="••••••••"
                 type="password"
                 value={currentPassword}
@@ -177,7 +184,9 @@ export function AccountChangePasswordDialog({
               <Label>Confirm password</Label>
               <Input
                 className="bg-background"
-                onChange={(event) => onConfirmPasswordChange(event.target.value)}
+                onChange={(event) =>
+                  onConfirmPasswordChange(event.target.value)
+                }
                 placeholder="••••••••"
                 type="password"
                 value={confirmPassword}
@@ -193,7 +202,12 @@ export function AccountChangePasswordDialog({
                 text="Save password"
                 type="submit"
               />
-              <Button onClick={() => onOpenChange(false)} size="sm" type="button" variant="ghost">
+              <Button
+                onClick={() => onOpenChange(false)}
+                size="sm"
+                type="button"
+                variant="ghost"
+              >
                 Cancel
               </Button>
             </div>
@@ -223,7 +237,7 @@ export function AccountChangeUsernameDialog({
   onUsernameChange,
   open,
   submitting,
-  username
+  username,
 }: AccountChangeUsernameDialogProps) {
   return (
     <Dialog onOpenChange={onOpenChange} open={open}>
@@ -234,7 +248,7 @@ export function AccountChangeUsernameDialog({
             "--dialog-background": "transparent",
             "--dialog-border-color": "transparent",
             "--dialog-max-width": "24rem",
-            "--dialog-padding": "0px"
+            "--dialog-padding": "0px",
           } as React.CSSProperties
         }
       >
@@ -245,7 +259,7 @@ export function AccountChangeUsernameDialog({
           strokeColor="var(--border)"
           strokeWidth={1.45}
           svgClassName="opacity-70"
-          crookednessIntensity={0.6}
+          crookedness={0.6}
         >
           <DialogHeader className="pr-10">
             <DialogTitle>Change username</DialogTitle>
@@ -282,7 +296,12 @@ export function AccountChangeUsernameDialog({
                 text="Update username"
                 type="submit"
               />
-              <Button onClick={() => onOpenChange(false)} size="sm" type="button" variant="ghost">
+              <Button
+                onClick={() => onOpenChange(false)}
+                size="sm"
+                type="button"
+                variant="ghost"
+              >
                 Cancel
               </Button>
             </div>
