@@ -6,8 +6,8 @@ export function Skeleton({ className, ...props }: React.ComponentProps<"div">) {
   return (
     <div
       className={cn(
-        "animate-pulse border border-[color:var(--border-soft)] bg-[linear-gradient(110deg,rgba(255,255,255,0.32),rgba(250,236,232,0.95),rgba(255,255,255,0.32))]",
-        className
+        "animate-pulse border border-[color:var(--theme-skeleton-border)] [background:var(--theme-skeleton-background)]",
+        className,
       )}
       data-slot="skeleton"
       {...props}
