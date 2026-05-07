@@ -1,10 +1,19 @@
 import * as React from "react";
+import { Check, Copy } from "lucide-react";
 
 import {
   HandDrawnFrame,
   HandDrawnRule,
 } from "@/components/ui/hand-drawn-frame";
-import { cn } from "@/lib/utils";
+import {
+  cn,
+  copyTextToClipboard,
+  docsCodeBlockButtonClass,
+  docsCodeBlockHeaderClass,
+  docsCodeBlockOverlayClass,
+  docsCodeBlockPreClass,
+  docsCodeBlockSurfaceClass,
+} from "@/lib/utils";
 
 interface DocsArticleProps {
   children: React.ReactNode;
@@ -122,22 +131,86 @@ export function DocsCallout({
 export function DocsCodeBlock({
   children,
   className,
+  codeText,
   ...props
-}: React.ComponentProps<"pre">) {
+}: React.ComponentProps<"pre"> & {
+  codeText?: string;
+}) {
+  const [copyState, setCopyState] = React.useState<"idle" | "copied" | "error">(
+    "idle",
+  );
+  const resetTimerRef = React.useRef<number | null>(null);
+  const resolvedCodeText =
+    codeText ?? (typeof children === "string" ? children : undefined);
+
+  React.useEffect(() => {
+    return () => {
+      if (resetTimerRef.current !== null) {
+        window.clearTimeout(resetTimerRef.current);
+      }
+    };
+  }, []);
+
+  const scheduleReset = () => {
+    if (resetTimerRef.current !== null) {
+      window.clearTimeout(resetTimerRef.current);
+    }
+
+    resetTimerRef.current = window.setTimeout(() => {
+      setCopyState("idle");
+      resetTimerRef.current = null;
+    }, 1800);
+  };
+
+  const handleCopy = async () => {
+    if (!resolvedCodeText) {
+      return;
+    }
+
+    const copied = await copyTextToClipboard(resolvedCodeText);
+    setCopyState(copied ? "copied" : "error");
+    scheduleReset();
+  };
+
   return (
-    <pre
-      className={cn(
-        "relative isolate mb-5 overflow-x-auto rounded-[var(--theme-radius-md)] border border-[color:var(--theme-docs-code-border)] [background:var(--theme-docs-code-background)] p-4 font-mono text-xs leading-7 text-[color:var(--theme-docs-code-foreground)] [text-shadow:var(--theme-docs-code-text-shadow)]",
-        className,
-      )}
-      {...props}
-    >
-      <span
-        aria-hidden="true"
-        className="paper-overlay pointer-events-none absolute inset-0 opacity-[0.05] mix-blend-multiply"
-      />
-      <code className="relative">{children}</code>
-    </pre>
+    <div className={cn("mb-5", docsCodeBlockSurfaceClass, className)}>
+      <span aria-hidden="true" className={docsCodeBlockOverlayClass} />
+
+      {resolvedCodeText ? (
+        <div className={docsCodeBlockHeaderClass}>
+          <div className="min-w-0 text-[0.68rem] font-medium uppercase tracking-[0.16em] text-[color:var(--theme-docs-code-button-foreground)]">
+            Code
+          </div>
+          <button
+            aria-label={
+              copyState === "copied"
+                ? "Copied code block"
+                : copyState === "error"
+                  ? "Retry copy"
+                  : "Copy code block"
+            }
+            className={docsCodeBlockButtonClass}
+            onClick={() => void handleCopy()}
+            type="button"
+          >
+            {copyState === "copied" ? (
+              <Check className="size-3.5" />
+            ) : (
+              <Copy className="size-3.5" />
+            )}
+            {copyState === "copied"
+              ? "Copied"
+              : copyState === "error"
+                ? "Retry"
+                : "Copy"}
+          </button>
+        </div>
+      ) : null}
+
+      <pre className={docsCodeBlockPreClass} {...props}>
+        <code className="relative block min-w-full">{children}</code>
+      </pre>
+    </div>
   );
 }
 

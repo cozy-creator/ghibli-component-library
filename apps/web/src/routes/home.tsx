@@ -38,12 +38,16 @@ import {
   CommunityVideoCard,
   CommunityVideoModal,
   contrastIconButtonClass,
+  copyTextToClipboard,
   DocsArticle,
   DocsCallout,
   DocsCodeBlock,
   DocsFaqAccordion,
   DocsH2,
   DocsParagraph,
+  docsCodeBlockButtonClass,
+  docsCodeBlockOverlayClass,
+  docsCodeBlockSurfaceClass,
   EmptyState,
   EmptyStateAction,
   FloatingAction,
@@ -183,9 +187,9 @@ const frameStrokeWidthOptions: FrameRulerOption[] = [
 
 function CodeBlock({ children }: { children: string }) {
   return (
-    <pre className="max-w-full overflow-x-auto border border-[color:var(--border)] bg-[color:rgba(255,255,255,0.42)] px-4 py-3 text-sm leading-7 text-[color:var(--ink-strong)]">
-      <code>{children}</code>
-    </pre>
+    <DocsCodeBlock className="mb-0 max-w-full" codeText={children}>
+      {children}
+    </DocsCodeBlock>
   );
 }
 
@@ -382,35 +386,39 @@ function CopyableInstallLine({ name }: { name: string }) {
   const [copied, setCopied] = useState(false);
   const command = `pnpm dlx shadcn@latest add @ghibli/${name}`;
 
-  const handleCopy = () => {
-    navigator.clipboard
-      .writeText(command)
-      .then(() => {
-        setCopied(true);
-        window.setTimeout(() => setCopied(false), 1500);
-      })
-      .catch(() => {
-        // Clipboard unavailable (e.g. insecure context); no-op.
-      });
+  const handleCopy = async () => {
+    const didCopy = await copyTextToClipboard(command);
+
+    if (!didCopy) {
+      return;
+    }
+
+    setCopied(true);
+    window.setTimeout(() => setCopied(false), 1500);
   };
 
   return (
-    <div className="mb-4 flex w-fit max-w-full items-center gap-2 rounded border border-[color:var(--border-soft)] bg-[var(--surface-sunk)] px-3 py-1.5 [html[data-theme='ghibli-forest']_&]:border-[color:var(--border)] [html[data-theme='ghibli-forest']_&]:bg-[color:var(--surface-shell)] [html[data-theme='ghibli-forest']_&]:bg-[image:var(--surface-shell-background)]">
-      <code className="min-w-0 flex-1 overflow-x-auto whitespace-nowrap font-mono text-xs text-[color:var(--ink-strong)]">
-        {command}
-      </code>
-      <button
-        aria-label={copied ? "Copied" : "Copy install command"}
-        className="inline-flex size-6 shrink-0 items-center justify-center rounded text-[color:var(--muted-foreground)] transition-colors hover:bg-[var(--surface-panel-floating)] hover:text-[color:var(--ink-strong)]"
-        onClick={handleCopy}
-        type="button"
-      >
-        {copied ? (
-          <Check className="size-3.5" />
-        ) : (
-          <Copy className="size-3.5" />
-        )}
-      </button>
+    <div className={cn("mb-4 w-fit max-w-full", docsCodeBlockSurfaceClass)}>
+      <div aria-hidden="true" className={docsCodeBlockOverlayClass} />
+      <div className="relative flex items-center gap-2 px-3 py-2">
+        <code className="min-w-0 flex-1 overflow-x-auto whitespace-nowrap pr-1 font-mono text-[0.8rem] text-[color:var(--theme-docs-code-foreground)] [text-shadow:var(--theme-docs-code-text-shadow)]">
+          {command}
+        </code>
+        <button
+          aria-label={
+            copied ? "Copied install command" : "Copy install command"
+          }
+          className={cn(docsCodeBlockButtonClass, "h-7 px-2")}
+          onClick={() => void handleCopy()}
+          type="button"
+        >
+          {copied ? (
+            <Check className="size-3.5" />
+          ) : (
+            <Copy className="size-3.5" />
+          )}
+        </button>
+      </div>
     </div>
   );
 }
@@ -452,9 +460,7 @@ function ShowcasePasswordInput({
 function ThemeSwitcher() {
   const { setTheme, theme } = useTheme();
   const selectable = THEME_OPTIONS.filter((option) =>
-    AVAILABLE_THEME_IDS.includes(
-      option.id as (typeof AVAILABLE_THEME_IDS)[number],
-    ),
+    AVAILABLE_THEME_IDS.includes(option.id),
   );
 
   return (
