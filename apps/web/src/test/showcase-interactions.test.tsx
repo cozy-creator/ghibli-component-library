@@ -1,4 +1,4 @@
-import { render, screen, waitFor, within } from "@testing-library/react";
+import { fireEvent, render, screen, waitFor, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 
 import { App } from "@/apps/web/src/app";
@@ -187,5 +187,35 @@ describe("showcase interactions", () => {
     expect(
       within(frameSection as HTMLElement).queryByText(/shape="/)
     ).not.toBeInTheDocument();
+
+    const crookednessRuler = within(frameSection as HTMLElement).getByRole("radiogroup", {
+      name: "Crookedness Intensity"
+    });
+
+    Object.defineProperty(crookednessRuler, "getBoundingClientRect", {
+      configurable: true,
+      value: () =>
+        ({
+          bottom: 76,
+          height: 76,
+          left: 0,
+          right: 210,
+          top: 0,
+          width: 210,
+          x: 0,
+          y: 0,
+          toJSON: () => ({})
+        }) as DOMRect
+    });
+
+    fireEvent.pointerDown(crookednessRuler, { button: 0, clientX: 0, pointerId: 1 });
+    fireEvent.pointerMove(crookednessRuler, { clientX: 210, pointerId: 1 });
+    fireEvent.pointerUp(crookednessRuler, { clientX: 210, pointerId: 1 });
+
+    await waitFor(() => {
+      expect(
+        within(frameSection as HTMLElement).getAllByText(/crookednessIntensity=\{10\}/).length
+      ).toBeGreaterThan(0);
+    });
   }, 10000);
 });

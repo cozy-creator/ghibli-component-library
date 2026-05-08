@@ -250,6 +250,84 @@ function FrameRulerField({
 }) {
   const activeOption =
     options.find((option) => option.value === value) ?? options[0]!;
+  const dragStateRef = useRef<{
+    pointerId: number | null;
+    startX: number;
+    suppressClick: boolean;
+  }>({
+    pointerId: null,
+    startX: 0,
+    suppressClick: false,
+  });
+  const trackInset = `${100 / (Math.max(options.length, 1) * 2)}%`;
+
+  const selectClosestOption = (
+    clientX: number,
+    currentTarget: HTMLDivElement,
+  ) => {
+    if (options.length === 0) {
+      return;
+    }
+
+    const rect = currentTarget.getBoundingClientRect();
+
+    if (rect.width <= 0) {
+      return;
+    }
+
+    const offset = Math.min(Math.max(clientX - rect.left, 0), rect.width);
+    const nextIndex =
+      options.length === 1
+        ? 0
+        : Math.round((offset / rect.width) * (options.length - 1));
+    const nextOption = options[nextIndex];
+
+    if (!nextOption || nextOption.value === value) {
+      return;
+    }
+
+    onValueChange(nextOption.value);
+  };
+
+  const resetPointerTracking = () => {
+    dragStateRef.current.pointerId = null;
+  };
+
+  const handlePointerDown = (event: React.PointerEvent<HTMLDivElement>) => {
+    if (event.pointerType === "mouse" && event.button !== 0) {
+      return;
+    }
+
+    dragStateRef.current.pointerId = event.pointerId;
+    dragStateRef.current.startX = event.clientX;
+    dragStateRef.current.suppressClick = false;
+    event.currentTarget.setPointerCapture?.(event.pointerId);
+    selectClosestOption(event.clientX, event.currentTarget);
+  };
+
+  const handlePointerMove = (event: React.PointerEvent<HTMLDivElement>) => {
+    if (dragStateRef.current.pointerId !== event.pointerId) {
+      return;
+    }
+
+    if (Math.abs(event.clientX - dragStateRef.current.startX) > 3) {
+      dragStateRef.current.suppressClick = true;
+    }
+
+    selectClosestOption(event.clientX, event.currentTarget);
+  };
+
+  const handlePointerEnd = (event: React.PointerEvent<HTMLDivElement>) => {
+    if (dragStateRef.current.pointerId !== event.pointerId) {
+      return;
+    }
+
+    if (event.currentTarget.hasPointerCapture?.(event.pointerId)) {
+      event.currentTarget.releasePointerCapture?.(event.pointerId);
+    }
+
+    resetPointerTracking();
+  };
 
   return (
     <FormField
@@ -264,12 +342,18 @@ function FrameRulerField({
       <div className="relative mx-auto w-[97.5%] pb-1">
         <div
           aria-hidden="true"
-          className="pointer-events-none absolute top-[3rem] left-[7.143%] right-[7.143%] h-px bg-[color:var(--border-strong)]"
+          className="pointer-events-none absolute top-[3rem] h-px bg-[color:var(--border-strong)]"
+          style={{ left: trackInset, right: trackInset }}
         />
 
         <div
           aria-label={label}
-          className="grid items-start"
+          className="grid items-start touch-none"
+          onLostPointerCapture={resetPointerTracking}
+          onPointerCancel={handlePointerEnd}
+          onPointerDown={handlePointerDown}
+          onPointerMove={handlePointerMove}
+          onPointerUp={handlePointerEnd}
           role="radiogroup"
           style={{
             gridTemplateColumns: `repeat(${options.length}, minmax(0, 1fr))`,
@@ -284,7 +368,15 @@ function FrameRulerField({
                 aria-label={`${label} ${option.label}`}
                 className="group/frame-ruler relative flex min-w-0 justify-center rounded-none bg-transparent px-0 py-0 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[color:var(--ring)] focus-visible:ring-offset-2 focus-visible:ring-offset-[color:var(--paper)]"
                 key={`${label}-${option.label}`}
-                onClick={() => onValueChange(option.value)}
+                onClick={(event) => {
+                  if (dragStateRef.current.suppressClick) {
+                    dragStateRef.current.suppressClick = false;
+                    event.preventDefault();
+                    return;
+                  }
+
+                  onValueChange(option.value);
+                }}
                 role="radio"
                 type="button"
               >
