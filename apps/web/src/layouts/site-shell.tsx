@@ -1,9 +1,10 @@
 import { useState } from "react";
-import { Flower2, LogOut, Palette, UserRound } from "lucide-react";
+import { LogOut, Palette, UserRound } from "lucide-react";
 import { Outlet } from "react-router-dom";
 
-import { ChangeThemeModal, HandDrawnFrame, ShellHeader } from "@ghibli/ui";
+import { ChangeThemeModal, ShellHeader } from "@ghibli/ui";
 
+import { BrandMark } from "@/apps/web/src/components/site-brand";
 import {
   DiscordHeaderIcon,
   GitHubHeaderIcon,
@@ -15,24 +16,6 @@ const discordUrl = "https://discord.gg/cozyart";
 
 function jumpToAnchor(anchorId: string) {
   window.location.hash = anchorId;
-}
-
-function BrandMark({ className }: { className?: string }) {
-  return (
-    <HandDrawnFrame
-      className={className ?? "size-12 shrink-0"}
-      contentClassName="p-2.5"
-      surfaceClassName="bg-white/45"
-      strokeColor="var(--border-strong)"
-      strokeWidth={1.85}
-      crookedness={0.7}
-    >
-      <Flower2
-        aria-hidden="true"
-        className="size-full text-[color:var(--ink-strong)]"
-      />
-    </HandDrawnFrame>
-  );
 }
 
 function SiteBrand() {
@@ -56,10 +39,6 @@ export function SiteShell() {
       <div
         aria-hidden="true"
         className="app-backdrop pointer-events-none fixed inset-0 z-0"
-      />
-      <div
-        aria-hidden="true"
-        className="paper-overlay pointer-events-none absolute inset-0 z-0 opacity-70 mix-blend-multiply"
       />
       <div className="relative z-10 mx-auto flex min-h-screen w-full max-w-7xl flex-col px-4 pt-4 md:px-6">
         <ShellHeader
@@ -140,6 +119,11 @@ export function SiteShell() {
           <Outlet />
         </main>
       </div>
+      <div
+        aria-hidden="true"
+        className="paper-overlay pointer-events-none absolute inset-0 z-30 mix-blend-multiply"
+        style={{ opacity: "var(--texture-overlay-opacity)" }}
+      />
 
       <ChangeThemeModal
         onOpenChange={setIsChangeThemeOpen}

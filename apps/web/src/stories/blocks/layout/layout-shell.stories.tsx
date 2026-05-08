@@ -1,9 +1,8 @@
 import type { Meta, StoryObj } from "@storybook/react-vite";
 
-import { Flower2 } from "lucide-react";
-
 import { ShellFooter, ShellHeader } from "@ghibli/ui";
 
+import { BrandMark } from "@/apps/web/src/components/site-brand";
 import { footerColumns, headerBrand, headerUser, libraryNavItems, socialItems } from "@/apps/web/src/data/demo-fixtures";
 
 const meta = {
@@ -26,11 +25,7 @@ export const Overview: Story = {
         user={headerUser}
       />
       <ShellFooter
-        brand={
-          <span className="inline-flex size-11 items-center justify-center border border-[color:var(--border-strong)] bg-[color:rgba(255,255,255,0.42)]">
-            <Flower2 className="size-6" />
-          </span>
-        }
+        brand={<BrandMark className="size-11 shrink-0" />}
         columns={footerColumns.flatMap((column) =>
           column.links.map((link) => ({ href: link.href, text: link.label }))
         )}
