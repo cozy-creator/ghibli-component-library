@@ -351,13 +351,13 @@ export const generateModelsByBase: GenerateModelsByBase =
   }, {});
 
 export const aspectRatioOptions: GenerateAspectRatioOption[] = [
-  { description: "Ultra wide", label: "21:9", value: "21/9" },
-  { description: "Landscape", label: "16:9", value: "16/9" },
-  { description: "Wide", label: "4:3", value: "4/3" },
-  { description: "Square", label: "1:1", value: "1/1" },
-  { description: "Tall", label: "3:4", value: "3/4" },
-  { description: "Portrait", label: "9:16", value: "9/16" },
-  { description: "Ultra Tall", label: "9:21", value: "9/21" },
+  { description: "Ultra-wide", height: 9, label: "21:9", value: "21/9", width: 21 },
+  { description: "Landscape", height: 9, label: "16:9", value: "16/9", width: 16 },
+  { description: "Wide", height: 3, label: "4:3", value: "4/3", width: 4 },
+  { description: "Square", height: 1, label: "1:1", value: "1/1", width: 1 },
+  { description: "Tall", height: 4, label: "3:4", value: "3/4", width: 3 },
+  { description: "Portrait", height: 16, label: "9:16", value: "9/16", width: 9 },
+  { description: "Ultra-tall", height: 21, label: "9:21", value: "9/21", width: 9 },
 ];
 
 export const sampleAttachments = [

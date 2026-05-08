@@ -9,13 +9,13 @@ import {
   DropdownMenuGroup,
   DropdownMenuItem,
   DropdownMenuLabel,
-  DropdownMenuRadioGroup,
-  DropdownMenuRadioItem,
   DropdownMenuSeparator,
   DropdownMenuTrigger
 } from "@/components/ui/dropdown-menu";
 import { HandDrawnFrame } from "@/components/ui/hand-drawn-frame";
+import { ThemeFrame } from "@/components/ui/theme-frame";
 import { cn, type SelectOption } from "@/lib/utils";
+import { THEME_FRAME_VARIANTS } from "@/lib/theme/theme-frame-config";
 
 const EXPERTISE_COLORS: Record<string, string> = {
   "3d-game": "#FF4500",
@@ -50,7 +50,9 @@ export interface GenerateModelItem {
 export type GenerateModelsByBase = Record<string, GenerateModelItem[]>;
 
 export interface GenerateAspectRatioOption extends SelectOption {
-  description: string;
+  description?: string;
+  height?: number;
+  width?: number;
 }
 
 export interface GenerateModeToggleProps {
@@ -117,63 +119,150 @@ export function GenerateModeToggle({
   );
 }
 
+type ResolvedGenerateAspectRatioOption = GenerateAspectRatioOption & {
+  height: number;
+  width: number;
+};
+
+function parseAspectRatioDimensions(value: string | undefined) {
+  if (!value) {
+    return null;
+  }
+
+  const match = value.trim().match(/^(\d+(?:\.\d+)?)\s*[:/]\s*(\d+(?:\.\d+)?)$/);
+
+  if (!match) {
+    return null;
+  }
+
+  const width = Number(match[1]);
+  const height = Number(match[2]);
+
+  if (!Number.isFinite(width) || !Number.isFinite(height) || width <= 0 || height <= 0) {
+    return null;
+  }
+
+  return { height, width };
+}
+
+function resolveAspectRatioOption(
+  option: GenerateAspectRatioOption
+): ResolvedGenerateAspectRatioOption {
+  const width = option.width;
+  const height = option.height;
+  const hasExplicitDimensions =
+    typeof width === "number" &&
+    typeof height === "number" &&
+    Number.isFinite(width) &&
+    Number.isFinite(height) &&
+    width > 0 &&
+    height > 0;
+  const parsedDimensions =
+    parseAspectRatioDimensions(option.value) ?? parseAspectRatioDimensions(option.label);
+
+  return {
+    ...option,
+    height: hasExplicitDimensions ? height : (parsedDimensions?.height ?? 1),
+    width: hasExplicitDimensions ? width : (parsedDimensions?.width ?? 1)
+  };
+}
+
 function GenerateAspectMenuSelect({
+  icon,
   label,
   onValueChange,
   options,
   value
 }: {
+  icon?: React.ReactNode;
   label: string;
   onValueChange?: ((value: string) => void) | undefined;
-  options: GenerateAspectRatioOption[];
+  options: readonly GenerateAspectRatioOption[];
   value: string;
 }) {
+  const aspectValueId = React.useId();
   const [open, setOpen] = React.useState(false);
   const [aspectRulerValue, setAspectRulerValue] = React.useState<string | null>(null);
-  const [showAspectCallout, setShowAspectCallout] = React.useState(false);
-  const activeOption = options.find((option) => option.value === value);
-  const displayedAspectValue = aspectRulerValue ?? value;
+  const resolvedOptions = React.useMemo(
+    () => options.map(resolveAspectRatioOption),
+    [options]
+  );
+  const selectedOption = resolvedOptions.find((option) => option.value === value);
+  const fallbackOption =
+    resolvedOptions.find((option) => option.value === "1/1") ?? resolvedOptions[0];
+  const activeOption = selectedOption ?? fallbackOption;
+  const effectiveValue = activeOption?.value ?? value;
+  const displayedAspectValue = aspectRulerValue ?? effectiveValue;
+  const selectedAspectIndex = Math.max(
+    0,
+    resolvedOptions.findIndex((option) => option.value === displayedAspectValue)
+  );
+  const selectedAspectOption = resolvedOptions[selectedAspectIndex];
+  const aspectOptionCount = resolvedOptions.length;
+  const safeAspectOptionCount = Math.max(aspectOptionCount, 1);
+  const aspectSliderEdgeInset = `calc(100% / ${safeAspectOptionCount * 2})`;
+  const getAspectPositionPercent = (index: number) =>
+    index <= 0 || aspectOptionCount <= 1 ? 0 : (index / (aspectOptionCount - 1)) * 100;
+  const selectedAspectPercent = getAspectPositionPercent(selectedAspectIndex);
+  const selectedAspectValueText = selectedAspectOption
+    ? [selectedAspectOption.label, selectedAspectOption.description].filter(Boolean).join(" ")
+    : displayedAspectValue;
 
   const handleOpenChange = (nextOpen: boolean) => {
     setOpen(nextOpen);
-    setAspectRulerValue(nextOpen ? value : null);
-    setShowAspectCallout(false);
+    setAspectRulerValue(nextOpen ? effectiveValue : null);
   };
 
   const handleAspectRulerSelect = (nextValue: string) => {
     setAspectRulerValue(nextValue);
-    setShowAspectCallout(true);
     onValueChange?.(nextValue);
+  };
+
+  const handleAspectSliderChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const nextIndex = Number(event.currentTarget.value);
+    const nextOption = resolvedOptions[nextIndex];
+
+    if (!nextOption || nextOption.disabled) {
+      return;
+    }
+
+    handleAspectRulerSelect(nextOption.value);
+  };
+
+  const handleAspectSliderKeyDown = (event: React.KeyboardEvent<HTMLInputElement>) => {
+    event.stopPropagation();
   };
 
   return (
     <DropdownMenu onOpenChange={handleOpenChange} open={open}>
-      <HandDrawnFrame
+      <ThemeFrame
         className="w-full sm:w-auto"
-        surfaceClassName="bg-[color:var(--paper)]"
-        strokeColor="var(--border)"
-        strokeWidth={1.25}
+        surfaceClassName="bg-[color:var(--theme-generate-control-strong-background)]"
+        strokeColor="var(--theme-generate-control-border)"
         svgClassName="opacity-85"
-        crookednessIntensity={0.3}
+        variant={THEME_FRAME_VARIANTS.generateControl}
       >
         <DropdownMenuTrigger asChild>
-          <Button className="w-full bg-transparent hover:bg-white/20 sm:w-auto" variant="ghost">
-            <Wand2 className="size-4" />
+          <Button
+            className="w-full bg-transparent text-[color:var(--theme-generate-control-foreground)] hover:bg-[color:var(--theme-generate-control-hover-background)] sm:w-auto"
+            variant="ghost"
+          >
+            {icon}
             <span>{activeOption?.label ?? label}</span>
             <ChevronDown className="size-4" />
           </Button>
         </DropdownMenuTrigger>
-      </HandDrawnFrame>
-      <DropdownMenuContent className="w-[min(28.5rem,calc(100vw-1.5rem))] min-w-0 overflow-visible border-[color:var(--border)] bg-[color:var(--foreground)] p-0 text-[color:var(--paper-soft)] ring-0">
-        <div className="grid gap-3 bg-[color:var(--foreground)] px-3 pt-4 pb-3">
+      </ThemeFrame>
+      <DropdownMenuContent className="w-[min(28.5rem,calc(100vw-1.5rem))] min-w-0 overflow-visible rounded-[var(--theme-radius-md)] border-[color:var(--theme-generate-menu-border)] bg-[color:var(--theme-generate-menu-background)] p-0 text-[color:var(--theme-generate-menu-foreground)] ring-0">
+        <div className="grid gap-3 bg-[color:var(--theme-generate-ruler-background)] px-3 pt-4 pb-3">
           <div className="mx-auto flex w-[97.5%] items-center justify-between gap-3">
-            <p className="text-sm font-medium tracking-[0.04em] text-[color:var(--paper-soft)]">
+            <p className="min-w-0 text-sm font-medium tracking-[0.04em] text-[color:var(--theme-generate-ruler-foreground)]">
               {label}
             </p>
 
             <Button
               aria-label={`Close ${label.toLowerCase()} options`}
-              className="h-8 w-8 shrink-0 p-0 text-[color:var(--paper-soft)] hover:bg-white/10 hover:text-white"
+              className="h-8 w-8 shrink-0 p-0 text-[color:var(--theme-generate-ruler-foreground)] hover:bg-[color:var(--theme-generate-control-hover-background)] hover:text-[color:var(--foreground)]"
               onClick={() => handleOpenChange(false)}
               size="sm"
               type="button"
@@ -183,60 +272,100 @@ function GenerateAspectMenuSelect({
             </Button>
           </div>
 
-          <div className="relative mx-auto w-[97.5%] pb-2">
-            <div
-              aria-hidden="true"
-              className="pointer-events-none absolute top-[3.5rem] left-[7.143%] right-[7.143%] h-px bg-[color:var(--paper)]"
-            />
-
-            <DropdownMenuRadioGroup className="relative grid grid-cols-7 items-start" value={displayedAspectValue}>
-              {options.map((option) => {
-                const isSelected = option.value === displayedAspectValue;
-
-                return (
-                  <DropdownMenuRadioItem
-                    aria-label={`${option.label} ${option.description}`}
-                    className={cn(
-                      "group/aspect-ruler relative flex min-w-0 cursor-pointer justify-center rounded-none bg-transparent px-0 py-0 text-[color:var(--paper-soft)] focus:bg-transparent focus:text-[color:var(--paper-soft)] [&_[data-slot=dropdown-menu-radio-item-indicator]]:hidden",
-                      option.disabled && "pointer-events-none opacity-40"
-                    )}
-                    disabled={option.disabled}
-                    key={option.value}
-                    onSelect={(event) => {
-                      event.preventDefault();
-                      handleAspectRulerSelect(option.value);
-                    }}
-                    value={option.value}
-                  >
-                    <span className="relative flex h-[4.75rem] w-full items-start justify-center">
-                      {showAspectCallout && isSelected ? (
-                        <span className="absolute top-0 inline-grid min-w-[6.9rem] max-w-[7.4rem] items-center justify-center border border-[color:var(--border)] bg-[color:var(--paper-soft)] px-2 py-1 text-center text-[11px] font-medium leading-tight text-[color:var(--foreground)] shadow-[0_8px_18px_rgba(0,0,0,0.18)]">
-                          <span>{option.label}</span>
-                          <span>({option.description})</span>
-                        </span>
+          <div className="mx-auto w-[97.5%]">
+            <div className="flex h-[7.25rem] min-w-0 flex-col items-center justify-start px-1 py-1.5 text-center text-[color:var(--theme-generate-ruler-foreground)]">
+              {selectedAspectOption ? (
+                <>
+                  <span className="relative z-10 mb-2 flex h-8 w-full min-w-0 items-center justify-center overflow-visible">
+                    <span
+                      className="flex flex-col items-center gap-0.5 whitespace-nowrap text-center text-xs leading-tight text-[color:var(--generate-aspect-selected-label)] max-[424px]:text-[11px]"
+                      id={aspectValueId}
+                    >
+                      <span>{selectedAspectOption.label}</span>
+                      {selectedAspectOption.description ? (
+                        <span>({selectedAspectOption.description})</span>
                       ) : null}
-
-                      <span
-                        aria-hidden="true"
-                        className={cn(
-                          "absolute top-[2.8rem] h-4 w-px bg-[color:var(--paper)] transition-opacity",
-                          isSelected ? "opacity-100" : "opacity-80"
-                        )}
-                      />
-                      <span
-                        aria-hidden="true"
-                        className={cn(
-                          "absolute top-[3.3rem] rounded-full border border-[color:var(--paper)] transition-all",
-                          isSelected
-                            ? "size-4 bg-[color:var(--paper)] shadow-[0_0_0_2px_color-mix(in_oklab,var(--foreground)_82%,transparent)]"
-                            : "size-2 bg-[color:var(--foreground)] group-hover/aspect-ruler:bg-[color:var(--paper)]"
-                        )}
-                      />
                     </span>
-                  </DropdownMenuRadioItem>
-                );
-              })}
-            </DropdownMenuRadioGroup>
+                  </span>
+                  <span className="flex h-16 w-full items-center justify-center max-[424px]:h-14">
+                    <span
+                      aria-hidden="true"
+                      className="rounded-[var(--theme-radius-sm)] border border-[color:var(--generate-aspect-preview-active-border)] bg-[color:var(--generate-aspect-preview-active-background)] transition-colors"
+                      style={{
+                        aspectRatio: `${selectedAspectOption.width} / ${selectedAspectOption.height}`,
+                        height:
+                          selectedAspectOption.height > selectedAspectOption.width
+                            ? "3.5rem"
+                            : "auto",
+                        maxHeight: "3.5rem",
+                        maxWidth: "min(3.75rem, 100%)",
+                        width:
+                          selectedAspectOption.width >= selectedAspectOption.height
+                            ? "min(3.75rem, 100%)"
+                            : "auto"
+                      }}
+                    />
+                  </span>
+                </>
+              ) : null}
+            </div>
+
+            <div
+              className="relative mt-1 px-[var(--generate-aspect-slider-edge-inset)]"
+              style={
+                {
+                  "--generate-aspect-slider-edge-inset": aspectSliderEdgeInset
+                } as React.CSSProperties
+              }
+            >
+              <div className="relative h-8">
+                <input
+                  aria-describedby={selectedAspectOption ? aspectValueId : undefined}
+                  aria-label={label}
+                  aria-valuetext={selectedAspectValueText}
+                  className="generate-aspect-slider absolute inset-0 z-30 h-full w-full cursor-pointer opacity-0"
+                  disabled={aspectOptionCount === 0}
+                  max={Math.max(aspectOptionCount - 1, 0)}
+                  min={0}
+                  onChange={handleAspectSliderChange}
+                  onKeyDown={handleAspectSliderKeyDown}
+                  step={1}
+                  type="range"
+                  value={selectedAspectIndex}
+                />
+                <div
+                  aria-hidden="true"
+                  className="generate-aspect-slider-track pointer-events-none absolute inset-x-0 top-1/2 h-[3px] -translate-y-1/2 rounded-full bg-[color:var(--generate-aspect-slider-track)]"
+                />
+                {resolvedOptions.map((option, index) => {
+                  const isSelected = option.value === displayedAspectValue;
+                  const optionPercent = getAspectPositionPercent(index);
+
+                  return (
+                    <span
+                      aria-hidden="true"
+                      className={cn(
+                        "pointer-events-none absolute top-1/2 z-10 block rounded-full bg-[color:var(--generate-aspect-slider-dot)] transition-all",
+                        isSelected ? "size-3 bg-[color:var(--generate-aspect-slider-dot-active)]" : "size-2"
+                      )}
+                      key={option.value}
+                      style={{
+                        left: `${optionPercent}%`,
+                        transform: "translate(-50%, -50%)"
+                      }}
+                    />
+                  );
+                })}
+                <span
+                  aria-hidden="true"
+                  className="generate-aspect-slider-thumb pointer-events-none absolute top-1/2 z-20 h-5 w-5 rounded-full"
+                  style={{
+                    left: `${selectedAspectPercent}%`,
+                    transform: "translate(-50%, -50%)"
+                  }}
+                />
+              </div>
+            </div>
           </div>
         </div>
       </DropdownMenuContent>
@@ -323,19 +452,22 @@ export function GenerateModelSelect({
 }
 
 export interface GenerateAspectRatioSelectProps {
+  label?: string;
   onValueChange?: ((value: string) => void) | undefined;
-  options: GenerateAspectRatioOption[];
+  options: readonly GenerateAspectRatioOption[];
   value: string;
 }
 
 export function GenerateAspectRatioSelect({
+  label = "Aspect ratio",
   onValueChange,
   options,
   value
 }: GenerateAspectRatioSelectProps) {
   return (
     <GenerateAspectMenuSelect
-      label="Aspect ratio"
+      icon={<Wand2 className="size-4" />}
+      label={label}
       onValueChange={onValueChange}
       options={options}
       value={value}
