@@ -10,9 +10,9 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import {
-  HandDrawnFrame,
-  HandDrawnRule,
-} from "@/components/ui/hand-drawn-frame";
+  ThemeFrame,
+  ThemeRule,
+} from "@/components/ui/theme-frame";
 import {
   Sheet,
   SheetClose,
@@ -21,8 +21,11 @@ import {
   SheetTitle,
   SheetTrigger,
 } from "@/components/ui/sheet";
-import { useTheme } from "@/lib/theme";
 import { cn, focusRingClass, type NavItem } from "@/lib/utils";
+import {
+  THEME_FRAME_VARIANTS,
+  THEME_RULE_VARIANTS,
+} from "@/lib/theme/theme-frame-config";
 
 export interface ShellNavItem extends NavItem {
   active?: boolean;
@@ -93,14 +96,20 @@ function HeaderLink({
 }) {
   const isSheet = layout === "sheet";
   const linkClassName = isSheet
-    ? "block w-full text-[color:var(--ink-strong)]"
-    : cn(
-        "inline-flex text-sm transition-colors",
-        item.active
-          ? "text-[color:var(--ink-strong)]"
-          : "items-center gap-2 px-3 py-2 text-muted-foreground hover:bg-white/45 hover:text-foreground",
-        item.iconOnly && !item.active && "justify-center gap-0 px-1.5",
-      );
+    ? "block w-full text-[color:var(--theme-shell-nav-link-foreground)]"
+    : item.active
+      ? cn(
+          "inline-flex text-sm font-medium transition-colors",
+          item.iconOnly
+            ? "items-center justify-center rounded-[var(--theme-radius-sm)] px-2.5 py-2 text-[color:var(--theme-shell-nav-active-foreground)]"
+            : "text-[color:var(--theme-shell-nav-active-foreground)]",
+        )
+      : cn(
+          "inline-flex items-center rounded-[var(--theme-radius-sm)] text-sm font-medium transition-colors",
+          item.iconOnly
+            ? "justify-center px-2.5 py-2 text-[color:var(--theme-shell-nav-icon-foreground)] hover:bg-[color:var(--theme-shell-nav-icon-hover-background)] hover:text-[color:var(--theme-shell-nav-icon-hover-foreground)]"
+            : "gap-2 px-3 py-2 text-[color:var(--theme-shell-nav-link-foreground)] hover:bg-[color:var(--theme-shell-nav-link-hover-background)] hover:text-[color:var(--theme-shell-nav-link-hover-foreground)]",
+        );
   const inlineContent = (
     <>
       {item.icon}
@@ -116,26 +125,25 @@ function HeaderLink({
   );
   const content =
     item.active && !item.iconOnly ? (
-      <HandDrawnFrame
+      <ThemeFrame
         className={cn(isSheet ? "w-full" : undefined)}
         contentClassName={cn(
           isSheet
-            ? "flex items-center gap-2.5 px-3 py-3 text-[0.95rem] leading-none"
-            : "inline-flex items-center gap-2 px-3 py-2",
+            ? "flex items-center gap-2.5 px-3 py-3 text-[0.95rem] leading-none text-[color:var(--theme-shell-nav-active-foreground)]"
+            : "inline-flex items-center gap-2 px-3 py-2 text-[color:var(--theme-shell-nav-active-foreground)]",
         )}
-        surfaceClassName="bg-[color:var(--paper)]"
-        strokeColor="var(--border)"
-        strokeWidth={1.1}
-        crookedness={0.69}
+        surfaceClassName="bg-[color:var(--theme-shell-nav-active-background)]"
+        strokeColor="var(--theme-shell-nav-active-border)"
+        variant={THEME_FRAME_VARIANTS.shellNavActive}
       >
         {inlineContent}
-      </HandDrawnFrame>
+      </ThemeFrame>
     ) : isSheet ? (
       <div
         className={cn(
           item.iconOnly
-            ? "flex min-h-12 w-full items-center justify-center border border-[color:var(--border)] bg-white/45 px-3 py-2.5 text-[color:var(--ink-strong)] transition-colors hover:bg-[color:var(--paper-soft)]"
-            : "flex min-h-12 w-full items-center gap-2.5 px-3 py-3 text-[0.95rem] leading-none text-muted-foreground transition-colors hover:bg-white/45 hover:text-[color:var(--ink-strong)]",
+            ? "flex min-h-12 w-full items-center justify-center rounded-[var(--theme-radius-md)] border border-[color:var(--theme-shell-mobile-surface-border)] bg-[color:var(--theme-shell-mobile-surface-background)] px-3 py-2.5 text-[color:var(--theme-shell-nav-icon-foreground)] transition-colors hover:bg-[color:var(--theme-shell-nav-icon-hover-background)] hover:text-[color:var(--theme-shell-nav-icon-hover-foreground)]"
+            : "flex min-h-12 w-full items-center gap-2.5 rounded-[var(--theme-radius-md)] px-3 py-3 text-[0.95rem] leading-none text-[color:var(--theme-shell-nav-link-foreground)] transition-colors hover:bg-[color:var(--theme-shell-nav-link-hover-background)] hover:text-[color:var(--theme-shell-nav-link-hover-foreground)]",
         )}
       >
         {inlineContent}
@@ -186,23 +194,16 @@ export function ShellHeader({
   const sheetPrimaryAction = primaryAction
     ? renderSheetPrimaryAction(primaryAction)
     : null;
-  const { theme } = useTheme();
-  const isForestTheme = theme === "ghibli-forest";
 
   return (
     <header className="sticky top-4 z-40">
-      <HandDrawnFrame
+      <ThemeFrame
         className={className}
-        contentClassName="px-4 py-3"
-        surfaceClassName={cn(
-          "bg-[color:var(--surface-shell)] bg-[image:var(--surface-shell-background)] backdrop-blur-md",
-          isForestTheme &&
-            "shadow-[0_10px_30px_color-mix(in_oklab,var(--ink-strong)_18%,transparent)]",
-        )}
-        strokeColor="var(--border)"
-        strokeWidth={isForestTheme ? 1.9 : 2.1}
-        crookedness={isForestTheme ? 0 : 0.5}
-        strokeWidthVariation={isForestTheme ? 0 : 4}
+        contentClassName="px-4 py-3 md:px-5"
+        surfaceClassName="bg-[color:var(--theme-shell-header-background)] bg-[image:var(--theme-shell-header-background-image)] backdrop-blur-md"
+        strokeColor="var(--theme-shell-header-border)"
+        style={{ boxShadow: "var(--theme-shell-header-shadow)" }}
+        variant={THEME_FRAME_VARIANTS.shellHeader}
       >
         <div
           className="shell-header-layout"
@@ -236,15 +237,15 @@ export function ShellHeader({
           <Sheet>
             <SheetTrigger asChild>
               <Button
-                className="shell-header-mobile-trigger"
+                className="shell-header-mobile-trigger rounded-[var(--theme-radius-sm)] border-transparent bg-transparent text-[color:var(--theme-shell-nav-icon-foreground)] shadow-none hover:bg-[color:var(--theme-shell-nav-icon-hover-background)] hover:text-[color:var(--theme-shell-nav-icon-hover-foreground)]"
                 size="icon"
-                variant="secondary"
+                variant="ghost"
               >
                 <Menu className="size-4" />
               </Button>
             </SheetTrigger>
-            <SheetContent className="shell-header-sheet">
-              <SheetHeader className="px-5 pt-5 pb-4">
+            <SheetContent className="shell-header-sheet border-[color:var(--theme-shell-mobile-surface-border)]">
+              <SheetHeader className="border-b border-[color:var(--theme-shell-mobile-surface-border)] px-5 pt-5 pb-4">
                 <SheetTitle>{mobileTitle}</SheetTitle>
               </SheetHeader>
               <div className="flex min-h-0 flex-1 flex-col gap-6 px-4 pb-5">
@@ -262,7 +263,7 @@ export function ShellHeader({
                   </nav>
                 ) : null}
                 {user ? (
-                  <div className="grid gap-3 border border-[color:var(--border)] bg-[color:var(--paper-soft)] p-3">
+                  <div className="grid gap-3 rounded-[var(--theme-radius-lg)] border border-[color:var(--theme-shell-mobile-surface-border)] bg-[color:var(--theme-shell-mobile-surface-background)] p-3">
                     <div className="flex min-w-0 items-center gap-3">
                       <Avatar size="sm">
                         {user.avatarUrl ? (
@@ -337,7 +338,7 @@ export function ShellHeader({
             </SheetContent>
           </Sheet>
         </div>
-      </HandDrawnFrame>
+      </ThemeFrame>
     </header>
   );
 }
@@ -349,17 +350,16 @@ function ShellHeaderUser({ user }: { user: ShellUser }) {
         <button
           aria-label={user.name}
           className={cn(
-            "inline-flex max-w-[16rem] items-center rounded-none align-middle",
+            "inline-flex max-w-[16rem] items-center rounded-[var(--theme-radius-md)] align-middle",
             focusRingClass,
           )}
         >
-          <HandDrawnFrame
+          <ThemeFrame
             className="min-w-0"
             contentClassName="shell-header-user-trigger px-3 py-2"
-            surfaceClassName="bg-white/45"
-            strokeColor="var(--border)"
-            strokeWidth={1.9}
-            crookedness={0.45}
+            surfaceClassName="bg-[color:var(--theme-shell-user-chip-background)]"
+            strokeColor="var(--theme-shell-user-chip-border)"
+            variant={THEME_FRAME_VARIANTS.shellUserChip}
           >
             <Avatar size="sm">
               {user.avatarUrl ? (
@@ -376,7 +376,7 @@ function ShellHeaderUser({ user }: { user: ShellUser }) {
             >
               {user.name}
             </span>
-          </HandDrawnFrame>
+          </ThemeFrame>
         </button>
       </DropdownMenuTrigger>
       <DropdownMenuContent
@@ -388,19 +388,20 @@ function ShellHeaderUser({ user }: { user: ShellUser }) {
           width: "var(--radix-popover-trigger-width)",
         }}
       >
-        <HandDrawnFrame
+        <ThemeFrame
           className="w-full"
           contentClassName="grid gap-1 px-3 py-2"
-          surfaceClassName="bg-[color:var(--paper)]"
-          strokeColor="var(--border)"
-          strokeWidth={1.6}
-          crookedness={0.8}
+          surfaceClassName="bg-[color:var(--theme-shell-user-menu-background)]"
+          strokeColor="var(--theme-shell-user-menu-border)"
+          variant={THEME_FRAME_VARIANTS.shellUserMenu}
         >
           {user.menuItems?.map((item) => (
             <DropdownMenuItem
               className={cn(
-                "gap-1.5 px-0 py-1.5 whitespace-nowrap focus:bg-[color:var(--ring)] focus:text-[color:var(--ink-strong)] data-[highlighted]:bg-[color:var(--ring)] data-[highlighted]:text-[color:var(--ink-strong)]",
-                item.destructive && "text-destructive",
+                "gap-1.5 px-0 py-1.5 whitespace-nowrap hover:bg-[color:var(--theme-shell-user-menu-item-highlight-background)] hover:text-[color:var(--theme-shell-user-menu-item-highlight-foreground)] focus:bg-[color:var(--theme-shell-user-menu-item-highlight-background)] focus:text-[color:var(--theme-shell-user-menu-item-highlight-foreground)] data-[highlighted]:bg-[color:var(--theme-shell-user-menu-item-highlight-background)] data-[highlighted]:text-[color:var(--theme-shell-user-menu-item-highlight-foreground)]",
+                item.destructive
+                  ? "text-destructive hover:text-[color:var(--theme-shell-user-menu-item-destructive-highlight-foreground)] focus:text-[color:var(--theme-shell-user-menu-item-destructive-highlight-foreground)] data-[highlighted]:text-[color:var(--theme-shell-user-menu-item-destructive-highlight-foreground)]"
+                  : "text-[color:var(--foreground)]",
               )}
               key={item.id}
               onClick={item.onSelect}
@@ -410,7 +411,7 @@ function ShellHeaderUser({ user }: { user: ShellUser }) {
               {item.label}
             </DropdownMenuItem>
           ))}
-        </HandDrawnFrame>
+        </ThemeFrame>
       </DropdownMenuContent>
     </DropdownMenu>
   );
@@ -429,12 +430,11 @@ export function ShellFooter({
       data-site-footer
     >
       <div className="relative pt-8 md:pt-10">
-        <HandDrawnRule
+        <ThemeRule
           className="absolute inset-x-0 top-0 h-3"
-          crookedness={9}
           strokeColor="var(--foreground)"
-          strokeWidth={1.4}
           svgClassName="opacity-85"
+          variant={THEME_RULE_VARIANTS.footerDivider}
         />
         <div className="flex flex-wrap items-center justify-center gap-x-5 gap-y-4 md:gap-x-6">
           {brand}
