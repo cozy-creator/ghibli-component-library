@@ -1,14 +1,10 @@
 import { useState } from "react";
-import { Flower2, LogOut, Palette, UserRound } from "lucide-react";
+import { LogOut, Palette, UserRound } from "lucide-react";
 import { Outlet } from "react-router-dom";
 
-import {
-  ChangeThemeModal,
-  ShellHeader,
-  THEME_FRAME_VARIANTS,
-  ThemeFrame,
-} from "@ghibli/ui";
+import { ChangeThemeModal, ShellHeader } from "@ghibli/ui";
 
+import { BrandMark } from "@/apps/web/src/components/site-brand";
 import {
   DiscordHeaderIcon,
   GitHubHeaderIcon,
@@ -20,23 +16,6 @@ const discordUrl = "https://discord.gg/cozyart";
 
 function jumpToAnchor(anchorId: string) {
   window.location.hash = anchorId;
-}
-
-function BrandMark({ className }: { className?: string }) {
-  return (
-    <ThemeFrame
-      className={className ?? "size-12 shrink-0"}
-      contentClassName="p-1.5"
-      surfaceClassName="bg-[color:var(--theme-shell-brand-background)]"
-      strokeColor="var(--theme-shell-brand-border)"
-      variant={THEME_FRAME_VARIANTS.shellBrandMark}
-    >
-      <Flower2
-        aria-hidden="true"
-        className="size-full text-[color:var(--ink-strong)]"
-      />
-    </ThemeFrame>
-  );
 }
 
 function SiteBrand() {

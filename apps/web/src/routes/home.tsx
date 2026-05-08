@@ -6,7 +6,6 @@ import {
   Eye,
   EyeOff,
   FileText,
-  Flower2,
   Heart,
   LogIn,
   LogOut,
@@ -71,12 +70,11 @@ import {
   ShellHeader,
   Tabs,
   Textarea,
-  THEME_FRAME_VARIANTS,
   THEME_OPTIONS,
-  ThemeFrame,
   useTheme,
 } from "@ghibli/ui";
 
+import { BrandMark } from "@/apps/web/src/components/site-brand";
 import {
   DiscordHeaderIcon,
   GitHubHeaderIcon,
@@ -196,23 +194,6 @@ function CodeBlock({ children }: { children: string }) {
 }
 
 const repoUrl = "https://github.com/rodrigoluz/ghibli-component-library";
-
-function LibraryMark({ className }: { className?: string }) {
-  return (
-    <ThemeFrame
-      className={className ?? "size-12 shrink-0"}
-      contentClassName="p-1.5"
-      surfaceClassName="bg-[color:var(--theme-shell-brand-background)]"
-      strokeColor="var(--theme-shell-brand-border)"
-      variant={THEME_FRAME_VARIANTS.shellBrandMark}
-    >
-      <Flower2
-        aria-hidden="true"
-        className="size-full text-[color:var(--ink-strong)]"
-      />
-    </ThemeFrame>
-  );
-}
 
 function DemoSurface({
   children,
@@ -854,7 +835,7 @@ export function HomePage() {
             <ShellHeader
               brand={
                 <a className="inline-flex items-center gap-3" href="#install">
-                  <LibraryMark />
+                  <BrandMark />
                   <span className="font-[var(--font-heading)] text-2xl text-[color:var(--ink-strong)]">
                     Ghibli UI
                   </span>
@@ -1778,7 +1759,7 @@ export function HomePage() {
                 className="inline-flex items-center justify-center"
                 href="#install"
               >
-                <LibraryMark className="size-10 shrink-0 bg-white/45 p-2" />
+                <BrandMark className="size-10 shrink-0" />
               </a>
             }
             columns={

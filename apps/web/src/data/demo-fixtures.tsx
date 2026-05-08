@@ -1,6 +1,5 @@
 import * as React from "react";
 import {
-  Flower2,
   ImageIcon,
   Leaf,
   MessageSquareText,
@@ -10,14 +9,13 @@ import {
 } from "lucide-react";
 
 import {
-  THEME_FRAME_VARIANTS,
-  ThemeFrame,
   type FaqItem,
   type GenerateAspectRatioOption,
   type GenerateModelItem,
   type GenerateModelsByBase,
 } from "@ghibli/ui";
 
+import { BrandMark } from "@/apps/web/src/components/site-brand";
 import {
   DocsHeaderIcon,
   GitHubHeaderIcon,
@@ -110,15 +108,7 @@ export const socialItems = [
 
 export const headerBrand = (
   <a className="inline-flex items-center gap-3" href="/">
-    <ThemeFrame
-      className="size-12 shrink-0"
-      contentClassName="p-1.5"
-      surfaceClassName="bg-[color:var(--theme-shell-brand-background)]"
-      strokeColor="var(--theme-shell-brand-border)"
-      variant={THEME_FRAME_VARIANTS.shellBrandMark}
-    >
-      <Flower2 className="size-full text-[color:var(--ink-strong)]" />
-    </ThemeFrame>
+    <BrandMark />
     <div className="grid gap-0.5">
       <span className="font-[var(--font-heading)] text-3xl text-[color:var(--ink-strong)]">
         Ghibli UI
