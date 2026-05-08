@@ -1,22 +1,6 @@
 import { BookOpen } from "lucide-react";
 
-export const mockHeaderAvatarUrl = `data:image/svg+xml;utf8,${encodeURIComponent(`
-  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 80 80">
-    <defs>
-      <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
-        <stop offset="0%" stop-color="#f4d28b" />
-        <stop offset="100%" stop-color="#dca96c" />
-      </linearGradient>
-    </defs>
-    <rect width="80" height="80" rx="18" fill="url(#bg)" />
-    <circle cx="40" cy="31" r="16" fill="#f8e7c8" />
-    <path d="M17 74c4-16 16-24 23-24s19 8 23 24" fill="#6c7f57" />
-    <path d="M26 28c4-9 10-14 18-14 7 0 12 3 16 9-5 5-11 8-19 8-5 0-10-1-15-3z" fill="#4a3627" />
-    <circle cx="34" cy="32" r="1.6" fill="#4a3627" />
-    <circle cx="46" cy="32" r="1.6" fill="#4a3627" />
-    <path d="M35 39c2 2 8 2 10 0" fill="none" stroke="#8a5b44" stroke-linecap="round" stroke-width="2" />
-  </svg>
-`)}`;
+export const mockHeaderAvatarUrl = "/examples/user-avatar.png";
 
 export function GitHubHeaderIcon() {
   return (
