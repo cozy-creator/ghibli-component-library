@@ -129,7 +129,8 @@ describe("showcase interactions", () => {
       within(generateControlsSection as HTMLElement).getByRole("button", { name: /9:16/i })
     );
 
-    expect(screen.getByRole("button", { name: /9:16 portrait/i })).toBeInTheDocument();
+    expect(screen.getByRole("slider", { name: "Aspect ratio" })).toBeInTheDocument();
+    expect(screen.getByText("(Portrait)")).toBeInTheDocument();
 
   }, 10000);
 

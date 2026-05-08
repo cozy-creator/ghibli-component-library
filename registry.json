@@ -1019,6 +1019,7 @@
       "description": "Cozy-style mode toggle, grouped model select, aspect ratio ruler, and generate CTA.",
       "registryDependencies": [
         "@ghibli/style",
+        "@ghibli/theme",
         "@ghibli/button",
         "@ghibli/cartoon-button",
         "@ghibli/dropdown-menu",

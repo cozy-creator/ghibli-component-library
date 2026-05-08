@@ -1,4 +1,4 @@
-import { render, screen } from "@testing-library/react";
+import { fireEvent, render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 
 import {
@@ -43,13 +43,13 @@ const modelsByBase = generateModelItems.reduce<Record<string, typeof generateMod
 );
 
 const aspectRatioOptions = [
-  { description: "Ultra wide", label: "21:9", value: "21/9" },
-  { description: "Landscape", label: "16:9", value: "16/9" },
-  { description: "Wide", label: "4:3", value: "4/3" },
-  { description: "Square", label: "1:1", value: "1/1" },
-  { description: "Tall", label: "3:4", value: "3/4" },
-  { description: "Portrait", label: "9:16", value: "9/16" },
-  { description: "Ultra Tall", label: "9:21", value: "9/21" }
+  { description: "Ultra-wide", height: 9, label: "21:9", value: "21/9", width: 21 },
+  { description: "Landscape", height: 9, label: "16:9", value: "16/9", width: 16 },
+  { description: "Wide", height: 3, label: "4:3", value: "4/3", width: 4 },
+  { description: "Square", height: 1, label: "1:1", value: "1/1", width: 1 },
+  { description: "Tall", height: 4, label: "3:4", value: "3/4", width: 3 },
+  { description: "Portrait", height: 16, label: "9:16", value: "9/16", width: 9 },
+  { description: "Ultra-tall", height: 21, label: "9:21", value: "9/21", width: 9 }
 ];
 
 describe("generate editor surfaces", () => {
@@ -110,10 +110,12 @@ describe("generate editor surfaces", () => {
 
     await user.click(screen.getByRole("button", { name: /1:1/i }));
 
-    expect(screen.getByRole("button", { name: /21:9 ultra wide/i })).toBeInTheDocument();
-    expect(screen.getByRole("button", { name: /9:16 portrait/i })).toBeInTheDocument();
+    expect(screen.getByText("Aspect ratio")).toBeInTheDocument();
+    expect(screen.getByText("(Square)")).toBeInTheDocument();
 
-    await user.click(screen.getByRole("button", { name: /9:16 portrait/i }));
+    fireEvent.change(screen.getByRole("slider", { name: "Aspect ratio" }), {
+      target: { value: "5" }
+    });
 
     expect(handleChange).toHaveBeenCalledWith("9/16");
     expect(screen.getByText("(Portrait)")).toBeInTheDocument();
