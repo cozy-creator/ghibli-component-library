@@ -1,12 +1,20 @@
 import type { Meta, StoryObj } from "@storybook/react-vite";
+import { Search } from "lucide-react";
 
-import { ShellFooter, ShellHeader } from "@ghibli/ui";
+import type { ShellUser } from "@ghibli/ui";
+import { Button, ShellFooter, ShellHeader } from "@ghibli/ui";
 
 import { BrandMark } from "@/apps/web/src/components/site-brand";
-import { footerColumns, headerBrand, headerUser, libraryNavItems, socialItems } from "@/apps/web/src/data/demo-fixtures";
+import {
+  footerColumns,
+  headerBrand,
+  headerUser,
+  libraryNavItems,
+  utilityItems,
+} from "@/apps/web/src/data/demo-fixtures";
 
 const meta = {
-  title: "Patterns/Layout/Layout Shell"
+  title: "Patterns/Layout/Layout Shell",
 } satisfies Meta;
 
 export default meta;
@@ -19,18 +27,44 @@ export const Overview: Story = {
         brand={headerBrand}
         navItems={libraryNavItems.map((item, index) => ({
           ...item,
-          active: index === 0
+          active: index === 0,
         }))}
-        socialItems={socialItems}
+        utilityItems={utilityItems}
         user={headerUser}
       />
       <ShellFooter
         brand={<BrandMark className="size-11 shrink-0" />}
         columns={footerColumns.flatMap((column) =>
-          column.links.map((link) => ({ href: link.href, text: link.label }))
+          column.links.map((link) => ({ href: link.href, text: link.label })),
         )}
         text="Header and footer blocks are installable and presentational."
       />
     </div>
-  )
+  ),
+};
+
+export const SlotRegions: Story = {
+  render: () => (
+    <ShellHeader
+      endContent={
+        <Button size="sm" variant="secondary">
+          Invite
+        </Button>
+      }
+      navItems={libraryNavItems.slice(0, 3)}
+      renderUserTrigger={(user: ShellUser) => (
+        <Button size="sm" variant="outline">
+          {user.name}
+        </Button>
+      )}
+      startContent={
+        <div className="hidden items-center gap-2 text-sm text-[color:var(--muted-foreground)] md:flex">
+          <Search className="size-4" />
+          Search library
+        </div>
+      }
+      utilityItems={utilityItems}
+      user={headerUser}
+    />
+  ),
 };

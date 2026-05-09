@@ -12,7 +12,6 @@ import {
 import { ThemeFrame, ThemeRule } from "@/components/ui/theme-frame";
 import {
   Sheet,
-  SheetClose,
   SheetContent,
   SheetHeader,
   SheetTitle,
@@ -50,7 +49,7 @@ export interface ShellUser {
   subtitle?: string;
 }
 
-type RenderLink = (
+export type RenderLink = (
   item: ShellNavItem,
   className: string,
   children: React.ReactNode,
@@ -58,15 +57,78 @@ type RenderLink = (
 
 type HeaderLinkLayout = "desktop" | "sheet";
 
-export interface ShellHeaderProps {
-  brand: React.ReactNode;
-  className?: string;
-  mobileTitle?: string;
-  navItems: ShellNavItem[];
-  primaryAction?: React.ReactNode;
+export interface ShellNavbarSlotClassNames {
+  end?: string | undefined;
+  mobilePanel?: string | undefined;
+  mobileTrigger?: string | undefined;
+  nav?: string | undefined;
+  root?: string | undefined;
+  start?: string | undefined;
+  userMenu?: string | undefined;
+  userTrigger?: string | undefined;
+  utility?: string | undefined;
+}
+
+export interface NavbarProps {
+  brand?: React.ReactNode | undefined;
+  className?: string | undefined;
+  endContent?: React.ReactNode | undefined;
+  mobileTitle?: string | undefined;
+  navItems?: ShellNavItem[] | undefined;
+  primaryAction?: React.ReactNode | undefined;
   renderLink?: RenderLink | undefined;
-  socialItems?: ShellNavItem[];
-  user?: ShellUser | undefined;
+  renderUserTrigger?: ((user: ShellUser) => React.ReactNode) | undefined;
+  slotClassNames?: ShellNavbarSlotClassNames | undefined;
+  startContent?: React.ReactNode | undefined;
+  socialItems?: ShellNavItem[] | undefined;
+  user?: ShellUser | null | undefined;
+  utilityItems?: ShellNavItem[] | undefined;
+}
+
+type ResolvedNavbarProps = {
+  brand: React.ReactNode | undefined;
+  className: string | undefined;
+  endContent: React.ReactNode | undefined;
+  mobileTitle: string;
+  navItems: ShellNavItem[];
+  primaryAction: React.ReactNode | undefined;
+  renderLink: RenderLink | undefined;
+  renderUserTrigger: ((user: ShellUser) => React.ReactNode) | undefined;
+  slotClassNames: ShellNavbarSlotClassNames;
+  startContent: React.ReactNode | undefined;
+  user: ShellUser | null;
+  utilityItems: ShellNavItem[];
+};
+
+function resolveNavbarProps({
+  brand,
+  className,
+  endContent,
+  mobileTitle = "Navigation",
+  navItems = [],
+  primaryAction,
+  renderLink,
+  renderUserTrigger,
+  slotClassNames = {},
+  socialItems,
+  startContent,
+  user,
+  utilityItems,
+}: NavbarProps): ResolvedNavbarProps {
+  return {
+    brand,
+    className,
+    endContent,
+    mobileTitle,
+    navItems,
+    primaryAction,
+    renderLink,
+    renderUserTrigger,
+    slotClassNames,
+    startContent,
+    user: user ?? null,
+    utilityItems: utilityItems ?? socialItems ?? [],
+  };
 }
 
 export interface ShellFooterLink {
@@ -86,11 +148,13 @@ function HeaderLink({
   closeOnActivate = false,
   item,
   layout = "desktop",
+  onActivate,
   renderLink,
 }: {
   closeOnActivate?: boolean;
   item: ShellNavItem;
   layout?: HeaderLinkLayout;
+  onActivate?: (() => void) | undefined;
   renderLink?: RenderLink | undefined;
 }) {
   const isSheet = layout === "sheet";
@@ -154,20 +218,49 @@ function HeaderLink({
   const renderedLink = renderLink ? (
     renderLink(item, linkClassName, content)
   ) : (
-    <a className={linkClassName} href={item.href} onClick={item.onClick}>
+    <a
+      aria-current={item.active ? "page" : undefined}
+      className={linkClassName}
+      href={item.href}
+      onClick={(event) => {
+        item.onClick?.(event);
+
+        if (closeOnActivate) {
+          onActivate?.();
+        }
+      }}
+    >
       {content}
     </a>
   );
 
-  if (closeOnActivate && React.isValidElement(renderedLink)) {
-    return <SheetClose asChild>{renderedLink}</SheetClose>;
+  if (
+    closeOnActivate &&
+    React.isValidElement<{
+      onClick?: (event: React.MouseEvent<HTMLElement>) => void;
+    }>(renderedLink)
+  ) {
+    return React.cloneElement(renderedLink, {
+      onClick: (event: React.MouseEvent<HTMLElement>) => {
+        renderedLink.props.onClick?.(event);
+        onActivate?.();
+      },
+    });
   }
 
   return renderedLink;
 }
 
-function renderSheetPrimaryAction(primaryAction: React.ReactNode) {
-  if (!React.isValidElement<{ className?: string }>(primaryAction)) {
+function renderSheetPrimaryAction(
+  onActivate: (() => void) | undefined,
+  primaryAction: React.ReactNode,
+) {
+  if (
+    !React.isValidElement<{
+      className?: string;
+      onClick?: (event: React.MouseEvent<HTMLElement>) => void;
+    }>(primaryAction)
+  ) {
     return primaryAction;
   }
 
@@ -176,212 +269,140 @@ function renderSheetPrimaryAction(primaryAction: React.ReactNode) {
       primaryAction.props.className,
       "w-full justify-center sm:w-full",
     ),
+    onClick: (event: React.MouseEvent<HTMLElement>) => {
+      primaryAction.props.onClick?.(event);
+      onActivate?.();
+    },
   });
 }
 
-export function ShellHeader({
-  brand,
-  className,
-  mobileTitle = "Navigation",
-  navItems,
-  primaryAction,
-  renderLink,
-  socialItems = [],
-  user,
-}: ShellHeaderProps) {
-  const hasNavItems = navItems.length > 0;
-  const sheetPrimaryAction = primaryAction
-    ? renderSheetPrimaryAction(primaryAction)
-    : null;
+function getUserInitials(user: ShellUser) {
+  return user.initials ?? user.name.slice(0, 2).toUpperCase();
+}
 
+function ShellHeaderUserAvatar({ user }: { user: ShellUser }) {
   return (
-    <header className="sticky top-4 z-40">
-      <ThemeFrame
-        className={className}
-        contentClassName="px-4 py-3 md:px-5"
-        surfaceClassName="bg-[color:var(--theme-shell-header-background)] bg-[image:var(--theme-shell-header-background-image)] backdrop-blur-md"
-        strokeColor="var(--theme-shell-header-border)"
-        style={{ boxShadow: "var(--theme-shell-header-shadow)" }}
-        variant={THEME_FRAME_VARIANTS.shellHeader}
-      >
-        <div
-          className="shell-header-layout"
-          data-has-nav={hasNavItems ? "true" : "false"}
-        >
-          <div className="shell-header-brand">{brand}</div>
-          {hasNavItems ? (
-            <nav className="shell-header-desktop-nav items-center gap-1 lg:justify-self-center">
-              {navItems.map((item) => (
-                <HeaderLink
-                  item={item}
-                  key={item.href}
-                  renderLink={renderLink}
-                />
-              ))}
-            </nav>
-          ) : null}
-          <div className="shell-header-desktop-actions items-center gap-2 lg:justify-self-end">
-            <div className="flex items-center gap-2">
-              {socialItems.map((item) => (
-                <HeaderLink
-                  item={item}
-                  key={item.href}
-                  renderLink={renderLink}
-                />
-              ))}
-            </div>
-            {user ? <ShellHeaderUser user={user} /> : null}
-            {primaryAction}
-          </div>
-          <Sheet>
-            <SheetTrigger asChild>
-              <Button
-                className="shell-header-mobile-trigger rounded-[var(--theme-radius-sm)] border-transparent bg-transparent text-[color:var(--theme-shell-nav-icon-foreground)] shadow-none hover:bg-[color:var(--theme-shell-nav-icon-hover-background)] hover:text-[color:var(--theme-shell-nav-icon-hover-foreground)]"
-                size="icon"
-                variant="ghost"
-              >
-                <Menu className="size-4" />
-              </Button>
-            </SheetTrigger>
-            <SheetContent className="shell-header-sheet border-[color:var(--theme-shell-mobile-surface-border)]">
-              <SheetHeader className="border-b border-[color:var(--theme-shell-mobile-surface-border)] px-5 pt-5 pb-4">
-                <SheetTitle>{mobileTitle}</SheetTitle>
-              </SheetHeader>
-              <div className="flex min-h-0 flex-1 flex-col gap-6 px-4 pb-5">
-                {hasNavItems ? (
-                  <nav className="grid gap-1.5">
-                    {navItems.map((item) => (
-                      <HeaderLink
-                        closeOnActivate
-                        item={item}
-                        key={item.href}
-                        layout="sheet"
-                        renderLink={renderLink}
-                      />
-                    ))}
-                  </nav>
-                ) : null}
-                {user ? (
-                  <div className="grid gap-3 rounded-[var(--theme-radius-lg)] border border-[color:var(--theme-shell-mobile-surface-border)] bg-[color:var(--theme-shell-mobile-surface-background)] p-3">
-                    <div className="flex min-w-0 items-center gap-3">
-                      <Avatar size="sm">
-                        {user.avatarUrl ? (
-                          <AvatarImage alt={user.name} src={user.avatarUrl} />
-                        ) : (
-                          <AvatarFallback>
-                            {user.initials ??
-                              user.name.slice(0, 2).toUpperCase()}
-                          </AvatarFallback>
-                        )}
-                      </Avatar>
-                      <div className="grid min-w-0 flex-1 gap-0.5">
-                        <span
-                          className="truncate text-sm font-medium text-[color:var(--ink-strong)]"
-                          title={user.name}
-                        >
-                          {user.name}
-                        </span>
-                        {user.subtitle ? (
-                          <span
-                            className="truncate text-xs text-muted-foreground"
-                            title={user.subtitle}
-                          >
-                            {user.subtitle}
-                          </span>
-                        ) : null}
-                      </div>
-                    </div>
-                    {user.menuItems?.length ? (
-                      <div className="grid gap-2">
-                        {user.menuItems.map((item) => (
-                          <SheetClose asChild key={item.id}>
-                            <Button
-                              className="w-full justify-start"
-                              onClick={item.onSelect}
-                              variant={item.destructive ? "ghost" : "secondary"}
-                            >
-                              {item.icon}
-                              {item.label}
-                            </Button>
-                          </SheetClose>
-                        ))}
-                      </div>
-                    ) : null}
-                  </div>
-                ) : null}
-                <div className="mt-auto grid gap-3">
-                  {socialItems.length ? (
-                    <div className="grid grid-cols-2 gap-2">
-                      {socialItems.map((item) => (
-                        <HeaderLink
-                          closeOnActivate
-                          item={item}
-                          key={item.href}
-                          layout="sheet"
-                          renderLink={renderLink}
-                        />
-                      ))}
-                    </div>
-                  ) : null}
-                  {sheetPrimaryAction ? (
-                    <div>
-                      {React.isValidElement(sheetPrimaryAction) ? (
-                        <SheetClose asChild>{sheetPrimaryAction}</SheetClose>
-                      ) : (
-                        sheetPrimaryAction
-                      )}
-                    </div>
-                  ) : null}
-                </div>
-              </div>
-            </SheetContent>
-          </Sheet>
-        </div>
-      </ThemeFrame>
-    </header>
+    <Avatar size="sm">
+      {user.avatarUrl ? (
+        <AvatarImage alt={user.name} src={user.avatarUrl} />
+      ) : (
+        <AvatarFallback>{getUserInitials(user)}</AvatarFallback>
+      )}
+    </Avatar>
   );
 }
 
-function ShellHeaderUser({ user }: { user: ShellUser }) {
+function ShellHeaderDefaultUserTrigger({ user }: { user: ShellUser }) {
+  return (
+    <ThemeFrame
+      className="min-w-0"
+      contentClassName="grid min-w-0 grid-cols-[auto_minmax(0,1fr)] items-center gap-3 px-3 py-2"
+      surfaceClassName="bg-[color:var(--theme-shell-user-chip-background)]"
+      strokeColor="var(--theme-shell-user-chip-border)"
+      variant={THEME_FRAME_VARIANTS.shellUserChip}
+    >
+      <ShellHeaderUserAvatar user={user} />
+      <span
+        className="hidden min-w-0 truncate pb-[0.08em] text-sm leading-[1.2] text-[color:var(--ink-strong)] xl:block"
+        title={user.name}
+      >
+        {user.name}
+      </span>
+    </ThemeFrame>
+  );
+}
+
+function createUserTriggerElement({
+  renderUserTrigger,
+  slotClassName,
+  user,
+}: {
+  renderUserTrigger: ((user: ShellUser) => React.ReactNode) | undefined;
+  slotClassName: string | undefined;
+  user: ShellUser;
+}) {
+  const customTrigger = renderUserTrigger?.(user);
+
+  if (
+    customTrigger &&
+    React.isValidElement<{
+      "aria-label"?: string;
+      "data-slot"?: string;
+      className?: string;
+      role?: string;
+      tabIndex?: number;
+      type?: string;
+    }>(customTrigger) &&
+    customTrigger.type !== React.Fragment
+  ) {
+    const isIntrinsicElement = typeof customTrigger.type === "string";
+    const isButtonElement =
+      isIntrinsicElement && customTrigger.type === "button";
+    const isAnchorElement = isIntrinsicElement && customTrigger.type === "a";
+
+    return React.cloneElement(customTrigger, {
+      ...(isButtonElement && customTrigger.props.type === undefined
+        ? { type: "button" }
+        : {}),
+      ...(isIntrinsicElement &&
+      !isButtonElement &&
+      !isAnchorElement &&
+      customTrigger.props.role === undefined
+        ? { role: "button" }
+        : {}),
+      ...(isIntrinsicElement &&
+      !isButtonElement &&
+      !isAnchorElement &&
+      customTrigger.props.tabIndex === undefined
+        ? { tabIndex: 0 }
+        : {}),
+      "aria-label": customTrigger.props["aria-label"] ?? user.name,
+      className: cn(customTrigger.props.className, slotClassName),
+      "data-slot": "user-trigger",
+    });
+  }
+
+  return (
+    <button
+      aria-label={user.name}
+      className={cn(
+        "inline-flex max-w-[16rem] items-center rounded-[var(--theme-radius-md)] align-middle",
+        focusRingClass,
+        slotClassName,
+      )}
+      data-slot="user-trigger"
+      type="button"
+    >
+      {customTrigger ?? <ShellHeaderDefaultUserTrigger user={user} />}
+    </button>
+  );
+}
+
+function ShellHeaderUser({
+  renderUserTrigger,
+  slotClassNames,
+  user,
+}: {
+  renderUserTrigger?: ((user: ShellUser) => React.ReactNode) | undefined;
+  slotClassNames: ShellNavbarSlotClassNames;
+  user: ShellUser;
+}) {
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
-        <button
-          aria-label={user.name}
-          className={cn(
-            "inline-flex max-w-[16rem] items-center rounded-[var(--theme-radius-md)] align-middle",
-            focusRingClass,
-          )}
-        >
-          <ThemeFrame
-            className="min-w-0"
-            contentClassName="shell-header-user-trigger px-3 py-2"
-            surfaceClassName="bg-[color:var(--theme-shell-user-chip-background)]"
-            strokeColor="var(--theme-shell-user-chip-border)"
-            variant={THEME_FRAME_VARIANTS.shellUserChip}
-          >
-            <Avatar size="sm">
-              {user.avatarUrl ? (
-                <AvatarImage alt={user.name} src={user.avatarUrl} />
-              ) : (
-                <AvatarFallback>
-                  {user.initials ?? user.name.slice(0, 2).toUpperCase()}
-                </AvatarFallback>
-              )}
-            </Avatar>
-            <span
-              className="hidden min-w-0 truncate pb-[0.08em] text-sm leading-[1.2] text-[color:var(--ink-strong)] xl:block"
-              title={user.name}
-            >
-              {user.name}
-            </span>
-          </ThemeFrame>
-        </button>
+        {createUserTriggerElement({
+          renderUserTrigger,
+          slotClassName: slotClassNames.userTrigger,
+          user,
+        })}
       </DropdownMenuTrigger>
       <DropdownMenuContent
         align="end"
+        className={cn(
+          "overflow-visible border-0 bg-transparent p-0 ring-0",
+          slotClassNames.userMenu,
+        )}
         sideOffset={4}
-        className="shell-header-user-menu overflow-visible border-0 bg-transparent p-0 ring-0"
         style={{
           minWidth: "var(--radix-popover-trigger-width)",
           width: "var(--radix-popover-trigger-width)",
@@ -390,6 +411,7 @@ function ShellHeaderUser({ user }: { user: ShellUser }) {
         <ThemeFrame
           className="w-full"
           contentClassName="grid gap-1 px-3 py-2"
+          data-slot="user-menu"
           surfaceClassName="bg-[color:var(--theme-shell-user-menu-background)]"
           strokeColor="var(--theme-shell-user-menu-border)"
           variant={THEME_FRAME_VARIANTS.shellUserMenu}
@@ -403,7 +425,13 @@ function ShellHeaderUser({ user }: { user: ShellUser }) {
                   : "text-[color:var(--foreground)]",
               )}
               key={item.id}
-              onClick={item.onSelect}
+              {...(item.onSelect
+                ? {
+                    onSelect: () => {
+                      item.onSelect?.();
+                    },
+                  }
+                : {})}
             >
               {item.icon ??
                 (item.destructive ? <LogOut className="size-4" /> : null)}
@@ -413,6 +441,265 @@ function ShellHeaderUser({ user }: { user: ShellUser }) {
         </ThemeFrame>
       </DropdownMenuContent>
     </DropdownMenu>
+  );
+}
+
+export function ShellHeader(props: NavbarProps) {
+  const {
+    brand,
+    className,
+    endContent,
+    mobileTitle,
+    navItems,
+    primaryAction,
+    renderLink,
+    renderUserTrigger,
+    slotClassNames,
+    startContent,
+    user,
+    utilityItems,
+  } = resolveNavbarProps(props);
+  const hasStartRegion = Boolean(brand || startContent);
+  const hasNavItems = navItems.length > 0;
+  const hasUtilityItems = utilityItems.length > 0;
+  const hasEndContent = Boolean(endContent);
+  const hasUser = Boolean(user);
+  const hasDesktopEndRegion =
+    hasUtilityItems || hasUser || Boolean(primaryAction) || hasEndContent;
+  const hasMobilePanelContent =
+    hasNavItems ||
+    hasUtilityItems ||
+    hasUser ||
+    Boolean(primaryAction) ||
+    hasEndContent;
+  const [isMobilePanelOpen, setIsMobilePanelOpen] = React.useState(false);
+  const sheetPrimaryAction = primaryAction
+    ? renderSheetPrimaryAction(() => setIsMobilePanelOpen(false), primaryAction)
+    : null;
+
+  return (
+    <header className="sticky top-4 z-40">
+      <ThemeFrame
+        className={cn(className, slotClassNames.root)}
+        contentClassName="px-4 py-3 md:px-5"
+        data-slot="root"
+        surfaceClassName="bg-[color:var(--theme-shell-header-background)] bg-[image:var(--theme-shell-header-background-image)] backdrop-blur-md"
+        strokeColor="var(--theme-shell-header-border)"
+        style={{ boxShadow: "var(--theme-shell-header-shadow)" }}
+        variant={THEME_FRAME_VARIANTS.shellHeader}
+      >
+        <div
+          className="flex items-center gap-3 lg:gap-4"
+          data-has-end={hasDesktopEndRegion ? "true" : "false"}
+          data-has-nav={hasNavItems ? "true" : "false"}
+          data-has-start={hasStartRegion ? "true" : "false"}
+        >
+          <div
+            className={cn(
+              "min-w-0 flex-1 basis-0 items-center gap-3",
+              hasStartRegion ? "flex" : "hidden lg:flex",
+              slotClassNames.start,
+            )}
+            data-slot="start"
+          >
+            {brand ? (
+              <div className="min-w-0 shrink-0" data-slot="brand">
+                {brand}
+              </div>
+            ) : null}
+            {startContent ? (
+              <div className="min-w-0 flex-1" data-slot="start-content">
+                {startContent}
+              </div>
+            ) : null}
+          </div>
+          {hasNavItems ? (
+            <nav
+              aria-label="Primary navigation"
+              className={cn(
+                "hidden items-center gap-1 lg:flex",
+                slotClassNames.nav,
+              )}
+              data-slot="nav"
+            >
+              {navItems.map((item) => (
+                <HeaderLink
+                  item={item}
+                  key={item.href}
+                  renderLink={renderLink}
+                />
+              ))}
+            </nav>
+          ) : null}
+          {hasDesktopEndRegion || hasNavItems ? (
+            <div
+              className={cn(
+                "hidden min-w-0 flex-1 basis-0 items-center justify-end gap-2 lg:flex",
+                slotClassNames.end,
+              )}
+              data-slot="end"
+            >
+              {hasUtilityItems ? (
+                <div
+                  className={cn(
+                    "flex items-center gap-2",
+                    slotClassNames.utility,
+                  )}
+                  data-slot="utility"
+                >
+                  {utilityItems.map((item) => (
+                    <HeaderLink
+                      item={item}
+                      key={item.href}
+                      renderLink={renderLink}
+                    />
+                  ))}
+                </div>
+              ) : null}
+              {hasUser && user ? (
+                <ShellHeaderUser
+                  renderUserTrigger={renderUserTrigger}
+                  slotClassNames={slotClassNames}
+                  user={user}
+                />
+              ) : null}
+              {primaryAction}
+              {endContent ? (
+                <div
+                  className="flex items-center gap-2"
+                  data-slot="end-content"
+                >
+                  {endContent}
+                </div>
+              ) : null}
+            </div>
+          ) : null}
+          {hasMobilePanelContent ? (
+            <Sheet open={isMobilePanelOpen} onOpenChange={setIsMobilePanelOpen}>
+              <div className="ml-auto lg:hidden" data-slot="mobile-trigger">
+                <SheetTrigger asChild>
+                  <Button
+                    aria-label="Open navigation menu"
+                    className={cn(
+                      "rounded-[var(--theme-radius-sm)] border-transparent bg-transparent text-[color:var(--theme-shell-nav-icon-foreground)] shadow-none hover:bg-[color:var(--theme-shell-nav-icon-hover-background)] hover:text-[color:var(--theme-shell-nav-icon-hover-foreground)]",
+                      slotClassNames.mobileTrigger,
+                    )}
+                    size="icon"
+                    variant="ghost"
+                  >
+                    <Menu className="size-4" />
+                  </Button>
+                </SheetTrigger>
+              </div>
+              <SheetContent
+                aria-describedby={undefined}
+                className={cn(
+                  "w-[min(90vw,24rem)] gap-0 border-[color:var(--theme-shell-mobile-surface-border)]",
+                  slotClassNames.mobilePanel,
+                )}
+              >
+                <SheetHeader className="border-b border-[color:var(--theme-shell-mobile-surface-border)] px-5 pt-5 pb-4">
+                  <SheetTitle>{mobileTitle}</SheetTitle>
+                </SheetHeader>
+                <div
+                  className="flex min-h-0 flex-1 flex-col gap-6 px-4 pb-5"
+                  data-slot="mobile-panel"
+                >
+                  {hasNavItems ? (
+                    <nav
+                      aria-label="Mobile navigation"
+                      className="grid gap-1.5"
+                    >
+                      {navItems.map((item) => (
+                        <HeaderLink
+                          closeOnActivate
+                          item={item}
+                          key={item.href}
+                          layout="sheet"
+                          onActivate={() => setIsMobilePanelOpen(false)}
+                          renderLink={renderLink}
+                        />
+                      ))}
+                    </nav>
+                  ) : null}
+                  {endContent ? (
+                    <div className="grid gap-3" data-slot="end-content">
+                      {endContent}
+                    </div>
+                  ) : null}
+                  {hasUser && user ? (
+                    <div className="grid gap-3 rounded-[var(--theme-radius-lg)] border border-[color:var(--theme-shell-mobile-surface-border)] bg-[color:var(--theme-shell-mobile-surface-background)] p-3">
+                      <div className="flex min-w-0 items-center gap-3">
+                        <ShellHeaderUserAvatar user={user} />
+                        <div className="grid min-w-0 flex-1 gap-0.5">
+                          <span
+                            className="truncate text-sm font-medium text-[color:var(--ink-strong)]"
+                            title={user.name}
+                          >
+                            {user.name}
+                          </span>
+                          {user.subtitle ? (
+                            <span
+                              className="truncate text-xs text-muted-foreground"
+                              title={user.subtitle}
+                            >
+                              {user.subtitle}
+                            </span>
+                          ) : null}
+                        </div>
+                      </div>
+                      {user.menuItems?.length ? (
+                        <div className="grid gap-2">
+                          {user.menuItems.map((item) => (
+                            <Button
+                              className="w-full justify-start"
+                              key={item.id}
+                              onClick={() => {
+                                item.onSelect?.();
+                                setIsMobilePanelOpen(false);
+                              }}
+                              variant={item.destructive ? "ghost" : "secondary"}
+                            >
+                              {item.icon}
+                              {item.label}
+                            </Button>
+                          ))}
+                        </div>
+                      ) : null}
+                    </div>
+                  ) : null}
+                  <div className="mt-auto grid gap-3">
+                    {hasUtilityItems ? (
+                      <div
+                        className={cn(
+                          "grid grid-cols-2 gap-2",
+                          slotClassNames.utility,
+                        )}
+                        data-slot="utility"
+                      >
+                        {utilityItems.map((item) => (
+                          <HeaderLink
+                            closeOnActivate
+                            item={item}
+                            key={item.href}
+                            layout="sheet"
+                            onActivate={() => setIsMobilePanelOpen(false)}
+                            renderLink={renderLink}
+                          />
+                        ))}
+                      </div>
+                    ) : null}
+                    {sheetPrimaryAction ? (
+                      <div>{sheetPrimaryAction}</div>
+                    ) : null}
+                  </div>
+                </div>
+              </SheetContent>
+            </Sheet>
+          ) : null}
+        </div>
+      </ThemeFrame>
+    </header>
   );
 }
 
@@ -461,34 +748,46 @@ export function ShellFooter({
 export type HeaderUserMenuItem = ShellUserMenuItem;
 export type HeaderUser = ShellUser;
 
-export interface HeaderProps {
-  brand: React.ReactNode;
+export interface HeaderProps extends Omit<NavbarProps, "navItems"> {
   currentPath?: string;
-  navItems: ShellNavItem[];
-  primaryAction?: React.ReactNode;
-  socialItems?: ShellNavItem[];
-  user?: ShellUser;
+  navItems?: ShellNavItem[];
 }
 
 export function Header({
   brand,
+  className,
   currentPath,
-  navItems,
+  endContent,
+  mobileTitle,
+  navItems = [],
   primaryAction,
+  renderLink,
+  renderUserTrigger,
+  slotClassNames,
+  startContent,
   socialItems = [],
   user,
+  utilityItems,
 }: HeaderProps) {
   return (
     <ShellHeader
       brand={brand}
+      className={className}
+      endContent={endContent}
       navItems={navItems.map((item) => ({
         ...item,
         active:
           item.active ?? (currentPath ? currentPath === item.href : false),
       }))}
+      mobileTitle={mobileTitle}
       primaryAction={primaryAction}
+      renderLink={renderLink}
+      renderUserTrigger={renderUserTrigger}
+      slotClassNames={slotClassNames}
+      startContent={startContent}
       socialItems={socialItems}
       user={user}
+      utilityItems={utilityItems}
     />
   );
 }

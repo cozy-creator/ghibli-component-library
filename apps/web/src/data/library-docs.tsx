@@ -50,10 +50,7 @@ import {
   AccountSubscriptionSection,
 } from "@/cozy-examples/account/sections";
 import { AuthDialog } from "@/cozy-examples/auth/dialog";
-import {
-  LoginForm,
-  RegisterForm,
-} from "@/cozy-examples/auth/forms";
+import { LoginForm, RegisterForm } from "@/cozy-examples/auth/forms";
 import {
   CommunityImageCard,
   CommunityVideoCard,
@@ -88,8 +85,8 @@ import {
   navigationVisual,
   sampleAttachments,
   sampleJobs,
-  socialItems,
   subscriptionOffers,
+  utilityItems,
 } from "@/apps/web/src/data/demo-fixtures";
 import {
   AppleAuthIcon,
@@ -2045,7 +2042,7 @@ const allPatternDocs: DocItem[] = [
               brand={headerBrand}
               currentPath="/guides/getting-started"
               navItems={libraryNavItems}
-              socialItems={socialItems}
+              utilityItems={utilityItems}
               user={headerUser}
             />
             <Footer
@@ -2060,7 +2057,7 @@ const allPatternDocs: DocItem[] = [
           "tsx",
           `import { Footer, Header } from "@/components/blocks/layout/shell";
 
-<Header brand={brand} navItems={navItems} />
+<Header brand={brand} navItems={navItems} utilityItems={utilityItems} />
 <Footer title="Ghibli UI" note="..." columns={columns} />`,
         ),
         title: "Header + footer",
@@ -2087,7 +2084,7 @@ const allPatternDocs: DocItem[] = [
           brand={headerBrand}
           currentPath="/guides/getting-started"
           navItems={libraryNavItems}
-          socialItems={socialItems}
+          utilityItems={utilityItems}
           user={headerUser}
         />
         <Footer
@@ -2104,7 +2101,7 @@ const allPatternDocs: DocItem[] = [
     usageSnippet: snippet(
       "Basic usage",
       "tsx",
-      `<Header brand={brand} navItems={navItems} user={user} />`,
+      `<Header brand={brand} navItems={navItems} utilityItems={utilityItems} user={user} />`,
     ),
   },
   {
@@ -2577,7 +2574,7 @@ export function AuthExample() {
           brand={headerBrand}
           currentPath="/components"
           navItems={libraryNavItems}
-          socialItems={socialItems}
+          utilityItems={utilityItems}
           user={headerUser}
         />
         <div className="grid gap-4 lg:grid-cols-[minmax(0,1fr)_18rem]">
