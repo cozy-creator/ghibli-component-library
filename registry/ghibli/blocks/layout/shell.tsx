@@ -9,10 +9,7 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import {
-  ThemeFrame,
-  ThemeRule,
-} from "@/components/ui/theme-frame";
+import { ThemeFrame, ThemeRule } from "@/components/ui/theme-frame";
 import {
   Sheet,
   SheetClose,
@@ -21,11 +18,13 @@ import {
   SheetTitle,
   SheetTrigger,
 } from "@/components/ui/sheet";
-import { cn, focusRingClass, type NavItem } from "@/lib/utils";
+
 import {
   THEME_FRAME_VARIANTS,
   THEME_RULE_VARIANTS,
 } from "@/lib/theme/theme-frame-config";
+
+import { cn, focusRingClass, type NavItem } from "@/lib/utils";
 
 export interface ShellNavItem extends NavItem {
   active?: boolean;
