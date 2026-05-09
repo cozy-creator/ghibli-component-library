@@ -62,7 +62,7 @@ export function SiteShell() {
               </a>
             )
           }
-          socialItems={[
+          utilityItems={[
             {
               href: "#",
               icon: <Palette className="size-4" />,
