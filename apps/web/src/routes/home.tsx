@@ -8,11 +8,9 @@ import {
   FileText,
   Heart,
   LogIn,
-  LogOut,
   Palette,
   Share2,
   Sparkles,
-  UserRound,
   Wand2,
 } from "lucide-react";
 
@@ -46,7 +44,6 @@ import {
   PageSection,
   PageShell,
   ShellFooter,
-  ShellHeader,
   Tabs,
   Textarea,
   ThemeFrame,
@@ -55,6 +52,7 @@ import {
   toast,
   useTheme,
 } from "@ghibli/ui";
+import { ShellHeaderPlayground } from "@/apps/web/src/components/showcase/shell-header-playground";
 import {
   AccountApiCreditsSection,
   AccountProfileSection,
@@ -87,11 +85,7 @@ import {
 import { GenerateEditorBar } from "@/cozy-examples/generate/editor-bar";
 
 import { BrandMark } from "@/apps/web/src/components/site-brand";
-import {
-  DiscordHeaderIcon,
-  GitHubHeaderIcon,
-  mockHeaderAvatarUrl,
-} from "@/apps/web/src/components/site-header-icons";
+import { mockHeaderAvatarUrl } from "@/apps/web/src/components/site-header-icons";
 import {
   AppleAuthIcon,
   DiscordAuthIcon,
@@ -204,8 +198,6 @@ function CodeBlock({ children }: { children: string }) {
     </DocsCodeBlock>
   );
 }
-
-const repoUrl = "https://github.com/rodrigoluz/ghibli-component-library";
 
 function DemoSurface({
   children,
@@ -745,77 +737,12 @@ export function HomePage() {
         <Specimen
           id="component-user-popup"
           installName="layout-shell"
-          note="The layout shell header, utility links, and user menu are shown directly instead of abstract placeholders."
+          note="Toggle slots from the playground to preview how the layout shell header reflows across brand, nav, utility, user, primary action, and end content combinations."
           title="Header / User Popup"
         >
-          <div className="[&>header]:static">
-            <ShellHeader
-              brand={
-                <a className="inline-flex items-center gap-3" href="#install">
-                  <BrandMark />
-                  <span className="font-[var(--font-heading)] text-2xl text-[color:var(--ink-strong)]">
-                    Ghibli UI
-                  </span>
-                </a>
-              }
-              navItems={[
-                { active: true, href: "#generate-flows", label: "Generate" },
-                { href: "#community-flows", label: "Community" },
-                { href: "#docs-screens", label: "Docs" },
-              ]}
-              socialItems={[
-                {
-                  href: "#",
-                  icon: <Palette className="size-4" />,
-                  iconOnly: true,
-                  label: "Change theme",
-                  onClick: (event) => {
-                    event.preventDefault();
-                    setIsChangeThemeOpen(true);
-                  },
-                },
-                {
-                  external: true,
-                  href: repoUrl,
-                  icon: <GitHubHeaderIcon />,
-                  iconOnly: true,
-                  label: "GitHub",
-                },
-                {
-                  external: true,
-                  href: "https://discord.gg/cozyart",
-                  icon: <DiscordHeaderIcon />,
-                  iconOnly: true,
-                  label: "Discord",
-                },
-              ]}
-              user={{
-                avatarUrl: mockHeaderAvatarUrl,
-                initials: "MS",
-                menuItems: [
-                  {
-                    icon: <UserRound className="size-4" />,
-                    id: "account",
-                    label: "Account",
-                  },
-                  {
-                    icon: <Palette className="size-4" />,
-                    id: "theme",
-                    label: "Theme",
-                    onSelect: () => setIsChangeThemeOpen(true),
-                  },
-                  {
-                    destructive: true,
-                    icon: <LogOut className="size-4" />,
-                    id: "logout",
-                    label: "Sign out",
-                  },
-                ],
-                name: "User",
-                subtitle: "mei@ghibli-ui.test",
-              }}
-            />
-          </div>
+          <ShellHeaderPlayground
+            onOpenThemeModal={() => setIsChangeThemeOpen(true)}
+          />
         </Specimen>
 
         <Specimen
