@@ -67,10 +67,7 @@ import {
   AccountChangeUsernameDialog,
 } from "@/cozy-examples/account/dialogs";
 import { AuthDialog } from "@/cozy-examples/auth/dialog";
-import {
-  LoginForm,
-  RegisterForm,
-} from "@/cozy-examples/auth/forms";
+import { LoginForm, RegisterForm } from "@/cozy-examples/auth/forms";
 import {
   CommunityImageCard,
   CommunityTabsList,
@@ -232,7 +229,9 @@ const forestWoodSurfaceClass =
   "[html[data-theme='ghibli-forest']_&]:bg-[color:var(--surface-shell)] [html[data-theme='ghibli-forest']_&]:bg-[image:var(--surface-shell-background)] [html[data-theme='ghibli-forest']_&]:border-[color:var(--border)] [html[data-theme='ghibli-forest']_&]:shadow-[0_10px_30px_color-mix(in_oklab,var(--ink-strong)_18%,transparent)]";
 
 function formatFrameSliderValue(value: number) {
-  return Number.isInteger(value) ? String(value) : value.toFixed(2).replace(/0+$/, "").replace(/\.$/, "");
+  return Number.isInteger(value)
+    ? String(value)
+    : value.toFixed(2).replace(/0+$/, "").replace(/\.$/, "");
 }
 
 function FrameRulerField({
@@ -259,9 +258,7 @@ function FrameRulerField({
   return (
     <FormField
       action={
-        <span className="text-xs text-muted-foreground">
-          {displayValue}
-        </span>
+        <span className="text-xs text-muted-foreground">{displayValue}</span>
       }
       description={description}
       htmlFor={fieldId}
@@ -675,8 +672,8 @@ export function HomePage() {
             to your app&apos;s <code>components.json</code> once, then install
             either the whole set with <code>@ghibli/all</code> or any single
             item by its name (e.g. <code>@ghibli/button</code>,{" "}
-            <code>@ghibli/form-field</code>). Installable sections show
-            its own install command with a copy button.
+            <code>@ghibli/form-field</code>). Installable sections show its own
+            install command with a copy button.
           </p>
         </div>
         <DemoSurface>
