@@ -44,7 +44,6 @@ import {
   PageSection,
   PageShell,
   ShellFooter,
-  Tabs,
   Textarea,
   ThemeFrame,
   THEME_FRAME_VARIANTS,
@@ -53,6 +52,7 @@ import {
   useTheme,
 } from "@ghibli/ui";
 import { ShellHeaderPlayground } from "@/apps/web/src/components/showcase/shell-header-playground";
+import { TabsSwitchPlayground } from "@/apps/web/src/components/showcase/tabs-switch-playground";
 import {
   AccountApiCreditsSection,
   AccountProfileSection,
@@ -68,7 +68,6 @@ import { AuthDialog } from "@/cozy-examples/auth/dialog";
 import { LoginForm, RegisterForm } from "@/cozy-examples/auth/forms";
 import {
   CommunityImageCard,
-  CommunityTabsList,
   CommunityVideoCard,
 } from "@/cozy-examples/community/cards";
 import {
@@ -505,7 +504,6 @@ function TokenSwatch({
 }
 
 export function HomePage() {
-  const [activeTab, setActiveTab] = useState("live-feed");
   const [isChangeThemeOpen, setIsChangeThemeOpen] = useState(false);
   const [isAccountEmailOpen, setIsAccountEmailOpen] = useState(false);
   const [isAccountPasswordOpen, setIsAccountPasswordOpen] = useState(false);
@@ -747,17 +745,11 @@ export function HomePage() {
 
         <Specimen
           id="component-tabs"
-          installName="tabs"
-          note="The community tab switch used for live feed, video, and X posts."
+          installName="tabs-switch"
+          note="A styled switch built on top of the lower-level tabs primitive, with a list-driven API for clean live feed, video, and social view pickers."
           title="Tabs Switch"
         >
-          <Tabs
-            className="min-w-0 gap-6"
-            onValueChange={setActiveTab}
-            value={activeTab}
-          >
-            <CommunityTabsList activeTab={activeTab} />
-          </Tabs>
+          <TabsSwitchPlayground />
         </Specimen>
 
         <Specimen

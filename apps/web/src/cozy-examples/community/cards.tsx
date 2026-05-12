@@ -17,82 +17,38 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { HandDrawnFrame } from "@/components/ui/hand-drawn-frame";
-import { TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { TabsSwitch, type TabsSwitchItem } from "@/components/ui/tabs-switch";
 import { cn } from "@/lib/utils";
 import { CommunityVideoPlayer } from "./video-player";
 
-export interface CommunityTabsListItem {
-  disabled?: boolean;
-  label: string;
-  value: string;
-}
-
 export interface CommunityTabsListProps {
-  activeTab: string;
+  activeTab?: string;
   className?: string;
   disabled?: boolean;
-  tabs?: CommunityTabsListItem[];
+  tabs?: TabsSwitchItem[];
 }
 
 const defaultCommunityTabs = [
   { label: "Live Feed", value: "live-feed" },
   { label: "Video", value: "video" },
   { label: "X Posts", value: "x-posts" },
-] satisfies CommunityTabsListItem[];
+] satisfies TabsSwitchItem[];
 
 export function CommunityTabsList({
-  activeTab,
+  activeTab: _activeTab,
   className,
   disabled = false,
   tabs = defaultCommunityTabs,
 }: CommunityTabsListProps) {
   return (
-    <HandDrawnFrame
+    <TabsSwitch
       className={cn(
         "ghibli-community-tabs-frame mx-auto w-fit max-w-full max-[424px]:w-full",
         className,
       )}
-      contentClassName="px-1.5 py-1.5"
-      surfaceClassName="bg-[color:color-mix(in_oklab,var(--card)_84%,white)]"
-      strokeColor="var(--border)"
-      strokeWidth={1.5}
-      crookedness={0.45}
-    >
-      <TabsList className="ghibli-community-tabs-list gap-1 border-0 bg-transparent p-0 shadow-none max-[424px]:grid max-[424px]:w-full max-[424px]:grid-cols-3 max-[424px]:gap-1">
-        {tabs.map((tab) => {
-          const isActive = tab.value === activeTab;
-
-          return (
-            <TabsTrigger
-              className="ghibli-community-tabs-trigger min-w-0 bg-transparent p-0 text-[color:var(--muted-foreground)] shadow-none hover:text-[color:var(--foreground)] data-[state=active]:bg-transparent data-[state=active]:shadow-none max-[424px]:w-full max-[424px]:text-xs"
-              disabled={disabled || tab.disabled}
-              key={tab.value}
-              value={tab.value}
-            >
-              {isActive ? (
-                <HandDrawnFrame
-                  className="ghibli-community-tabs-pill inline-flex max-w-full text-[color:var(--primary)]"
-                  contentClassName="ghibli-community-tabs-pill-content flex min-w-0 items-center justify-center px-4 py-2 text-center leading-none max-[424px]:px-2"
-                  surfaceClassName="bg-[color:color-mix(in_oklab,var(--ring)_22%,white)]"
-                  strokeColor="var(--border)"
-                  strokeWidth={1.35}
-                  svgClassName="size-full"
-                  crookedness={0.9}
-                >
-                  <span className="ghibli-community-tabs-text whitespace-nowrap">
-                    {tab.label}
-                  </span>
-                </HandDrawnFrame>
-              ) : (
-                <span className="ghibli-community-tabs-label inline-flex items-center justify-center whitespace-nowrap px-4 py-2 max-[424px]:px-2">
-                  {tab.label}
-                </span>
-              )}
-            </TabsTrigger>
-          );
-        })}
-      </TabsList>
-    </HandDrawnFrame>
+      disabled={disabled}
+      tabs={tabs}
+    />
   );
 }
 
