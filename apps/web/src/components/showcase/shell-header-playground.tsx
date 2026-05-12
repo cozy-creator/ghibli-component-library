@@ -1,11 +1,5 @@
 import { useMemo, useState, type ReactNode } from "react";
-import {
-  LogOut,
-  Palette,
-  Search,
-  Sparkles,
-  UserRound,
-} from "lucide-react";
+import { LogOut, Palette, Search, Sparkles, UserRound } from "lucide-react";
 
 import {
   Badge,
@@ -45,7 +39,6 @@ export type ShellHeaderPlaygroundState = {
   showStartContent: boolean;
   showUser: boolean;
   showUtilityItems: boolean;
-  useLegacySocialItems: boolean;
   userTriggerVariant: "default" | "custom";
 };
 
@@ -59,7 +52,6 @@ export const defaultPlaygroundState: ShellHeaderPlaygroundState = {
   showStartContent: false,
   showUser: true,
   showUtilityItems: true,
-  useLegacySocialItems: false,
   userTriggerVariant: "default",
 };
 
@@ -262,8 +254,7 @@ export function buildPlaygroundSnippet(
   const utilityLiteral = utilityItemsLiteral(state);
 
   if (utilityLiteral) {
-    const propName = state.useLegacySocialItems ? "socialItems" : "utilityItems";
-    lines.push(`${propName}={${utilityLiteral}}`);
+    lines.push(`"utilityItems"={${utilityLiteral}}`);
   }
 
   const userJson = userLiteral(state);
@@ -312,7 +303,9 @@ function ToggleField({
     <label
       className={cn(
         "flex cursor-pointer items-start gap-3 border border-[color:var(--border-soft)] bg-[color:var(--paper-soft)] px-3 py-2.5 text-left transition-colors",
-        value ? "text-[color:var(--ink-strong)]" : "text-[color:var(--muted-foreground)]",
+        value
+          ? "text-[color:var(--ink-strong)]"
+          : "text-[color:var(--muted-foreground)]",
       )}
     >
       <input
@@ -415,20 +408,13 @@ export function ShellHeaderPlayground({
 
   const renderUserTrigger =
     state.showUser && state.userTriggerVariant === "custom"
-      ? (user: ShellUser) => (
-          <Button variant="outline">{user.name}</Button>
-        )
+      ? (user: ShellUser) => <Button variant="outline">{user.name}</Button>
       : undefined;
 
-  const utilityProp = state.useLegacySocialItems
-    ? { socialItems: previewBuild.utilityItems }
-    : { utilityItems: previewBuild.utilityItems };
+  const utilityProp = { utilityItems: previewBuild.utilityItems };
 
   return (
-    <div
-      className="grid gap-4"
-      data-testid="shell-header-playground"
-    >
+    <div className="grid gap-4" data-testid="shell-header-playground">
       <div
         className="min-w-0 border border-[color:var(--border-soft)] bg-[color:rgba(255,255,255,0.35)] p-4"
         data-testid="shell-header-playground-preview"
@@ -450,108 +436,99 @@ export function ShellHeaderPlayground({
 
       <div className="grid gap-4 lg:grid-cols-[minmax(0,18rem)_minmax(0,1fr)]">
         <div className="grid content-start gap-3 border border-[color:var(--border-soft)] bg-[color:rgba(255,255,255,0.35)] p-4">
-        <div className="grid gap-1">
-          <p className="font-[var(--font-heading)] text-lg text-[color:var(--ink-strong)]">
-            Header playground
-          </p>
-          <p className="text-xs leading-6 text-[color:var(--muted-foreground)]">
-            Toggle slots to preview how the navbar reflows.
-          </p>
+          <div className="grid gap-1">
+            <p className="font-[var(--font-heading)] text-lg text-[color:var(--ink-strong)]">
+              Header playground
+            </p>
+            <p className="text-xs leading-6 text-[color:var(--muted-foreground)]">
+              Toggle slots to preview how the navbar reflows.
+            </p>
+          </div>
+
+          <div className="grid gap-2">
+            <ToggleField
+              label="Brand"
+              onChange={(next) => update("showBrand", next)}
+              value={state.showBrand}
+            />
+            <ToggleField
+              description="Renders inside the start region after the brand."
+              label="Start content"
+              onChange={(next) => update("showStartContent", next)}
+              value={state.showStartContent}
+            />
+            <ToggleField
+              label="Nav items"
+              onChange={(next) => update("showNavItems", next)}
+              value={state.showNavItems}
+            />
+            <ToggleField
+              label="Utility items"
+              onChange={(next) => update("showUtilityItems", next)}
+              value={state.showUtilityItems}
+            />
+            <ToggleField
+              label="User"
+              onChange={(next) => update("showUser", next)}
+              value={state.showUser}
+            />
+            <ToggleField
+              description="Slot rendered before the end content."
+              label="Primary action"
+              onChange={(next) => update("showPrimaryAction", next)}
+              value={state.showPrimaryAction}
+            />
+            <ToggleField
+              label="End content"
+              onChange={(next) => update("showEndContent", next)}
+              value={state.showEndContent}
+            />
+          </div>
+
+          {state.showNavItems && navOptionsForActive.length > 0 ? (
+            <SegmentedField
+              label="Active nav item"
+              onChange={(next) => update("activeNavItem", next)}
+              options={navOptionsForActive}
+              value={state.activeNavItem}
+            />
+          ) : null}
+
+          {state.showUser ? (
+            <SegmentedField
+              label="User trigger"
+              onChange={(next) => update("userTriggerVariant", next)}
+              options={[
+                { label: "Default chip", value: "default" },
+                { label: "Custom button", value: "custom" },
+              ]}
+              value={state.userTriggerVariant}
+            />
+          ) : null}
+
+          <FormField
+            description="Sheet title shown in the mobile drawer."
+            htmlFor="shell-header-playground-mobile-title"
+            label="Mobile title"
+          >
+            <Input
+              id="shell-header-playground-mobile-title"
+              onChange={(event) =>
+                update("mobileTitle", event.currentTarget.value)
+              }
+              value={state.mobileTitle}
+            />
+          </FormField>
+
+          <Button
+            className="mt-1"
+            onClick={() => setState(defaultPlaygroundState)}
+            type="button"
+            variant="secondary"
+          >
+            Reset
+          </Button>
         </div>
-
-        <div className="grid gap-2">
-          <ToggleField
-            label="Brand"
-            onChange={(next) => update("showBrand", next)}
-            value={state.showBrand}
-          />
-          <ToggleField
-            description="Renders inside the start region after the brand."
-            label="Start content"
-            onChange={(next) => update("showStartContent", next)}
-            value={state.showStartContent}
-          />
-          <ToggleField
-            label="Nav items"
-            onChange={(next) => update("showNavItems", next)}
-            value={state.showNavItems}
-          />
-          <ToggleField
-            label="Utility items"
-            onChange={(next) => update("showUtilityItems", next)}
-            value={state.showUtilityItems}
-          />
-          <ToggleField
-            label="User"
-            onChange={(next) => update("showUser", next)}
-            value={state.showUser}
-          />
-          <ToggleField
-            description="Slot rendered before the end content."
-            label="Primary action"
-            onChange={(next) => update("showPrimaryAction", next)}
-            value={state.showPrimaryAction}
-          />
-          <ToggleField
-            label="End content"
-            onChange={(next) => update("showEndContent", next)}
-            value={state.showEndContent}
-          />
-        </div>
-
-        {state.showNavItems && navOptionsForActive.length > 0 ? (
-          <SegmentedField
-            label="Active nav item"
-            onChange={(next) => update("activeNavItem", next)}
-            options={navOptionsForActive}
-            value={state.activeNavItem}
-          />
-        ) : null}
-
-        {state.showUser ? (
-          <SegmentedField
-            label="User trigger"
-            onChange={(next) => update("userTriggerVariant", next)}
-            options={[
-              { label: "Default chip", value: "default" },
-              { label: "Custom button", value: "custom" },
-            ]}
-            value={state.userTriggerVariant}
-          />
-        ) : null}
-
-        {state.showUtilityItems ? (
-          <ToggleField
-            description="Render through the legacy socialItems alias instead of utilityItems."
-            label="Legacy socialItems"
-            onChange={(next) => update("useLegacySocialItems", next)}
-            value={state.useLegacySocialItems}
-          />
-        ) : null}
-
-        <FormField
-          description="Sheet title shown in the mobile drawer."
-          htmlFor="shell-header-playground-mobile-title"
-          label="Mobile title"
-        >
-          <Input
-            id="shell-header-playground-mobile-title"
-            onChange={(event) =>
-              update("mobileTitle", event.currentTarget.value)
-            }
-            value={state.mobileTitle}
-          />
-        </FormField>
-
-        <Button
-          className="mt-1"
-          onClick={() => setState(defaultPlaygroundState)}
-          type="button"
-          variant="secondary"
-        >
-          Reset
-        </Button>
-      </div>
 
         <div className="min-w-0">
           <PlaygroundCodeBlock>{snippet}</PlaygroundCodeBlock>
