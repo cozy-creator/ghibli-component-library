@@ -8,10 +8,7 @@
       "title": "Utils",
       "type": "registry:lib",
       "description": "Shared helpers, controllable-state utilities, and scenic tone classes.",
-      "dependencies": [
-        "clsx",
-        "tailwind-merge"
-      ],
+      "dependencies": ["clsx", "tailwind-merge"],
       "files": [
         {
           "path": "registry/ghibli/lib/utils.ts",
@@ -73,9 +70,7 @@
       "title": "Theme Sounds",
       "type": "registry:lib",
       "description": "Optional theme-aware UI sound helpers. Consumers must provide the referenced public audio assets or customize the sound source map after installation.",
-      "registryDependencies": [
-        "@ghibli/theme"
-      ],
+      "registryDependencies": ["@ghibli/theme"],
       "files": [
         {
           "path": "registry/ghibli/lib/theme/theme-sounds.ts",
@@ -105,9 +100,7 @@
       "type": "registry:style",
       "description": "Warm paper theme with stronger ink borders, flatter surfaces, and handcrafted texture helpers.",
       "extends": "none",
-      "dependencies": [
-        "tw-animate-css"
-      ],
+      "dependencies": ["tw-animate-css"],
       "files": [],
       "cssVars": {
         "theme": {
@@ -251,14 +244,8 @@
       "title": "Button",
       "type": "registry:ui",
       "description": "Soft paper action buttons with raised ink edges.",
-      "dependencies": [
-        "@radix-ui/react-slot",
-        "class-variance-authority"
-      ],
-      "registryDependencies": [
-        "@ghibli/style",
-        "@ghibli/utils"
-      ],
+      "dependencies": ["@radix-ui/react-slot", "class-variance-authority"],
+      "registryDependencies": ["@ghibli/style", "@ghibli/utils"],
       "files": [
         {
           "path": "registry/ghibli/ui/button.tsx",
@@ -272,10 +259,7 @@
       "title": "Cartoon Button",
       "type": "registry:ui",
       "description": "Chunkier illustrated CTA button built on top of the scenic button primitive.",
-      "registryDependencies": [
-        "@ghibli/button",
-        "@ghibli/utils"
-      ],
+      "registryDependencies": ["@ghibli/button", "@ghibli/utils"],
       "files": [
         {
           "path": "registry/ghibli/ui/cartoon-button.tsx",
@@ -283,23 +267,15 @@
           "target": "components/ui/cartoon-button.tsx"
         }
       ],
-      "dependencies": [
-        "lucide-react"
-      ]
+      "dependencies": ["lucide-react"]
     },
     {
       "name": "badge",
       "title": "Badge",
       "type": "registry:ui",
       "description": "Small scenic badges for states and metadata.",
-      "dependencies": [
-        "@radix-ui/react-slot",
-        "class-variance-authority"
-      ],
-      "registryDependencies": [
-        "@ghibli/style",
-        "@ghibli/utils"
-      ],
+      "dependencies": ["@radix-ui/react-slot", "class-variance-authority"],
+      "registryDependencies": ["@ghibli/style", "@ghibli/utils"],
       "files": [
         {
           "path": "registry/ghibli/ui/badge.tsx",
@@ -313,10 +289,7 @@
       "title": "Card",
       "type": "registry:ui",
       "description": "Layered paper card surface pieces.",
-      "registryDependencies": [
-        "@ghibli/style",
-        "@ghibli/utils"
-      ],
+      "registryDependencies": ["@ghibli/style", "@ghibli/utils"],
       "files": [
         {
           "path": "registry/ghibli/ui/card.tsx",
@@ -330,10 +303,7 @@
       "title": "Hand Drawn Frame",
       "type": "registry:ui",
       "description": "Reusable Cozy-style hand-drawn frame for surfaces and decorative divider rules.",
-      "registryDependencies": [
-        "@ghibli/style",
-        "@ghibli/utils"
-      ],
+      "registryDependencies": ["@ghibli/style", "@ghibli/utils"],
       "files": [
         {
           "path": "registry/ghibli/ui/hand-drawn-frame.tsx",
@@ -398,9 +368,7 @@
       "title": "Input OTP",
       "type": "registry:ui",
       "description": "One-time verification code input with grouped digit slots.",
-      "dependencies": [
-        "input-otp"
-      ],
+      "dependencies": ["input-otp"],
       "registryDependencies": [
         "@ghibli/style",
         "@ghibli/hand-drawn-frame",
@@ -437,10 +405,7 @@
       "title": "Label",
       "type": "registry:ui",
       "description": "Form label text with ink contrast.",
-      "registryDependencies": [
-        "@ghibli/style",
-        "@ghibli/utils"
-      ],
+      "registryDependencies": ["@ghibli/style", "@ghibli/utils"],
       "files": [
         {
           "path": "registry/ghibli/ui/label.tsx",
@@ -454,10 +419,7 @@
       "title": "Separator",
       "type": "registry:ui",
       "description": "Subtle divider for paper sections.",
-      "registryDependencies": [
-        "@ghibli/style",
-        "@ghibli/utils"
-      ],
+      "registryDependencies": ["@ghibli/style", "@ghibli/utils"],
       "files": [
         {
           "path": "registry/ghibli/ui/separator.tsx",
@@ -471,10 +433,7 @@
       "title": "Skeleton",
       "type": "registry:ui",
       "description": "Paper shimmer placeholder.",
-      "registryDependencies": [
-        "@ghibli/style",
-        "@ghibli/utils"
-      ],
+      "registryDependencies": ["@ghibli/style", "@ghibli/utils"],
       "files": [
         {
           "path": "registry/ghibli/ui/skeleton.tsx",
@@ -488,10 +447,7 @@
       "title": "Avatar",
       "type": "registry:ui",
       "description": "Soft-framed avatars and avatar groups.",
-      "registryDependencies": [
-        "@ghibli/style",
-        "@ghibli/utils"
-      ],
+      "registryDependencies": ["@ghibli/style", "@ghibli/utils"],
       "files": [
         {
           "path": "registry/ghibli/ui/avatar.tsx",
@@ -505,14 +461,8 @@
       "title": "Tabs",
       "type": "registry:ui",
       "description": "Segmented scenic tabs.",
-      "dependencies": [
-        "@radix-ui/react-tabs",
-        "class-variance-authority"
-      ],
-      "registryDependencies": [
-        "@ghibli/style",
-        "@ghibli/utils"
-      ],
+      "dependencies": ["@radix-ui/react-tabs", "class-variance-authority"],
+      "registryDependencies": ["@ghibli/style", "@ghibli/utils"],
       "files": [
         {
           "path": "registry/ghibli/ui/tabs.tsx",
@@ -522,18 +472,31 @@
       ]
     },
     {
+      "name": "tabs-switch",
+      "title": "Tabs Switch",
+      "type": "registry:ui",
+      "description": "Hand-drawn tabs switch built on top of the base tabs primitive.",
+      "registryDependencies": [
+        "@ghibli/style",
+        "@ghibli/hand-drawn-frame",
+        "@ghibli/tabs",
+        "@ghibli/utils"
+      ],
+      "files": [
+        {
+          "path": "registry/ghibli/ui/tabs-switch.tsx",
+          "type": "registry:ui",
+          "target": "components/ui/tabs-switch.tsx"
+        }
+      ]
+    },
+    {
       "name": "accordion",
       "title": "Accordion",
       "type": "registry:ui",
       "description": "FAQ-style accordion with simple controllable state.",
-      "dependencies": [
-        "@radix-ui/react-accordion",
-        "lucide-react"
-      ],
-      "registryDependencies": [
-        "@ghibli/style",
-        "@ghibli/utils"
-      ],
+      "dependencies": ["@radix-ui/react-accordion", "lucide-react"],
+      "registryDependencies": ["@ghibli/style", "@ghibli/utils"],
       "files": [
         {
           "path": "registry/ghibli/ui/accordion.tsx",
@@ -547,10 +510,7 @@
       "title": "Dialog",
       "type": "registry:ui",
       "description": "Paper-framed modal dialog.",
-      "dependencies": [
-        "@radix-ui/react-dialog",
-        "lucide-react"
-      ],
+      "dependencies": ["@radix-ui/react-dialog", "lucide-react"],
       "registryDependencies": [
         "@ghibli/style",
         "@ghibli/button",
@@ -569,10 +529,7 @@
       "title": "Sheet",
       "type": "registry:ui",
       "description": "Side sheet built on the dialog primitive.",
-      "dependencies": [
-        "@radix-ui/react-dialog",
-        "lucide-react"
-      ],
+      "dependencies": ["@radix-ui/react-dialog", "lucide-react"],
       "registryDependencies": [
         "@ghibli/style",
         "@ghibli/button",
@@ -591,14 +548,8 @@
       "title": "Dropdown Menu",
       "type": "registry:ui",
       "description": "Popover-backed paper menu for app controls.",
-      "dependencies": [
-        "@radix-ui/react-dropdown-menu",
-        "lucide-react"
-      ],
-      "registryDependencies": [
-        "@ghibli/style",
-        "@ghibli/utils"
-      ],
+      "dependencies": ["@radix-ui/react-dropdown-menu", "lucide-react"],
+      "registryDependencies": ["@ghibli/style", "@ghibli/utils"],
       "files": [
         {
           "path": "registry/ghibli/ui/dropdown-menu.tsx",
@@ -612,13 +563,8 @@
       "title": "Tooltip",
       "type": "registry:ui",
       "description": "Simple hover/focus tooltip backed by popover positioning.",
-      "dependencies": [
-        "@radix-ui/react-tooltip"
-      ],
-      "registryDependencies": [
-        "@ghibli/style",
-        "@ghibli/utils"
-      ],
+      "dependencies": ["@radix-ui/react-tooltip"],
+      "registryDependencies": ["@ghibli/style", "@ghibli/utils"],
       "files": [
         {
           "path": "registry/ghibli/ui/tooltip.tsx",
@@ -632,13 +578,8 @@
       "title": "Toast",
       "type": "registry:ui",
       "description": "Small portal-backed toast notifications for success, error, and informational feedback.",
-      "dependencies": [
-        "lucide-react"
-      ],
-      "registryDependencies": [
-        "@ghibli/style",
-        "@ghibli/utils"
-      ],
+      "dependencies": ["lucide-react"],
+      "registryDependencies": ["@ghibli/style", "@ghibli/utils"],
       "files": [
         {
           "path": "registry/ghibli/ui/toast.tsx",
@@ -670,10 +611,7 @@
       "title": "Notice Banner",
       "type": "registry:block",
       "description": "Scenic advisory banner for guidance, status updates, and inline product notices.",
-      "registryDependencies": [
-        "@ghibli/badge",
-        "@ghibli/utils"
-      ],
+      "registryDependencies": ["@ghibli/badge", "@ghibli/utils"],
       "files": [
         {
           "path": "registry/ghibli/blocks/feedback/notice-banner.tsx",
@@ -681,9 +619,7 @@
           "target": "components/blocks/feedback/notice-banner.tsx"
         }
       ],
-      "dependencies": [
-        "lucide-react"
-      ]
+      "dependencies": ["lucide-react"]
     },
     {
       "name": "floating-action",
@@ -708,10 +644,7 @@
       "title": "Page Shell",
       "type": "registry:block",
       "description": "Page-level shell primitives for consistent heroes, sections, and loading states.",
-      "registryDependencies": [
-        "@ghibli/skeleton",
-        "@ghibli/utils"
-      ],
+      "registryDependencies": ["@ghibli/skeleton", "@ghibli/utils"],
       "files": [
         {
           "path": "registry/ghibli/blocks/layout/page-shell.tsx",
@@ -725,10 +658,7 @@
       "title": "Sidebar Nav",
       "type": "registry:block",
       "description": "Grouped scenic sidebar navigation for docs, dashboards, and settings layouts.",
-      "registryDependencies": [
-        "@ghibli/button",
-        "@ghibli/utils"
-      ],
+      "registryDependencies": ["@ghibli/button", "@ghibli/utils"],
       "files": [
         {
           "path": "registry/ghibli/blocks/navigation/sidebar-nav.tsx",
@@ -759,9 +689,7 @@
           "target": "components/blocks/layout/shell.tsx"
         }
       ],
-      "dependencies": [
-        "lucide-react"
-      ]
+      "dependencies": ["lucide-react"]
     },
     {
       "name": "empty-state",
@@ -780,9 +708,7 @@
           "target": "components/blocks/shared/empty-state.tsx"
         }
       ],
-      "dependencies": [
-        "lucide-react"
-      ]
+      "dependencies": ["lucide-react"]
     },
     {
       "name": "marketing-sections",
@@ -802,19 +728,14 @@
           "target": "components/blocks/marketing/sections.tsx"
         }
       ],
-      "dependencies": [
-        "lucide-react"
-      ]
+      "dependencies": ["lucide-react"]
     },
     {
       "name": "docs-article",
       "title": "Docs Article",
       "type": "registry:block",
       "description": "Prose-friendly article wrapper with callouts, code blocks, and heading helpers.",
-      "registryDependencies": [
-        "@ghibli/style",
-        "@ghibli/utils"
-      ],
+      "registryDependencies": ["@ghibli/style", "@ghibli/utils"],
       "files": [
         {
           "path": "registry/ghibli/blocks/docs/docs-article.tsx",
@@ -828,10 +749,7 @@
       "title": "Docs FAQ Accordion",
       "type": "registry:block",
       "description": "FAQ presentation block for docs and info pages.",
-      "registryDependencies": [
-        "@ghibli/style",
-        "@ghibli/accordion"
-      ],
+      "registryDependencies": ["@ghibli/style", "@ghibli/accordion"],
       "files": [
         {
           "path": "registry/ghibli/blocks/docs/faq-accordion.tsx",
@@ -857,9 +775,7 @@
           "target": "components/blocks/theme/theme-option-card.tsx"
         }
       ],
-      "dependencies": [
-        "lucide-react"
-      ]
+      "dependencies": ["lucide-react"]
     },
     {
       "name": "change-theme-modal",

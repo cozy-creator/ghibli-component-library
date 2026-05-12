@@ -36,6 +36,7 @@ import {
   Tabs,
   TabsContent,
   TabsList,
+  TabsSwitch,
   TabsTrigger,
   Textarea,
   Tooltip,
@@ -1049,6 +1050,7 @@ import { Label } from "@/components/ui/label";
     notes: [
       "Use tabs for sibling content groups, not for full application navigation.",
       "Keep labels short so the triggers remain balanced at smaller widths.",
+      "Choose `Tabs Switch` when you want the stylized Cozy switch treatment without rebuilding the trigger list by hand.",
     ],
     preview: (
       <Tabs defaultValue="live">
@@ -1060,7 +1062,7 @@ import { Label } from "@/components/ui/label";
         <TabsContent value="video">Video feed content</TabsContent>
       </Tabs>
     ),
-    related: ["accordion", "dropdown-menu", "community-cards"],
+    related: ["tabs-switch", "accordion", "dropdown-menu", "community-cards"],
     storybookTitle: "Components/Navigation/Tabs",
     summary: "Segmented content navigation for sibling views and tool panels.",
     title: "Tabs",
@@ -1068,6 +1070,92 @@ import { Label } from "@/components/ui/label";
       "Basic usage",
       "tsx",
       `<Tabs defaultValue="overview">{/* ... */}</Tabs>`,
+    ),
+  },
+  {
+    description:
+      "Tabs Switch adds the hand-drawn Cozy.art treatment on top of the base tabs primitive, using a simple list of label and value pairs.",
+    examples: [
+      {
+        description:
+          "Use the styled switch when the tab list itself should feel like a polished control instead of a bare segmented strip.",
+        id: "tabs-switch-basic",
+        preview: (
+          <Tabs defaultValue="live-feed">
+            <TabsSwitch
+              tabs={[
+                { label: "Live Feed", value: "live-feed" },
+                { label: "Video", value: "video" },
+                { label: "X Posts", value: "x-posts" },
+              ]}
+            />
+            <TabsContent value="live-feed">Live Feed content</TabsContent>
+            <TabsContent value="video">Video content</TabsContent>
+            <TabsContent value="x-posts">X Posts content</TabsContent>
+          </Tabs>
+        ),
+        snippet: snippet(
+          "Usage",
+          "tsx",
+          `import { Tabs, TabsContent } from "@/components/ui/tabs";
+import { TabsSwitch } from "@/components/ui/tabs-switch";
+
+<Tabs defaultValue="live-feed">
+  <TabsSwitch
+    tabs={[
+      { label: "Live Feed", value: "live-feed" },
+      { label: "Video", value: "video" },
+      { label: "X Posts", value: "x-posts" },
+    ]}
+  />
+  <TabsContent value="live-feed">Live Feed content</TabsContent>
+  <TabsContent value="video">Video content</TabsContent>
+  <TabsContent value="x-posts">X Posts content</TabsContent>
+</Tabs>`,
+        ),
+        title: "Styled switch",
+      },
+    ],
+    exports: ["TabsSwitch"],
+    family: "Navigation",
+    importSnippet: snippet(
+      "Import",
+      "tsx",
+      `import { Tabs, TabsContent } from "@/components/ui/tabs";
+import { TabsSwitch } from "@/components/ui/tabs-switch";`,
+    ),
+    installSnippet: installSnippet("tabs-switch"),
+    kind: "component",
+    name: "tabs-switch",
+    notes: [
+      "Install this when you want the Cozy switch treatment. Keep the base `TabsList` and `TabsTrigger` primitives for lower-level layouts.",
+      "The `tabs` prop drives the trigger list, so changing labels or disabled states stays localized to one array.",
+    ],
+    preview: (
+      <Tabs defaultValue="live-feed">
+        <TabsSwitch
+          tabs={[
+            { label: "Live Feed", value: "live-feed" },
+            { label: "Video", value: "video" },
+            { label: "X Posts", value: "x-posts" },
+          ]}
+        />
+        <TabsContent value="live-feed">Live Feed content</TabsContent>
+        <TabsContent value="video">Video content</TabsContent>
+        <TabsContent value="x-posts">X Posts content</TabsContent>
+      </Tabs>
+    ),
+    related: ["tabs", "hand-drawn-frame", "community-cards"],
+    storybookTitle: "Components/Navigation/Tabs Switch",
+    summary:
+      "List-driven hand-drawn switch for content groups that need a more polished scenic treatment.",
+    title: "Tabs Switch",
+    usageSnippet: snippet(
+      "Basic usage",
+      "tsx",
+      `<Tabs defaultValue="live-feed">
+  <TabsSwitch tabs={[{ label: "Live Feed", value: "live-feed" }]} />
+</Tabs>`,
     ),
   },
   {
