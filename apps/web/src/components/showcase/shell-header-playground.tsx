@@ -63,6 +63,9 @@ function buildPreview(
         active: item.href === state.activeNavItem,
         href: item.href,
         label: item.label,
+        onClick: (event) => {
+          event.preventDefault();
+        },
       }))
     : [];
 
