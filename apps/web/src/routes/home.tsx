@@ -735,7 +735,7 @@ export function HomePage() {
         <Specimen
           id="component-user-popup"
           installName="layout-shell"
-          note="Toggle slots from the playground to preview how the layout shell header reflows across brand, nav, utility, user, primary action, and end content combinations."
+          note="Toggle slots from the playground to preview how the layout shell header reflows across brand, nav, utility, and user combinations."
           title="Header / User Popup"
         >
           <ShellHeaderPlayground
