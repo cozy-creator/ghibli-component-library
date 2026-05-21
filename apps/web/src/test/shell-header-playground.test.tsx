@@ -78,16 +78,12 @@ describe("ShellHeaderPlayground snippet generator", () => {
     expect(snippet).toContain('<Button variant="outline">{user.name}</Button>');
   });
 
-  it("includes primaryAction, endContent, and a custom mobileTitle", () => {
+  it("includes a custom mobileTitle", () => {
     const snippet = buildPlaygroundSnippet({
       ...defaultPlaygroundState,
       mobileTitle: "Studio menu",
-      showEndContent: true,
-      showPrimaryAction: true,
     });
 
-    expect(snippet).toContain('primaryAction={<CartoonButton text="Generate" />}');
-    expect(snippet).toContain('endContent={<Badge variant="stamp">Beta</Badge>}');
     expect(snippet).toContain('mobileTitle="Studio menu"');
   });
 
@@ -95,10 +91,7 @@ describe("ShellHeaderPlayground snippet generator", () => {
     const snippet = buildPlaygroundSnippet({
       ...defaultPlaygroundState,
       showBrand: false,
-      showEndContent: false,
       showNavItems: false,
-      showPrimaryAction: false,
-      showStartContent: false,
       showUser: false,
       showUtilityItems: false,
     });
@@ -186,10 +179,8 @@ describe("ShellHeaderPlayground component", () => {
 
     await user.click(getCheckbox("Brand"));
     await user.click(getCheckbox("User"));
-    await user.click(getCheckbox("End content"));
 
     expect(within(preview).queryByText("Ghibli UI")).not.toBeInTheDocument();
-    expect(within(preview).getByText("Beta")).toBeInTheDocument();
 
     await user.click(screen.getByRole("button", { name: "Reset" }));
 
@@ -197,8 +188,6 @@ describe("ShellHeaderPlayground component", () => {
     expect(
       within(preview).getByRole("button", { name: "User" }),
     ).toBeInTheDocument();
-    expect(within(preview).queryByText("Beta")).not.toBeInTheDocument();
     expect(screen.getByText(/brand=\{<BrandLink \/>\}/)).toBeInTheDocument();
-    expect(screen.queryByText(/endContent=/)).not.toBeInTheDocument();
   });
 });

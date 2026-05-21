@@ -1,10 +1,8 @@
 import { useMemo, useState, type ReactNode } from "react";
-import { LogOut, Palette, Search, Sparkles, UserRound } from "lucide-react";
+import { LogOut, Palette, UserRound } from "lucide-react";
 
 import {
-  Badge,
   Button,
-  CartoonButton,
   cn,
   DocsCodeBlock,
   FormField,
@@ -33,10 +31,7 @@ export type ShellHeaderPlaygroundState = {
   activeNavItem: string;
   mobileTitle: string;
   showBrand: boolean;
-  showEndContent: boolean;
   showNavItems: boolean;
-  showPrimaryAction: boolean;
-  showStartContent: boolean;
   showUser: boolean;
   showUtilityItems: boolean;
   userTriggerVariant: "default" | "custom";
@@ -46,10 +41,7 @@ export const defaultPlaygroundState: ShellHeaderPlaygroundState = {
   activeNavItem: "#generate-flows",
   mobileTitle: "Navigation",
   showBrand: true,
-  showEndContent: false,
   showNavItems: true,
-  showPrimaryAction: false,
-  showStartContent: false,
   showUser: true,
   showUtilityItems: true,
   userTriggerVariant: "default",
@@ -60,9 +52,6 @@ type PreviewBuild = {
   utilityItems: ShellNavItem[];
   user: ShellUser | undefined;
   brand: ReactNode | undefined;
-  startContent: ReactNode | undefined;
-  endContent: ReactNode | undefined;
-  primaryAction: ReactNode | undefined;
 };
 
 function buildPreview(
@@ -143,33 +132,9 @@ function buildPreview(
     </a>
   ) : undefined;
 
-  const startContent = state.showStartContent ? (
-    <div className="hidden items-center gap-2 text-sm text-[color:var(--muted-foreground)] md:flex">
-      <Search className="size-4" />
-      <span>Search library</span>
-    </div>
-  ) : undefined;
-
-  const endContent = state.showEndContent ? (
-    <Badge variant="stamp">Beta</Badge>
-  ) : undefined;
-
-  const primaryAction = state.showPrimaryAction ? (
-    <CartoonButton
-      color="#7b9d68"
-      icon={<Sparkles className="size-4" />}
-      onClick={() => undefined}
-      size="sm"
-      text="Generate"
-    />
-  ) : undefined;
-
   return {
     brand,
-    endContent,
     navItems,
-    primaryAction,
-    startContent,
     user,
     utilityItems,
   };
@@ -241,10 +206,6 @@ export function buildPlaygroundSnippet(
     lines.push(`brand={<BrandLink />}`);
   }
 
-  if (state.showStartContent) {
-    lines.push(`startContent={<SearchHint />}`);
-  }
-
   const navLiteral = navItemsLiteral(state);
 
   if (navLiteral) {
@@ -254,7 +215,7 @@ export function buildPlaygroundSnippet(
   const utilityLiteral = utilityItemsLiteral(state);
 
   if (utilityLiteral) {
-    lines.push(`"utilityItems"={${utilityLiteral}}`);
+    lines.push(`utilityItems={${utilityLiteral}}`);
   }
 
   const userJson = userLiteral(state);
@@ -267,14 +228,6 @@ export function buildPlaygroundSnippet(
     lines.push(
       `renderUserTrigger={(user) => (\n  <Button variant="outline">{user.name}</Button>\n)}`,
     );
-  }
-
-  if (state.showPrimaryAction) {
-    lines.push(`primaryAction={<CartoonButton text="Generate" />}`);
-  }
-
-  if (state.showEndContent) {
-    lines.push(`endContent={<Badge variant="stamp">Beta</Badge>}`);
   }
 
   if (state.mobileTitle && state.mobileTitle !== "Navigation") {
@@ -422,12 +375,9 @@ export function ShellHeaderPlayground({
         <div className="[&>header]:static">
           <ShellHeader
             brand={previewBuild.brand}
-            endContent={previewBuild.endContent}
             mobileTitle={state.mobileTitle}
             navItems={previewBuild.navItems}
-            primaryAction={previewBuild.primaryAction}
             renderUserTrigger={renderUserTrigger}
-            startContent={previewBuild.startContent}
             user={previewBuild.user}
             {...utilityProp}
           />
@@ -452,12 +402,6 @@ export function ShellHeaderPlayground({
               value={state.showBrand}
             />
             <ToggleField
-              description="Renders inside the start region after the brand."
-              label="Start content"
-              onChange={(next) => update("showStartContent", next)}
-              value={state.showStartContent}
-            />
-            <ToggleField
               label="Nav items"
               onChange={(next) => update("showNavItems", next)}
               value={state.showNavItems}
@@ -471,17 +415,6 @@ export function ShellHeaderPlayground({
               label="User"
               onChange={(next) => update("showUser", next)}
               value={state.showUser}
-            />
-            <ToggleField
-              description="Slot rendered before the end content."
-              label="Primary action"
-              onChange={(next) => update("showPrimaryAction", next)}
-              value={state.showPrimaryAction}
-            />
-            <ToggleField
-              label="End content"
-              onChange={(next) => update("showEndContent", next)}
-              value={state.showEndContent}
             />
           </div>
 
