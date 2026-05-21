@@ -41,27 +41,27 @@ describe("tabs switch", () => {
     const user = userEvent.setup();
 
     render(
-      <Tabs defaultValue="live-feed">
+      <Tabs defaultValue="updates">
         <TabsSwitch
           tabs={[
-            { label: "Live Feed", value: "live-feed" },
-            { disabled: true, label: "Video", value: "video" },
-            { label: "X Posts", value: "x-posts" },
+            { label: "Updates", value: "updates" },
+            { disabled: true, label: "Media", value: "media" },
+            { label: "Social", value: "social" },
           ]}
         />
-        <TabsContent value="live-feed">Live Feed content</TabsContent>
-        <TabsContent value="video">Video content</TabsContent>
-        <TabsContent value="x-posts">X Posts content</TabsContent>
+        <TabsContent value="updates">Updates content</TabsContent>
+        <TabsContent value="media">Media content</TabsContent>
+        <TabsContent value="social">Social content</TabsContent>
       </Tabs>,
     );
 
-    const disabledTab = screen.getByRole("tab", { name: "Video" });
+    const disabledTab = screen.getByRole("tab", { name: "Media" });
 
     expect(disabledTab).toBeDisabled();
 
     await user.click(disabledTab);
 
-    expect(screen.getByRole("tab", { name: "Live Feed" })).toHaveAttribute(
+    expect(screen.getByRole("tab", { name: "Updates" })).toHaveAttribute(
       "data-state",
       "active",
     );
@@ -72,24 +72,24 @@ describe("tabs switch", () => {
     const user = userEvent.setup();
 
     function ControlledTabsSwitch() {
-      const [value, setValue] = useState("live-feed");
+      const [value, setValue] = useState("updates");
 
       return (
         <div>
-          <button onClick={() => setValue("x-posts")} type="button">
+          <button onClick={() => setValue("social")} type="button">
             Show posts
           </button>
           <Tabs onValueChange={setValue} value={value}>
             <TabsSwitch
               tabs={[
-                { label: "Live Feed", value: "live-feed" },
-                { label: "Video", value: "video" },
-                { label: "X Posts", value: "x-posts" },
+                { label: "Updates", value: "updates" },
+                { label: "Media", value: "media" },
+                { label: "Social", value: "social" },
               ]}
             />
-            <TabsContent value="live-feed">Live Feed content</TabsContent>
-            <TabsContent value="video">Video content</TabsContent>
-            <TabsContent value="x-posts">X Posts content</TabsContent>
+            <TabsContent value="updates">Updates content</TabsContent>
+            <TabsContent value="media">Media content</TabsContent>
+            <TabsContent value="social">Social content</TabsContent>
           </Tabs>
         </div>
       );
@@ -97,17 +97,17 @@ describe("tabs switch", () => {
 
     render(<ControlledTabsSwitch />);
 
-    expect(screen.getByRole("tab", { name: "Live Feed" })).toHaveAttribute(
+    expect(screen.getByRole("tab", { name: "Updates" })).toHaveAttribute(
       "data-state",
       "active",
     );
 
     await user.click(screen.getByRole("button", { name: "Show posts" }));
 
-    expect(screen.getByRole("tab", { name: "X Posts" })).toHaveAttribute(
+    expect(screen.getByRole("tab", { name: "Social" })).toHaveAttribute(
       "data-state",
       "active",
     );
-    expect(screen.getByText("X Posts content")).toBeInTheDocument();
+    expect(screen.getByText("Social content")).toBeInTheDocument();
   });
 });

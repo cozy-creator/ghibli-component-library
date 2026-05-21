@@ -15,7 +15,7 @@ test("renders the single-page showcase and redirects legacy routes into anchors"
   await expect(page.locator("#shell-navigation")).toBeVisible();
   await expect(page.locator("#core-primitives")).toBeVisible();
   await expect(page.getByRole("heading", { exact: true, name: "Button" })).toBeVisible();
-  await expect(page.getByRole("heading", { exact: true, name: "Cozy Generate Editor Bar" })).toBeVisible();
+  await expect(page.getByRole("heading", { exact: true, name: "Generate Editor Bar" })).toBeVisible();
   await expect(page.getByRole("heading", { exact: true, name: "Footer" })).toBeVisible();
 
   await desktopHeader.getByRole("button", { name: /User/i }).click();
@@ -60,7 +60,7 @@ test("renders the single-page showcase and redirects legacy routes into anchors"
   await page.goto("/patterns/auth-forms");
 
   await expect(page).toHaveURL(/#pattern-auth-forms$/);
-  await expect(page.getByRole("heading", { name: "Cozy Auth Example" })).toBeVisible();
+  await expect(page.getByRole("heading", { name: "Auth Example" })).toBeVisible();
   await expect(page.locator("#pattern-auth-forms").getByRole("button", { name: "Create account" })).toBeVisible();
   await expect(page.getByText("Reference screen")).toHaveCount(0);
 });
@@ -87,7 +87,7 @@ test("renders the showcase on mobile and desktop without horizontal page overflo
   await page.reload();
 
   await expect(mobileMenuTrigger).toBeHidden();
-  await expect(page.getByRole("heading", { exact: true, name: "Cozy Image Card" })).toBeVisible();
+  await expect(page.getByRole("heading", { exact: true, name: "Image Card" })).toBeVisible();
   await expect(page.getByRole("heading", { exact: true, name: "Footer" })).toBeVisible();
   await expect.poll(async () =>
     page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth + 1)

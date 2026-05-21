@@ -12,7 +12,7 @@ import {
 } from "@/apps/web/src/components/site-header-icons";
 
 const repoUrl = "https://github.com/rodrigoluz/ghibli-component-library";
-const discordUrl = "https://discord.gg/cozyart";
+const discordUrl = "#";
 
 function jumpToAnchor(anchorId: string) {
   window.location.hash = anchorId;

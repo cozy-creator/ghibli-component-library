@@ -13,7 +13,7 @@ import type {
   GenerateAspectRatioOption,
   GenerateModelItem,
   GenerateModelsByBase,
-} from "@/cozy-examples/generate/controls";
+} from "@/examples/generate/controls";
 
 import { BrandMark } from "@/apps/web/src/components/site-brand";
 import {

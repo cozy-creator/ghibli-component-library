@@ -1,6 +1,6 @@
 import type { Meta, StoryObj } from "@storybook/react-vite";
 
-import { GenerateEditorBar } from "@/cozy-examples/generate/editor-bar";
+import { GenerateEditorBar } from "@/examples/generate/editor-bar";
 
 import {
   aspectRatioOptions,

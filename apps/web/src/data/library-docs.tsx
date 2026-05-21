@@ -49,21 +49,21 @@ import {
   AccountLinkedAccountsSection,
   AccountProfileSection,
   AccountSubscriptionSection,
-} from "@/cozy-examples/account/sections";
-import { AuthDialog } from "@/cozy-examples/auth/dialog";
-import { LoginForm, RegisterForm } from "@/cozy-examples/auth/forms";
+} from "@/examples/account/sections";
+import { AuthDialog } from "@/examples/auth/dialog";
+import { LoginForm, RegisterForm } from "@/examples/auth/forms";
 import {
   CommunityImageCard,
   CommunityVideoCard,
-} from "@/cozy-examples/community/cards";
+} from "@/examples/community/cards";
 import {
   GenerateAspectRatioSelect,
   GenerateButton,
   GenerateModeToggle,
   GenerateModelSelect,
-} from "@/cozy-examples/generate/controls";
-import { GenerateEditorBar } from "@/cozy-examples/generate/editor-bar";
-import { GenerateJobCard } from "@/cozy-examples/generate/job-card";
+} from "@/examples/generate/controls";
+import { GenerateEditorBar } from "@/examples/generate/editor-bar";
+import { GenerateJobCard } from "@/examples/generate/job-card";
 
 import {
   aspectRatioOptions,
@@ -1012,13 +1012,13 @@ import { Label } from "@/components/ui/label";
           "Tabs help organize content without switching to a heavier navigation pattern.",
         id: "tabs-basic",
         preview: (
-          <Tabs defaultValue="live">
+          <Tabs defaultValue="updates">
             <TabsList>
-              <TabsTrigger value="live">Live feed</TabsTrigger>
-              <TabsTrigger value="video">Video</TabsTrigger>
+              <TabsTrigger value="updates">Updates</TabsTrigger>
+              <TabsTrigger value="media">Media</TabsTrigger>
             </TabsList>
-            <TabsContent value="live">Image feed content</TabsContent>
-            <TabsContent value="video">Video feed content</TabsContent>
+            <TabsContent value="updates">Updates content</TabsContent>
+            <TabsContent value="media">Media content</TabsContent>
           </Tabs>
         ),
         snippet: snippet(
@@ -1026,13 +1026,13 @@ import { Label } from "@/components/ui/label";
           "tsx",
           `import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
-<Tabs defaultValue="live">
+<Tabs defaultValue="updates">
   <TabsList>
-    <TabsTrigger value="live">Live feed</TabsTrigger>
-    <TabsTrigger value="video">Video</TabsTrigger>
+    <TabsTrigger value="updates">Updates</TabsTrigger>
+    <TabsTrigger value="media">Media</TabsTrigger>
   </TabsList>
-  <TabsContent value="live">Image feed content</TabsContent>
-  <TabsContent value="video">Video feed content</TabsContent>
+  <TabsContent value="updates">Updates content</TabsContent>
+  <TabsContent value="media">Media content</TabsContent>
 </Tabs>`,
         ),
         title: "Segmented navigation",
@@ -1050,16 +1050,16 @@ import { Label } from "@/components/ui/label";
     notes: [
       "Use tabs for sibling content groups, not for full application navigation.",
       "Keep labels short so the triggers remain balanced at smaller widths.",
-      "Choose `Tabs Switch` when you want the stylized Cozy switch treatment without rebuilding the trigger list by hand.",
+      "Choose `Tabs Switch` when you want the stylized switch treatment without rebuilding the trigger list by hand.",
     ],
     preview: (
-      <Tabs defaultValue="live">
+      <Tabs defaultValue="updates">
         <TabsList>
-          <TabsTrigger value="live">Live feed</TabsTrigger>
-          <TabsTrigger value="video">Video</TabsTrigger>
+          <TabsTrigger value="updates">Updates</TabsTrigger>
+          <TabsTrigger value="media">Media</TabsTrigger>
         </TabsList>
-        <TabsContent value="live">Image feed content</TabsContent>
-        <TabsContent value="video">Video feed content</TabsContent>
+        <TabsContent value="updates">Updates content</TabsContent>
+        <TabsContent value="media">Media content</TabsContent>
       </Tabs>
     ),
     related: ["tabs-switch", "accordion", "dropdown-menu", "community-cards"],
@@ -1074,24 +1074,24 @@ import { Label } from "@/components/ui/label";
   },
   {
     description:
-      "Tabs Switch adds the hand-drawn Cozy.art treatment on top of the base tabs primitive, using a simple list of label and value pairs.",
+      "Tabs Switch adds the hand-drawn styled treatment on top of the base tabs primitive, using a simple list of label and value pairs.",
     examples: [
       {
         description:
           "Use the styled switch when the tab list itself should feel like a polished control instead of a bare segmented strip.",
         id: "tabs-switch-basic",
         preview: (
-          <Tabs defaultValue="live-feed">
+          <Tabs defaultValue="updates">
             <TabsSwitch
               tabs={[
-                { label: "Live Feed", value: "live-feed" },
-                { label: "Video", value: "video" },
-                { label: "X Posts", value: "x-posts" },
+                { label: "Updates", value: "updates" },
+                { label: "Media", value: "media" },
+                { label: "Social", value: "social" },
               ]}
             />
-            <TabsContent value="live-feed">Live Feed content</TabsContent>
-            <TabsContent value="video">Video content</TabsContent>
-            <TabsContent value="x-posts">X Posts content</TabsContent>
+            <TabsContent value="updates">Updates content</TabsContent>
+            <TabsContent value="media">Media content</TabsContent>
+            <TabsContent value="social">Social content</TabsContent>
           </Tabs>
         ),
         snippet: snippet(
@@ -1100,17 +1100,17 @@ import { Label } from "@/components/ui/label";
           `import { Tabs, TabsContent } from "@/components/ui/tabs";
 import { TabsSwitch } from "@/components/ui/tabs-switch";
 
-<Tabs defaultValue="live-feed">
+<Tabs defaultValue="updates">
   <TabsSwitch
     tabs={[
-      { label: "Live Feed", value: "live-feed" },
-      { label: "Video", value: "video" },
-      { label: "X Posts", value: "x-posts" },
+      { label: "Updates", value: "updates" },
+      { label: "Media", value: "media" },
+      { label: "Social", value: "social" },
     ]}
   />
-  <TabsContent value="live-feed">Live Feed content</TabsContent>
-  <TabsContent value="video">Video content</TabsContent>
-  <TabsContent value="x-posts">X Posts content</TabsContent>
+  <TabsContent value="updates">Updates content</TabsContent>
+  <TabsContent value="media">Media content</TabsContent>
+  <TabsContent value="social">Social content</TabsContent>
 </Tabs>`,
         ),
         title: "Styled switch",
@@ -1128,21 +1128,21 @@ import { TabsSwitch } from "@/components/ui/tabs-switch";`,
     kind: "component",
     name: "tabs-switch",
     notes: [
-      "Install this when you want the Cozy switch treatment. Keep the base `TabsList` and `TabsTrigger` primitives for lower-level layouts.",
+      "Install this when you want the styled switch treatment. Keep the base `TabsList` and `TabsTrigger` primitives for lower-level layouts.",
       "The `tabs` prop drives the trigger list, so changing labels or disabled states stays localized to one array.",
     ],
     preview: (
-      <Tabs defaultValue="live-feed">
+      <Tabs defaultValue="updates">
         <TabsSwitch
           tabs={[
-            { label: "Live Feed", value: "live-feed" },
-            { label: "Video", value: "video" },
-            { label: "X Posts", value: "x-posts" },
+            { label: "Updates", value: "updates" },
+            { label: "Media", value: "media" },
+            { label: "Social", value: "social" },
           ]}
         />
-        <TabsContent value="live-feed">Live Feed content</TabsContent>
-        <TabsContent value="video">Video content</TabsContent>
-        <TabsContent value="x-posts">X Posts content</TabsContent>
+        <TabsContent value="updates">Updates content</TabsContent>
+        <TabsContent value="media">Media content</TabsContent>
+        <TabsContent value="social">Social content</TabsContent>
       </Tabs>
     ),
     related: ["tabs", "hand-drawn-frame", "community-cards"],
@@ -1153,8 +1153,8 @@ import { TabsSwitch } from "@/components/ui/tabs-switch";`,
     usageSnippet: snippet(
       "Basic usage",
       "tsx",
-      `<Tabs defaultValue="live-feed">
-  <TabsSwitch tabs={[{ label: "Live Feed", value: "live-feed" }]} />
+      `<Tabs defaultValue="updates">
+  <TabsSwitch tabs={[{ label: "Updates", value: "updates" }]} />
 </Tabs>`,
     ),
   },
@@ -1859,11 +1859,11 @@ const allPatternDocs: DocItem[] = [
   },
   {
     description:
-      "Cozy-style mode, grouped model, ratio, and CTA controls for the bottom generate workflow.",
+      "Styled mode, grouped model, ratio, and CTA controls for the bottom generate workflow.",
     examples: [
       {
         description:
-          "Use the same grouped row from the Cozy generate page when you need the full core control set.",
+          "Use the same grouped row from the example generate page when you need the full core control set.",
         id: "generate-controls-overview",
         preview: (
           <div className="flex flex-wrap gap-3">
@@ -1921,8 +1921,8 @@ const allPatternDocs: DocItem[] = [
     kind: "pattern",
     name: "generate-controls",
     notes: [
-      "The grouped model selector expects Cozy-shaped model data split by base model.",
-      "This surface intentionally stays limited to the Cozy core row instead of bundling secondary dialogs or prompt helpers.",
+      "The grouped model selector expects model data split by base model.",
+      "This surface intentionally stays limited to the core row instead of bundling secondary dialogs or prompt helpers.",
     ],
     preview: (
       <div className="flex flex-wrap gap-3">

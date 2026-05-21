@@ -92,7 +92,7 @@ function buildPreview(
         },
         {
           external: true,
-          href: "https://discord.gg/cozyart",
+          href: "#",
           icon: <DiscordHeaderIcon />,
           iconOnly: true,
           label: "Discord",

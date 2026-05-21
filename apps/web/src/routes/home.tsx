@@ -58,30 +58,30 @@ import {
   AccountProfileSection,
   AccountSubscriptionSection,
   AccountUserDisplayBox,
-} from "@/cozy-examples/account/sections";
+} from "@/examples/account/sections";
 import {
   AccountChangeEmailDialog,
   AccountChangePasswordDialog,
   AccountChangeUsernameDialog,
-} from "@/cozy-examples/account/dialogs";
-import { AuthDialog } from "@/cozy-examples/auth/dialog";
-import { LoginForm, RegisterForm } from "@/cozy-examples/auth/forms";
+} from "@/examples/account/dialogs";
+import { AuthDialog } from "@/examples/auth/dialog";
+import { LoginForm, RegisterForm } from "@/examples/auth/forms";
 import {
   CommunityImageCard,
   CommunityVideoCard,
-} from "@/cozy-examples/community/cards";
+} from "@/examples/community/cards";
 import {
   CommunityImageModal,
   CommunityVideoModal,
-} from "@/cozy-examples/community/modals";
+} from "@/examples/community/modals";
 import {
   GenerateAspectRatioSelect,
   GenerateButton,
   type GenerateAttachment,
   GenerateModeToggle,
   GenerateModelSelect,
-} from "@/cozy-examples/generate/controls";
-import { GenerateEditorBar } from "@/cozy-examples/generate/editor-bar";
+} from "@/examples/generate/controls";
+import { GenerateEditorBar } from "@/examples/generate/editor-bar";
 
 import { BrandMark } from "@/apps/web/src/components/site-brand";
 import { mockHeaderAvatarUrl } from "@/apps/web/src/components/site-header-icons";
@@ -727,7 +727,7 @@ export function HomePage() {
           className={`max-w-3xl text-sm leading-7 text-[color:var(--muted-foreground)] ${forestReadableTextClass}`}
         >
           Installable sections below display their own install command with a
-          copy button. Cozy examples are showcase-only compositions.
+          copy button. The other examples are showcase-only compositions.
         </p>
       </section>
 
@@ -755,7 +755,7 @@ export function HomePage() {
         <Specimen
           id="component-hand-drawn-frame"
           installName="hand-drawn-frame"
-          note="The frame primitive now mirrors Cozy.art's surface and divider API with crookedness compensation and stroke-width variation controls."
+          note="The frame primitive exposes a surface and divider API with crookedness compensation and stroke-width variation controls."
           title="Hand Drawn Frame"
         >
           <div className="grid gap-4 lg:grid-cols-[minmax(0,18rem)_minmax(0,1fr)]">
@@ -791,7 +791,7 @@ export function HomePage() {
                     Interactive playground
                   </p>
                   <p className="text-sm leading-7 text-muted-foreground">
-                    Adjust the Cozy-style surface controls and preview the
+                    Adjust the hand-drawn surface controls and preview the
                     result live.
                   </p>
                 </div>
@@ -806,7 +806,7 @@ export function HomePage() {
                     Frame preview
                   </p>
                   <p className="mt-2 text-sm leading-7 text-muted-foreground">
-                    The showcase focuses on the primary Cozy surface treatment
+                    The showcase focuses on the primary surface treatment
                     instead of exposing every frame mode here.
                   </p>
                 </HandDrawnFrame>
@@ -1029,8 +1029,8 @@ export function HomePage() {
       <ShowcaseGroup id="auth-flows">
         <Specimen
           id="pattern-auth-forms"
-          note="Cozy example only: auth fields, tab labels, and register policy belong to the host app, not the public registry."
-          title="Cozy Auth Example"
+          note="Example only: auth fields, tab labels, and register policy belong to the host app, not the public registry."
+          title="Auth Example"
         >
           <div className="flex flex-wrap gap-3">
             <CartoonButton
@@ -1087,8 +1087,8 @@ export function HomePage() {
       <ShowcaseGroup id="account-screens">
         <Specimen
           id="pattern-account-user-display"
-          note="Cozy example only: account metadata, avatar actions, generation counts, and password policy are app-owned."
-          title="Cozy Account User Display"
+          note="Example only: account metadata, avatar actions, generation counts, and password policy are app-owned."
+          title="Account User Display"
         >
           <DemoSurface>
             <AccountUserDisplayBox
@@ -1108,8 +1108,8 @@ export function HomePage() {
 
         <Specimen
           id="pattern-account-profile-summary"
-          note="Cozy example only: this shows how primitives compose around account data without making account policy installable."
-          title="Cozy Account Profile Section"
+          note="Example only: this shows how primitives compose around account data without making account policy installable."
+          title="Account Profile Section"
         >
           <DemoSurface>
             <AccountProfileSection
@@ -1139,8 +1139,8 @@ export function HomePage() {
 
         <Specimen
           id="pattern-account-subscription"
-          note="Cozy example only: plan names, billing actions, and credit balances are product-specific."
-          title="Cozy Subscription Section"
+          note="Example only: plan names, billing actions, and credit balances are product-specific."
+          title="Subscription Section"
         >
           <DemoSurface>
             <AccountSubscriptionSection
@@ -1167,8 +1167,8 @@ export function HomePage() {
 
         <Specimen
           id="pattern-account-credits"
-          note="Cozy example only: ledger semantics and payment copy stay in the host app."
-          title="Cozy Payments Section"
+          note="Example only: ledger semantics and payment copy stay in the host app."
+          title="Payments Section"
         >
           <DemoSurface>
             <AccountApiCreditsSection ledger={creditLedger} />
@@ -1177,8 +1177,8 @@ export function HomePage() {
 
         <Specimen
           id="pattern-account-dialogs"
-          note="Cozy example only: username, email, and password change flows are app/auth-provider policy."
-          title="Cozy Account Dialogs"
+          note="Example only: username, email, and password change flows are app/auth-provider policy."
+          title="Account Dialogs"
         >
           <DemoSurface>
             <div className="flex flex-wrap gap-3">
@@ -1208,8 +1208,8 @@ export function HomePage() {
       <ShowcaseGroup id="community-flows">
         <Specimen
           id="pattern-community-cards"
-          note="Cozy example only: live-feed media, prompts, model metadata, and X-post semantics are product-owned."
-          title="Cozy Image Card"
+          note="Example only: live-feed media, prompts, model metadata, and X-post semantics are product-owned."
+          title="Image Card"
         >
           <div className="ghibli-showcase-image-card-grid">
             {featuredCommunityImages.map((item, index) => (
@@ -1249,8 +1249,8 @@ export function HomePage() {
 
         <Specimen
           id="pattern-community-video-card"
-          note="Cozy example only: video feed behavior and viewer semantics stay outside the installable registry."
-          title="Cozy Video Card"
+          note="Example only: video feed behavior and viewer semantics stay outside the installable registry."
+          title="Video Card"
         >
           <div className="ghibli-showcase-video-card-grid">
             {featuredCommunityVideos.map((item, index) => (
@@ -1292,8 +1292,8 @@ export function HomePage() {
       <ShowcaseGroup id="generate-flows">
         <Specimen
           id="pattern-generate-editor-bar"
-          note="Cozy example only: prompt submission, attachments, model selection, and generation policy belong to Cozy Art."
-          title="Cozy Generate Editor Bar"
+          note="Example only: prompt submission, attachments, model selection, and generation policy belong to the host application."
+          title="Generate Editor Bar"
         >
           <div className="ghibli-generate-editor-stage">
             <div className="ghibli-generate-editor-stage-dock">
@@ -1329,8 +1329,8 @@ export function HomePage() {
 
         <Specimen
           id="pattern-generate-controls"
-          note="Cozy example only: these controls show product-specific generation composition, not a public registry item."
-          title="Cozy Generate Controls"
+          note="Example only: these controls show product-specific generation composition, not a public registry item."
+          title="Generate Controls"
         >
           <div className="flex flex-wrap items-center gap-3">
             <GenerateModeToggle
@@ -1532,7 +1532,7 @@ export function HomePage() {
 
         <Specimen
           id="pattern-new-tokens"
-          note="CSS custom properties synced from Cozy Art. Each swatch is the resolved value under the active theme."
+          note="CSS custom properties exposed by the active theme. Each swatch shows the resolved value under the active theme."
           title="New Tokens"
         >
           <DemoSurface>

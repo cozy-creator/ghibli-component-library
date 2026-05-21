@@ -302,7 +302,7 @@
       "name": "hand-drawn-frame",
       "title": "Hand Drawn Frame",
       "type": "registry:ui",
-      "description": "Reusable Cozy-style hand-drawn frame for surfaces and decorative divider rules.",
+      "description": "Reusable hand-drawn frame for surfaces and decorative divider rules.",
       "registryDependencies": ["@ghibli/style", "@ghibli/utils"],
       "files": [
         {

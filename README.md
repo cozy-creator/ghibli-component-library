@@ -131,9 +131,9 @@ import { HandDrawnFrame } from "@/components/ui/hand-drawn-frame";
 
 Ghibli owns reusable presentation: primitives, style tokens, themes, generic form/layout/media shells, and small generic blocks. The registry should not encode host-app behavior such as auth policy, account-management rules, generation model semantics, backend routes, validation schemas, or product copy.
 
-The docs app may keep richer showcase examples under `apps/web/src/cozy-examples/`, but those examples are not listed in `registry.json`, are not exported from `@ghibli/ui`, and are not included by `@ghibli/all`. If an example needs Cozy Art terms to make sense, keep it as a non-installable showcase example or move it into Cozy Art.
+The docs app may keep richer showcase examples under `apps/web/src/examples/`, but those examples are not listed in `registry.json`, are not exported from `@ghibli/ui`, and are not included by `@ghibli/all`. If an example depends on host-application-specific terms to make sense, keep it as a non-installable showcase example or move it into the host application.
 
-For Cozy Art syncs, make shared style, primitive, theme, and generic presentation changes in this repo first, then re-install or copy the affected registry item into Cozy Art. Product behavior, content, schema, API, routing, auth, generation, and account-flow changes belong in Cozy Art only.
+When syncing into a consuming application, make shared style, primitive, theme, and generic presentation changes in this repo first, then re-install or copy the affected registry item into the host app. Product behavior, content, schema, API, routing, auth, generation, and account-flow changes belong in the host application only.
 
 ---
 

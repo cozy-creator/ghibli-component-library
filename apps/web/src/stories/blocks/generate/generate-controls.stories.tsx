@@ -5,7 +5,7 @@ import {
   GenerateButton,
   GenerateModeToggle,
   GenerateModelSelect
-} from "@/cozy-examples/generate/controls";
+} from "@/examples/generate/controls";
 
 import {
   aspectRatioOptions,
