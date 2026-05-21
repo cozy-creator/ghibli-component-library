@@ -57,6 +57,7 @@ type PreviewBuild = {
 function buildPreview(
   state: ShellHeaderPlaygroundState,
   onOpenThemeModal: () => void,
+  onSelectNavItem: (href: string) => void,
 ): PreviewBuild {
   const navItems: ShellNavItem[] = state.showNavItems
     ? navOptions.map((item) => ({
@@ -65,6 +66,7 @@ function buildPreview(
         label: item.label,
         onClick: (event) => {
           event.preventDefault();
+          onSelectNavItem(item.href);
         },
       }))
     : [];
@@ -346,17 +348,19 @@ export function ShellHeaderPlayground({
     defaultPlaygroundState,
   );
 
-  const previewBuild = useMemo(
-    () => buildPreview(state, onOpenThemeModal),
-    [state, onOpenThemeModal],
-  );
-
-  const snippet = useMemo(() => buildPlaygroundSnippet(state), [state]);
-
   const update = <K extends keyof ShellHeaderPlaygroundState>(
     key: K,
     value: ShellHeaderPlaygroundState[K],
   ) => setState((current) => ({ ...current, [key]: value }));
+
+  const previewBuild = useMemo(
+    () => buildPreview(state, onOpenThemeModal, (href) =>
+      setState((current) => ({ ...current, activeNavItem: href })),
+    ),
+    [state, onOpenThemeModal],
+  );
+
+  const snippet = useMemo(() => buildPlaygroundSnippet(state), [state]);
 
   const navOptionsForActive = navOptions
     .filter(() => state.showNavItems)
