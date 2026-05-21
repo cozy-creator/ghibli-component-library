@@ -22,9 +22,9 @@ import {
 const repoUrl = "https://github.com/rodrigoluz/ghibli-component-library";
 
 const navOptions: { active: boolean; href: string; label: string }[] = [
-  { active: true, href: "#generate-flows", label: "Generate" },
-  { active: false, href: "#community-flows", label: "Community" },
-  { active: false, href: "#docs-screens", label: "Docs" },
+  { active: true, href: "#create", label: "Create" },
+  { active: false, href: "#explore", label: "Explore" },
+  { active: false, href: "#resources", label: "Resources" },
 ];
 
 export type ShellHeaderPlaygroundState = {
@@ -38,7 +38,7 @@ export type ShellHeaderPlaygroundState = {
 };
 
 export const defaultPlaygroundState: ShellHeaderPlaygroundState = {
-  activeNavItem: "#generate-flows",
+  activeNavItem: "#create",
   mobileTitle: "Navigation",
   showBrand: true,
   showNavItems: true,

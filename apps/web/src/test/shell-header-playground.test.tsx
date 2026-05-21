@@ -28,7 +28,7 @@ describe("ShellHeaderPlayground snippet generator", () => {
 
     expect(snippet).toContain("brand={<BrandLink />}");
     expect(snippet).toContain('navItems={[');
-    expect(snippet).toContain('active: true, href: "#generate-flows"');
+    expect(snippet).toContain('active: true, href: "#create"');
     expect(snippet).toContain("utilityItems={[");
     expect(snippet).toContain("user={{");
     expect(snippet).not.toContain("socialItems={");
@@ -42,7 +42,7 @@ describe("ShellHeaderPlayground snippet generator", () => {
   it("omits sections when toggled off and switches the active nav item", () => {
     const next: ShellHeaderPlaygroundState = {
       ...defaultPlaygroundState,
-      activeNavItem: "#docs-screens",
+      activeNavItem: "#resources",
       showBrand: false,
       showUser: false,
       showUtilityItems: false,
@@ -54,8 +54,8 @@ describe("ShellHeaderPlayground snippet generator", () => {
     expect(snippet).not.toContain("user=");
     expect(snippet).not.toContain("utilityItems=");
     expect(snippet).not.toContain("socialItems=");
-    expect(snippet).toContain('active: true, href: "#docs-screens"');
-    expect(snippet).not.toContain('active: true, href: "#generate-flows"');
+    expect(snippet).toContain('active: true, href: "#resources"');
+    expect(snippet).not.toContain('active: true, href: "#create"');
   });
 
   it("uses the legacy socialItems alias when requested", () => {
@@ -106,7 +106,7 @@ describe("ShellHeaderPlayground component", () => {
 
     expect(within(preview).getByText("Ghibli UI")).toBeInTheDocument();
     expect(
-      within(preview).getByRole("link", { name: "Generate" }),
+      within(preview).getByRole("link", { name: "Create" }),
     ).toBeInTheDocument();
     expect(
       within(preview).getByRole("link", { name: "Change theme" }),
@@ -125,7 +125,7 @@ describe("ShellHeaderPlayground component", () => {
 
     await user.click(getCheckbox("Nav items"));
     expect(
-      within(preview).queryByRole("link", { name: "Generate" }),
+      within(preview).queryByRole("link", { name: "Create" }),
     ).not.toBeInTheDocument();
 
     await user.click(getCheckbox("Utility items"));
@@ -160,16 +160,16 @@ describe("ShellHeaderPlayground component", () => {
     const { preview } = renderPlayground();
 
     expect(
-      within(preview).getByRole("link", { name: "Generate" }),
+      within(preview).getByRole("link", { name: "Create" }),
     ).toHaveAttribute("aria-current", "page");
 
-    await user.click(screen.getByRole("button", { name: "Docs", pressed: false }));
+    await user.click(screen.getByRole("button", { name: "Resources", pressed: false }));
 
     expect(
-      within(preview).getByRole("link", { name: "Docs" }),
+      within(preview).getByRole("link", { name: "Resources" }),
     ).toHaveAttribute("aria-current", "page");
     expect(
-      within(preview).getByRole("link", { name: "Generate" }),
+      within(preview).getByRole("link", { name: "Create" }),
     ).not.toHaveAttribute("aria-current", "page");
   });
 
