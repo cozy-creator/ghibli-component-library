@@ -78,7 +78,7 @@ export function TabsSwitch({
               svgClassName="size-full opacity-0 transition-opacity duration-200 group-data-[state=active]/tabs-switch-trigger:opacity-100"
               crookedness={0.9}
             >
-              <span className="ghibli-tabs-switch-text max-w-full text-pretty [overflow-wrap:anywhere]">
+              <span className="ghibli-tabs-switch-text max-w-full whitespace-nowrap">
                 {tab.label}
               </span>
             </HandDrawnFrame>
