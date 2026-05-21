@@ -22,13 +22,13 @@ describe("docs information architecture", () => {
     expect(screen.getAllByText(/pnpm dlx shadcn@latest add @ghibli\/all/)).toHaveLength(1);
     expect(screen.getByRole("heading", { name: "Button" })).toBeInTheDocument();
     expect(screen.getByRole("heading", { name: "Tabs Switch" })).toBeInTheDocument();
-    expect(screen.getByRole("heading", { name: "Cozy Image Card" })).toBeInTheDocument();
-    expect(screen.getByRole("heading", { name: "Cozy Video Card" })).toBeInTheDocument();
-    expect(screen.getByRole("heading", { name: "Cozy Generate Editor Bar" })).toBeInTheDocument();
+    expect(screen.getByRole("heading", { name: "Image Card" })).toBeInTheDocument();
+    expect(screen.getByRole("heading", { name: "Video Card" })).toBeInTheDocument();
+    expect(screen.getByRole("heading", { name: "Generate Editor Bar" })).toBeInTheDocument();
     expect(screen.getByRole("heading", { name: "Storybook" })).toBeInTheDocument();
-    expect(screen.getByRole("heading", { name: "Cozy Account Dialogs" })).toBeInTheDocument();
-    expect(screen.getByRole("heading", { name: "Cozy Account User Display" })).toBeInTheDocument();
-    expect(screen.getByRole("heading", { name: "Cozy Subscription Section" })).toBeInTheDocument();
+    expect(screen.getByRole("heading", { name: "Account Dialogs" })).toBeInTheDocument();
+    expect(screen.getByRole("heading", { name: "Account User Display" })).toBeInTheDocument();
+    expect(screen.getByRole("heading", { name: "Subscription Section" })).toBeInTheDocument();
     expect(
       screen.queryByRole("heading", { name: "Dropdown, Model, Aspect Controls" })
     ).not.toBeInTheDocument();
@@ -78,7 +78,7 @@ describe("docs information architecture", () => {
       expect(window.location.hash).toBe("#pattern-auth-forms");
     });
 
-    expect(screen.getByRole("heading", { name: "Cozy Auth Example" })).toBeInTheDocument();
+    expect(screen.getByRole("heading", { name: "Auth Example" })).toBeInTheDocument();
     expect(screen.getAllByRole("button", { name: "Sign in" })).not.toHaveLength(0);
     expect(screen.getByRole("button", { name: "Create account" })).toBeInTheDocument();
     expect(screen.queryByText("pnpm dlx shadcn@latest add @ghibli/auth-forms")).not.toBeInTheDocument();
@@ -108,7 +108,7 @@ describe("docs information architecture", () => {
       });
 
       expect(container.querySelector("#component-generate-selects")).not.toBeNull();
-      expect(screen.getByRole("heading", { name: "Cozy Generate Controls" })).toBeInTheDocument();
+      expect(screen.getByRole("heading", { name: "Generate Controls" })).toBeInTheDocument();
     }
   );
 

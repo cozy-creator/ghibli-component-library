@@ -29,9 +29,9 @@ export interface CommunityTabsListProps {
 }
 
 const defaultCommunityTabs = [
-  { label: "Live Feed", value: "live-feed" },
-  { label: "Video", value: "video" },
-  { label: "X Posts", value: "x-posts" },
+  { label: "Updates", value: "updates" },
+  { label: "Media", value: "media" },
+  { label: "Social", value: "social" },
 ] satisfies TabsSwitchItem[];
 
 export function CommunityTabsList({

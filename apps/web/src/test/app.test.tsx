@@ -11,7 +11,7 @@ describe("app", () => {
 
     expect(screen.getByText(/pnpm dlx shadcn@latest add @ghibli\/all/)).toBeInTheDocument();
     expect(screen.getByRole("heading", { name: "Button" })).toBeInTheDocument();
-    expect(screen.getByRole("heading", { name: "Cozy Generate Editor Bar" })).toBeInTheDocument();
+    expect(screen.getByRole("heading", { name: "Generate Editor Bar" })).toBeInTheDocument();
     expect(screen.getByRole("heading", { name: "Footer" })).toBeInTheDocument();
     const siteBrandLink = screen.getByRole("link", { name: "Ghibli UI Library" });
 

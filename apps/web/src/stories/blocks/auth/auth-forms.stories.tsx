@@ -4,7 +4,7 @@ import {
   ForgotPasswordForm,
   LoginForm,
   RegisterForm,
-} from "@/cozy-examples/auth/forms";
+} from "@/examples/auth/forms";
 
 const meta = {
   title: "Patterns/Auth/Auth Forms"

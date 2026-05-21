@@ -6,7 +6,7 @@ import {
   CommunityTabsList,
   CommunityVideoCard,
   CommunityXPostCard,
-} from "@/cozy-examples/community/cards";
+} from "@/examples/community/cards";
 
 describe("community cards", () => {
   it("renders image, video, and x-post cards", () => {
@@ -24,8 +24,8 @@ describe("community cards", () => {
           handle="melina"
           metrics={{ likes: "20", replies: "4", reposts: "5" }}
         />
-        <Tabs value="video">
-          <CommunityTabsList activeTab="video" />
+        <Tabs value="media">
+          <CommunityTabsList activeTab="media" />
         </Tabs>
       </div>
     );
@@ -34,6 +34,6 @@ describe("community cards", () => {
     expect(screen.getByText("Lantern ferry glide")).toBeInTheDocument();
     expect(screen.getByText("Painterly component release notes.")).toBeInTheDocument();
     expect(screen.getByText("20")).toBeInTheDocument();
-    expect(screen.getByRole("tab", { name: "Video" })).toHaveAttribute("data-state", "active");
+    expect(screen.getByRole("tab", { name: "Media" })).toHaveAttribute("data-state", "active");
   });
 });

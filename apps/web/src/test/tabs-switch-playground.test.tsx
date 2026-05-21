@@ -24,10 +24,10 @@ describe("TabsSwitchPlayground snippet generator", () => {
     expect(snippet).toContain(
       'import { TabsSwitch } from "@/components/ui/tabs-switch";',
     );
-    expect(snippet).toContain('<Tabs defaultValue="live-feed">');
-    expect(snippet).toContain('{ label: "Live Feed", value: "live-feed" }');
-    expect(snippet).toContain('{ label: "Video", value: "video" }');
-    expect(snippet).toContain('{ label: "X Posts", value: "x-posts" }');
+    expect(snippet).toContain('<Tabs defaultValue="updates">');
+    expect(snippet).toContain('{ label: "Updates", value: "updates" }');
+    expect(snippet).toContain('{ label: "Media", value: "media" }');
+    expect(snippet).toContain('{ label: "Social", value: "social" }');
   });
 
   it("updates labels, values, and disabled state from the list-driven controls", () => {
@@ -60,7 +60,7 @@ describe("TabsSwitchPlayground component", () => {
     const { preview } = renderPlayground();
 
     expect(
-      within(preview).getByRole("tab", { name: "Live Feed" }),
+      within(preview).getByRole("tab", { name: "Updates" }),
     ).toHaveAttribute("data-state", "active");
     expect(
       screen.getByText(
@@ -76,14 +76,14 @@ describe("TabsSwitchPlayground component", () => {
     await user.clear(screen.getByLabelText("Option 1 label"));
     await user.type(screen.getByLabelText("Option 1 label"), "Forest Notes");
     await user.click(screen.getAllByRole("checkbox", { name: "Disabled" })[1]!);
-    await user.click(screen.getByRole("button", { name: "X Posts" }));
+    await user.click(screen.getByRole("button", { name: "Social" }));
 
     expect(
       within(preview).getByRole("tab", { name: "Forest Notes" }),
     ).toBeInTheDocument();
-    expect(within(preview).getByRole("tab", { name: "Video" })).toBeDisabled();
+    expect(within(preview).getByRole("tab", { name: "Media" })).toBeDisabled();
     expect(
-      within(preview).getByRole("tab", { name: "X Posts" }),
+      within(preview).getByRole("tab", { name: "Social" }),
     ).toHaveAttribute("data-state", "active");
     expect(screen.getByText(/label: "Forest Notes"/)).toBeInTheDocument();
     expect(screen.getByText(/value: "forest-notes"/)).toBeInTheDocument();
@@ -102,18 +102,18 @@ describe("TabsSwitchPlayground component", () => {
       within(preview).getByRole("tab", { name: "Forest Notes" }),
     ).toBeInTheDocument();
     expect(
-      within(preview).getByRole("tab", { name: "X Posts" }),
+      within(preview).getByRole("tab", { name: "Social" }),
     ).toBeDisabled();
 
     await user.click(screen.getByRole("button", { name: "Reset" }));
 
     expect(
-      within(preview).getByRole("tab", { name: "Live Feed" }),
+      within(preview).getByRole("tab", { name: "Updates" }),
     ).toHaveAttribute("data-state", "active");
     expect(
-      within(preview).getByRole("tab", { name: "Video" }),
+      within(preview).getByRole("tab", { name: "Media" }),
     ).not.toBeDisabled();
-    expect(screen.getByText(/label: "Live Feed"/)).toBeInTheDocument();
+    expect(screen.getByText(/label: "Updates"/)).toBeInTheDocument();
     expect(screen.queryByText(/label: "Forest Notes"/)).not.toBeInTheDocument();
   });
 });

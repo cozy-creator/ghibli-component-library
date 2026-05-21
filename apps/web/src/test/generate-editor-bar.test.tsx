@@ -4,11 +4,11 @@ import userEvent from "@testing-library/user-event";
 import {
   GenerateAspectRatioSelect,
   GenerateModelSelect,
-} from "@/cozy-examples/generate/controls";
+} from "@/examples/generate/controls";
 import {
   GenerateEditorBar,
   GeneratePromptComposer,
-} from "@/cozy-examples/generate/editor-bar";
+} from "@/examples/generate/editor-bar";
 
 const modeOptions = [
   { label: "Image", value: "image" },

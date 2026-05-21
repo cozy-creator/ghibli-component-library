@@ -1,6 +1,6 @@
 import type { Meta, StoryObj } from "@storybook/react-vite";
 
-import { GenerateJobCard } from "@/cozy-examples/generate/job-card";
+import { GenerateJobCard } from "@/examples/generate/job-card";
 
 import { sampleJobs } from "@/apps/web/src/data/demo-fixtures";
 

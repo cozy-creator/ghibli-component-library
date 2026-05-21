@@ -3,7 +3,7 @@ import type { Meta, StoryObj } from "@storybook/react-vite";
 import {
   AccountChangeEmailDialog,
   AccountChangePasswordDialog,
-} from "@/cozy-examples/account/dialogs";
+} from "@/examples/account/dialogs";
 
 const meta = {
   title: "Patterns/Account/Account Dialogs"

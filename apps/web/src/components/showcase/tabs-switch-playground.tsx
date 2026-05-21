@@ -30,17 +30,17 @@ type ResolvedTabsSwitchItem = {
 };
 
 const previewDescriptions = [
-  "Pinned sketches, community notes, and fresh hand-drawn experiments.",
-  "Short motion studies, paint-over clips, and looping scene tests.",
-  "Quick launch chatter, reposts, and studio updates for the current build.",
+  "Recent activity, shared notes, and highlighted updates.",
+  "Featured media, previews, and short-form content.",
+  "Community posts, announcements, and external updates.",
 ];
 
 export const defaultTabsSwitchPlaygroundState: TabsSwitchPlaygroundState = {
   activeIndex: 0,
   items: [
-    { disabled: false, label: "Live Feed" },
-    { disabled: false, label: "Video" },
-    { disabled: false, label: "X Posts" },
+    { disabled: false, label: "Updates" },
+    { disabled: false, label: "Media" },
+    { disabled: false, label: "Social" },
   ],
 };
 

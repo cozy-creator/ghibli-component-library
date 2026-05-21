@@ -14,7 +14,7 @@ import {
 } from "@/apps/web/src/data/demo-fixtures";
 
 describe("showcase interactions", () => {
-  it("opens the auth modal from Cozy-style trigger buttons", async () => {
+  it("opens the auth modal from styled trigger buttons", async () => {
     const user = userEvent.setup();
 
     window.history.pushState({}, "", "/");
@@ -109,7 +109,7 @@ describe("showcase interactions", () => {
     ).toBeInTheDocument();
   }, 10000);
 
-  it("renders the generate flow with the Cozy drawer interactions", async () => {
+  it("renders the generate flow with the drawer interactions", async () => {
     const user = userEvent.setup();
 
     window.history.pushState({}, "", "/");
@@ -126,7 +126,7 @@ describe("showcase interactions", () => {
     expect(generateControlsSection).not.toBeNull();
 
     expect(
-      screen.getByRole("heading", { name: "Cozy Generate Editor Bar" }),
+      screen.getByRole("heading", { name: "Generate Editor Bar" }),
     ).toBeInTheDocument();
     expect(
       screen.queryByRole("heading", {
@@ -177,7 +177,7 @@ describe("showcase interactions", () => {
     expect(screen.getByText("(Portrait)")).toBeInTheDocument();
   }, 10000);
 
-  it("updates the hand-drawn frame playground with the new Cozy frame controls", async () => {
+  it("updates the hand-drawn frame playground with the new frame controls", async () => {
     window.history.pushState({}, "", "/");
 
     const { container } = render(<App />);
@@ -261,7 +261,7 @@ describe("showcase interactions", () => {
     expect(tabsSection).not.toBeNull();
     expect(
       within(tabsSection as HTMLElement).getByRole("tab", {
-        name: "Live Feed",
+        name: "Updates",
       }),
     ).toHaveAttribute("data-state", "active");
 
@@ -279,7 +279,7 @@ describe("showcase interactions", () => {
     );
     await user.click(
       within(tabsSection as HTMLElement).getByRole("button", {
-        name: "X Posts",
+        name: "Social",
       }),
     );
 
@@ -289,10 +289,10 @@ describe("showcase interactions", () => {
       }),
     ).toBeInTheDocument();
     expect(
-      within(tabsSection as HTMLElement).getByRole("tab", { name: "Video" }),
+      within(tabsSection as HTMLElement).getByRole("tab", { name: "Media" }),
     ).toBeDisabled();
     expect(
-      within(tabsSection as HTMLElement).getByRole("tab", { name: "X Posts" }),
+      within(tabsSection as HTMLElement).getByRole("tab", { name: "Social" }),
     ).toHaveAttribute("data-state", "active");
     expect(
       within(tabsSection as HTMLElement).getByText(/value: "forest-notes"/),
