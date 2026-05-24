@@ -311,6 +311,11 @@
           "target": "components/ui/hand-drawn-frame.tsx"
         },
         {
+          "path": "registry/ghibli/ui/hand-drawn-frame.random.ts",
+          "type": "registry:ui",
+          "target": "components/ui/hand-drawn-frame.random.ts"
+        },
+        {
           "path": "registry/ghibli/ui/hand-drawn-frame.geometry.ts",
           "type": "registry:ui",
           "target": "components/ui/hand-drawn-frame.geometry.ts"
@@ -650,6 +655,22 @@
           "path": "registry/ghibli/blocks/layout/page-shell.tsx",
           "type": "registry:block",
           "target": "components/blocks/layout/page-shell.tsx"
+        }
+      ]
+    },
+    {
+      "name": "media-grid",
+      "title": "Media Grid",
+      "type": "registry:block",
+      "description": "Responsive image/video gallery grid: fluid 2-to-8 columns that stretch within each breakpoint, designed for an edge-to-edge container.",
+      "registryDependencies": [
+        "@ghibli/utils"
+      ],
+      "files": [
+        {
+          "path": "registry/ghibli/blocks/layout/media-grid.tsx",
+          "type": "registry:block",
+          "target": "components/blocks/layout/media-grid.tsx"
         }
       ]
     },

@@ -3,7 +3,7 @@ import * as React from "react";
 import { Skeleton } from "@/components/ui/skeleton";
 import { cn, layoutContainerClass, paperSurfaceClass } from "@/lib/utils";
 
-type PageWidth = "md" | "lg" | "xl";
+type PageWidth = "md" | "lg" | "xl" | "full";
 
 interface PageShellProps {
   children: React.ReactNode;
@@ -35,7 +35,10 @@ interface PageHeroSkeletonProps {
 const widthClassMap: Record<PageWidth, string> = {
   md: "max-w-4xl",
   lg: "max-w-5xl",
-  xl: "max-w-7xl"
+  xl: "max-w-7xl",
+  // Edge-to-edge: drop the max width so content (e.g. a media gallery grid)
+  // reaches the page gutters. Only the layout container padding remains.
+  full: "max-w-none"
 };
 
 export function PageShell({ children, className, width = "xl" }: PageShellProps) {
