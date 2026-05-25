@@ -319,6 +319,16 @@
           "path": "registry/ghibli/ui/hand-drawn-frame.stroke-width-variation.ts",
           "type": "registry:ui",
           "target": "components/ui/hand-drawn-frame.stroke-width-variation.ts"
+        },
+        {
+          "path": "registry/ghibli/ui/hand-drawn-frame.random.ts",
+          "type": "registry:ui",
+          "target": "components/ui/hand-drawn-frame.random.ts"
+        },
+        {
+          "path": "registry/ghibli/ui/hand-drawn-frame.bezier.ts",
+          "type": "registry:ui",
+          "target": "components/ui/hand-drawn-frame.bezier.ts"
         }
       ]
     },
