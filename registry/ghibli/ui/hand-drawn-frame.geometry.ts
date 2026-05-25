@@ -1,21 +1,17 @@
-import { createSeededRandom } from "./hand-drawn-frame.random";
-
 export type HandDrawnFrameShape = "surface" | "divider";
 
 export type HandDrawnFrameAxis = "x" | "y";
 
 export type HandDrawnFrameCoordinateRole = "anchor" | "control";
 
-/**
- * Per-axis jitter/morph multiplier. The SVG viewBox is stretched to fill the
- * frame with preserveAspectRatio="none", so wobble authored in viewBox units
- * renders larger on the more-stretched axis. To keep the hand-drawn drift even
- * in *rendered pixels*, the weaker (less-stretched) axis is amplified by the
- * stretch ratio; the dominant axis stays at 1. A square frame is {x:1, y:1}.
- */
-export type HandDrawnFrameAxisScale = {
-  x: number;
-  y: number;
+type HandDrawnFrameAxisRoleCompensation = Record<
+  HandDrawnFrameAxis,
+  Record<HandDrawnFrameCoordinateRole, number>
+>;
+
+export type HandDrawnFrameCrookednessCompensation = {
+  jitter: HandDrawnFrameAxisRoleCompensation;
+  morph: HandDrawnFrameAxisRoleCompensation;
 };
 
 export type HandDrawnFrameJitterConfig = {
@@ -25,7 +21,20 @@ export type HandDrawnFrameJitterConfig = {
 
 const PATH_TOKEN_PATTERN = /[A-Za-z]|-?\d*\.?\d+/g;
 const NEUTRAL_SCALE_RATIO_THRESHOLD = 1.01;
-const NEUTRAL_AXIS_SCALE: HandDrawnFrameAxisScale = { x: 1, y: 1 };
+
+function createNeutralAxisRoleCompensation(): HandDrawnFrameAxisRoleCompensation {
+  return {
+    x: { anchor: 1, control: 1 },
+    y: { anchor: 1, control: 1 },
+  };
+}
+
+function createNeutralCrookednessCompensation(): HandDrawnFrameCrookednessCompensation {
+  return {
+    jitter: createNeutralAxisRoleCompensation(),
+    morph: createNeutralAxisRoleCompensation(),
+  };
+}
 
 export function clamp(value: number, min: number, max: number) {
   return Math.min(max, Math.max(min, value));
@@ -79,30 +88,22 @@ function coordinateAxis(command: string, coordinateIndex: number) {
   return coordinateIndex % 2 === 0 ? "x" : "y";
 }
 
-// Mirrors the original command-letter axis seeding so output is unchanged.
-function axisForCommandToken(token: string, current: HandDrawnFrameAxis) {
-  if (/[MLCQST]/.test(token)) return "x";
-  if (token === "H") return "x";
-  if (token === "V") return "y";
-
-  return current;
+function resolveCrookednessCompensationValue(
+  compensation?: HandDrawnFrameCrookednessCompensation,
+) {
+  return compensation ?? createNeutralCrookednessCompensation();
 }
 
-/**
- * Compute the per-axis amplification needed for even rendered wobble. Replaces
- * the previous nested compensation tables (Record<axis, Record<role>>): the
- * weaker axis ends up at the stretch ratio, the dominant axis at 1, which
- * equalises pixel drift across axes. Returns neutral for dividers, square-ish
- * frames, or invalid sizes.
- */
-export function resolveAxisJitterScale(
+export function resolveCrookednessCompensation(
   shape: HandDrawnFrameShape,
   viewBox: string,
   width?: number | null,
   height?: number | null,
-): HandDrawnFrameAxisScale {
+): HandDrawnFrameCrookednessCompensation {
+  const neutralCompensation = createNeutralCrookednessCompensation();
+
   if (shape !== "surface" || !width || !height || width <= 0 || height <= 0) {
-    return NEUTRAL_AXIS_SCALE;
+    return neutralCompensation;
   }
 
   const bounds = parseViewBox(viewBox);
@@ -115,25 +116,67 @@ export function resolveAxisJitterScale(
     scaleX <= 0 ||
     scaleY <= 0
   ) {
-    return NEUTRAL_AXIS_SCALE;
+    return neutralCompensation;
   }
 
   const dominantScale = Math.max(scaleX, scaleY);
-  const scaleRatio = dominantScale / Math.min(scaleX, scaleY);
+  const weakerScale = Math.min(scaleX, scaleY);
+  const scaleRatio = dominantScale / weakerScale;
 
-  if (!Number.isFinite(scaleRatio) || scaleRatio <= NEUTRAL_SCALE_RATIO_THRESHOLD) {
-    return NEUTRAL_AXIS_SCALE;
+  if (
+    !Number.isFinite(scaleRatio) ||
+    scaleRatio <= 0 ||
+    scaleRatio <= NEUTRAL_SCALE_RATIO_THRESHOLD
+  ) {
+    return neutralCompensation;
   }
 
-  // Dominant axis -> dominant/dominant = 1; weaker axis -> dominant/weaker = ratio.
-  return { x: dominantScale / scaleX, y: dominantScale / scaleY };
+  const weakerAxis: HandDrawnFrameAxis = scaleX < scaleY ? "x" : "y";
+  const compensation = createNeutralCrookednessCompensation();
+
+  compensation.morph[weakerAxis].control = scaleRatio;
+  compensation.jitter[weakerAxis].anchor = scaleRatio;
+  compensation.jitter[weakerAxis].control = scaleRatio;
+
+  return compensation;
+}
+
+function resolveCoordinateCompensation(
+  compensation: HandDrawnFrameAxisRoleCompensation,
+  axis: HandDrawnFrameAxis,
+  role: HandDrawnFrameCoordinateRole | null,
+) {
+  if (!role) {
+    return 1;
+  }
+
+  return compensation[axis][role];
+}
+
+function resolveInterpolationIntensity(
+  baseIntensity: number,
+  compensation: HandDrawnFrameCrookednessCompensation,
+  axis: HandDrawnFrameAxis,
+  role: HandDrawnFrameCoordinateRole | null,
+) {
+  const coordinateCompensation = resolveCoordinateCompensation(
+    compensation.morph,
+    axis,
+    role,
+  );
+
+  return clamp(
+    baseIntensity * coordinateCompensation,
+    0,
+    coordinateCompensation,
+  );
 }
 
 export function interpolatePath(
   fromPath: string,
   toPath: string,
   intensity: number,
-  axisScale: HandDrawnFrameAxisScale = NEUTRAL_AXIS_SCALE,
+  compensation?: HandDrawnFrameCrookednessCompensation,
 ) {
   const baseIntensity = clamp(intensity, 0, 1);
 
@@ -148,6 +191,8 @@ export function interpolatePath(
     return baseIntensity < 0.5 ? fromPath : toPath;
   }
 
+  const resolvedCompensation =
+    resolveCrookednessCompensationValue(compensation);
   let axis: HandDrawnFrameAxis = "x";
   let command = "";
   let coordinateIndex = 0;
@@ -164,7 +209,14 @@ export function interpolatePath(
         if (/^[A-Za-z]$/.test(fromToken)) {
           command = fromToken;
           coordinateIndex = 0;
-          axis = axisForCommandToken(fromToken, axis);
+
+          if (/[MLCQST]/.test(fromToken)) {
+            axis = "x";
+          } else if (fromToken === "H") {
+            axis = "x";
+          } else if (fromToken === "V") {
+            axis = "y";
+          }
         }
 
         return fromToken === toToken ? fromToken : toToken;
@@ -179,16 +231,19 @@ export function interpolatePath(
 
       const role = coordinateRole(command, coordinateIndex);
       const resolvedAxis = coordinateAxis(command, coordinateIndex) ?? axis;
-      // Morph amplification applies only to control points (the curve bulge) on
-      // the weaker axis; anchors stay at base intensity so corners don't
-      // overshoot the frame.
-      const morphScale = role === "control" ? axisScale[resolvedAxis] : 1;
-      const coordinateIntensity = clamp(baseIntensity * morphScale, 0, morphScale);
+      const coordinateIntensity = resolveInterpolationIntensity(
+        baseIntensity,
+        resolvedCompensation,
+        resolvedAxis,
+        role,
+      );
 
       coordinateIndex += 1;
       axis = resolvedAxis === "x" ? "y" : "x";
 
-      return (fromValue + (toValue - fromValue) * coordinateIntensity).toFixed(3);
+      return (fromValue + (toValue - fromValue) * coordinateIntensity).toFixed(
+        3,
+      );
     })
     .join(" ");
 }
@@ -198,7 +253,7 @@ export function perturbPath(
   viewBox: string,
   jitter: HandDrawnFrameJitterConfig,
   seed: string,
-  axisScale: HandDrawnFrameAxisScale = NEUTRAL_AXIS_SCALE,
+  compensation?: HandDrawnFrameCrookednessCompensation,
 ) {
   if (jitter.anchor <= 0 && jitter.control <= 0) {
     return path;
@@ -206,6 +261,8 @@ export function perturbPath(
 
   const bounds = parseViewBox(viewBox);
   const tokens = path.match(PATH_TOKEN_PATTERN) ?? [];
+  const resolvedCompensation =
+    resolveCrookednessCompensationValue(compensation);
   const random = createSeededRandom(seed);
   let axis: HandDrawnFrameAxis = "x";
   let command = "";
@@ -216,7 +273,14 @@ export function perturbPath(
       if (/^[A-Za-z]$/.test(token)) {
         command = token;
         coordinateIndex = 0;
-        axis = axisForCommandToken(token, axis);
+
+        if (/[MLCQST]/.test(token)) {
+          axis = "x";
+        } else if (token === "H") {
+          axis = "x";
+        } else if (token === "V") {
+          axis = "y";
+        }
 
         return token;
       }
@@ -229,13 +293,16 @@ export function perturbPath(
 
       const role = coordinateRole(command, coordinateIndex);
       const resolvedAxis = coordinateAxis(command, coordinateIndex) ?? axis;
-      // Jitter amplification applies to both anchors and control points.
-      const scale = axisScale[resolvedAxis];
+      const coordinateCompensation = resolveCoordinateCompensation(
+        resolvedCompensation.jitter,
+        resolvedAxis,
+        role,
+      );
       const jitterAmount =
         role === "control"
-          ? jitter.control * scale
+          ? jitter.control * coordinateCompensation
           : role === "anchor"
-            ? jitter.anchor * scale
+            ? jitter.anchor * coordinateCompensation
             : 0;
 
       coordinateIndex += 1;
@@ -254,7 +321,10 @@ export function perturbPath(
     .join(" ");
 }
 
-export function normalizePathToObjectBoundingBox(path: string, viewBox: string) {
+export function normalizePathToObjectBoundingBox(
+  path: string,
+  viewBox: string,
+) {
   const bounds = parseViewBox(viewBox);
   const tokens = path.match(PATH_TOKEN_PATTERN) ?? [];
   let axis: HandDrawnFrameAxis = "x";
@@ -264,7 +334,14 @@ export function normalizePathToObjectBoundingBox(path: string, viewBox: string) 
     .map((token) => {
       if (/^[A-Za-z]$/.test(token)) {
         command = token;
-        axis = axisForCommandToken(token, axis);
+
+        if (/[MLCQST]/.test(token)) {
+          axis = "x";
+        } else if (token === "H") {
+          axis = "x";
+        } else if (token === "V") {
+          axis = "y";
+        }
 
         return token;
       }
@@ -295,4 +372,30 @@ export function normalizePathToObjectBoundingBox(path: string, viewBox: string) 
     .join(" ");
 
   return /[Zz]\s*$/.test(normalized) ? normalized : `${normalized} Z`;
+}
+
+function hashSeed(value: string) {
+  let hash = 2166136261;
+
+  for (let index = 0; index < value.length; index += 1) {
+    hash ^= value.charCodeAt(index);
+    hash = Math.imul(hash, 16777619);
+  }
+
+  return hash >>> 0;
+}
+
+function createSeededRandom(seed: string) {
+  let state = hashSeed(seed) || 0x6d2b79f5;
+
+  return () => {
+    state += 0x6d2b79f5;
+
+    let value = state;
+
+    value = Math.imul(value ^ (value >>> 15), value | 1);
+    value ^= value + Math.imul(value ^ (value >>> 7), value | 61);
+
+    return ((value ^ (value >>> 14)) >>> 0) / 4294967296;
+  };
 }
