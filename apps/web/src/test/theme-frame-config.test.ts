@@ -15,8 +15,8 @@ describe("getThemeFrameStyleConfig", () => {
       getThemeFrameStyleConfig("hand-drawn-paper", THEME_FRAME_VARIANTS.field),
     ).toEqual({
       crookedness: 0.3,
-      strokeWidth: 1.25,
-      strokeWidthVariation: 4,
+      strokeWidthRange: [0.75, 1.95],
+      strokeWidthVariation: 0.54,
     });
   });
 
@@ -28,8 +28,8 @@ describe("getThemeFrameStyleConfig", () => {
       ),
     ).toEqual({
       crookedness: 0.7,
-      strokeWidth: 1.85,
-      strokeWidthVariation: 4,
+      strokeWidthRange: [1.35, 2.55],
+      strokeWidthVariation: 0.54,
     });
   });
 
@@ -41,8 +41,8 @@ describe("getThemeFrameStyleConfig", () => {
       ),
     ).toEqual({
       crookedness: 0.6,
-      strokeWidth: 1.45,
-      strokeWidthVariation: 4,
+      strokeWidthRange: [0.95, 2.15],
+      strokeWidthVariation: 0.54,
     });
   });
 
@@ -54,8 +54,8 @@ describe("getThemeFrameStyleConfig", () => {
       ),
     ).toEqual({
       crookedness: 1.5,
-      strokeWidth: 1.55,
-      strokeWidthVariation: 4,
+      strokeWidthRange: [1.05, 2.25],
+      strokeWidthVariation: 0.54,
     });
 
     expect(
@@ -65,8 +65,8 @@ describe("getThemeFrameStyleConfig", () => {
       ),
     ).toEqual({
       crookedness: 0.45,
-      strokeWidth: 1.5,
-      strokeWidthVariation: 4,
+      strokeWidthRange: [1, 2.2],
+      strokeWidthVariation: 0.54,
     });
   });
 
@@ -78,8 +78,8 @@ describe("getThemeFrameStyleConfig", () => {
       ),
     ).toEqual({
       crookedness: 0.32,
-      strokeWidth: 1.2,
-      strokeWidthVariation: 4,
+      strokeWidthRange: [0.7, 1.9],
+      strokeWidthVariation: 0.54,
     });
 
     expect(
@@ -89,8 +89,8 @@ describe("getThemeFrameStyleConfig", () => {
       ),
     ).toEqual({
       crookedness: 0.9,
-      strokeWidth: 1.15,
-      strokeWidthVariation: 4,
+      strokeWidthRange: [0.65, 1.85],
+      strokeWidthVariation: 0.54,
     });
 
     expect(
@@ -100,8 +100,8 @@ describe("getThemeFrameStyleConfig", () => {
       ),
     ).toEqual({
       crookedness: 0.3,
-      strokeWidth: 1.15,
-      strokeWidthVariation: 4,
+      strokeWidthRange: [0.65, 1.85],
+      strokeWidthVariation: 0.54,
     });
   });
 
@@ -113,8 +113,8 @@ describe("getThemeFrameStyleConfig", () => {
       ),
     ).toEqual({
       crookedness: 0.3,
-      strokeWidth: 1.25,
-      strokeWidthVariation: 4,
+      strokeWidthRange: [0.75, 1.95],
+      strokeWidthVariation: 0.54,
     });
 
     expect(
@@ -124,8 +124,8 @@ describe("getThemeFrameStyleConfig", () => {
       ),
     ).toEqual({
       crookedness: 0.9,
-      strokeWidth: 2.1,
-      strokeWidthVariation: 4,
+      strokeWidthRange: [1.6, 2.8],
+      strokeWidthVariation: 0.54,
     });
 
     expect(
@@ -135,8 +135,8 @@ describe("getThemeFrameStyleConfig", () => {
       ),
     ).toEqual({
       crookedness: 0.7,
-      strokeWidth: 1.85,
-      strokeWidthVariation: 4,
+      strokeWidthRange: [1.35, 2.55],
+      strokeWidthVariation: 0.54,
     });
   });
 
@@ -148,8 +148,8 @@ describe("getThemeFrameStyleConfig", () => {
       ),
     ).toEqual({
       crookedness: 0.35,
-      strokeWidth: 1.65,
-      strokeWidthVariation: 4,
+      strokeWidthRange: [1.15, 2.35],
+      strokeWidthVariation: 0.54,
     });
 
     expect(
@@ -159,8 +159,8 @@ describe("getThemeFrameStyleConfig", () => {
       ),
     ).toEqual({
       crookedness: 0.35,
-      strokeWidth: 1.65,
-      strokeWidthVariation: 4,
+      strokeWidthRange: [1.15, 2.35],
+      strokeWidthVariation: 0.54,
     });
 
     expect(
@@ -170,8 +170,8 @@ describe("getThemeFrameStyleConfig", () => {
       ),
     ).toEqual({
       crookedness: 3,
-      strokeWidth: 1.1,
-      strokeWidthVariation: 4,
+      strokeWidthRange: [0.6, 1.8],
+      strokeWidthVariation: 0.54,
     });
   });
 
@@ -183,8 +183,8 @@ describe("getThemeFrameStyleConfig", () => {
       ),
     ).toEqual({
       crookedness: 0.6,
-      strokeWidth: 1.45,
-      strokeWidthVariation: 4,
+      strokeWidthRange: [0.95, 2.15],
+      strokeWidthVariation: 0.54,
     });
 
     expect(
@@ -194,8 +194,8 @@ describe("getThemeFrameStyleConfig", () => {
       ),
     ).toEqual({
       crookedness: 0.3,
-      strokeWidth: 1.05,
-      strokeWidthVariation: 4,
+      strokeWidthRange: [0.55, 1.75],
+      strokeWidthVariation: 0.54,
     });
   });
 
@@ -207,7 +207,7 @@ describe("getThemeFrameStyleConfig", () => {
       ),
     ).toEqual({
       crookedness: 0,
-      strokeWidth: 1.9,
+      strokeWidthRange: [1.9, 1.9],
       strokeWidthVariation: 0,
     });
   });
@@ -217,7 +217,7 @@ describe("getThemeFrameStyleConfig", () => {
       getThemeFrameStyleConfig("modern", THEME_FRAME_VARIANTS.docsArticle),
     ).toEqual({
       crookedness: 0,
-      strokeWidth: 1.45,
+      strokeWidthRange: [0.95, 2.15],
       strokeWidthVariation: 0,
     });
 
@@ -228,7 +228,7 @@ describe("getThemeFrameStyleConfig", () => {
       ),
     ).toEqual({
       crookedness: 0,
-      strokeWidth: 0,
+      strokeWidthRange: [0, 0],
       strokeWidthVariation: 0,
     });
 
@@ -239,7 +239,7 @@ describe("getThemeFrameStyleConfig", () => {
       ),
     ).toEqual({
       crookedness: 0,
-      strokeWidth: 0,
+      strokeWidthRange: [0, 0],
       strokeWidthVariation: 0,
     });
 
@@ -250,7 +250,7 @@ describe("getThemeFrameStyleConfig", () => {
       ),
     ).toEqual({
       crookedness: 0,
-      strokeWidth: 0,
+      strokeWidthRange: [0, 0],
       strokeWidthVariation: 0,
     });
 
@@ -258,7 +258,7 @@ describe("getThemeFrameStyleConfig", () => {
       getThemeFrameStyleConfig("modern", THEME_FRAME_VARIANTS.field),
     ).toEqual({
       crookedness: 0,
-      strokeWidth: 0,
+      strokeWidthRange: [0, 0],
       strokeWidthVariation: 0,
     });
 
@@ -266,7 +266,7 @@ describe("getThemeFrameStyleConfig", () => {
       getThemeFrameStyleConfig("modern", THEME_FRAME_VARIANTS.docsSidebar),
     ).toEqual({
       crookedness: 0,
-      strokeWidth: 1,
+      strokeWidthRange: [1, 1],
       strokeWidthVariation: 0,
     });
 
@@ -274,7 +274,7 @@ describe("getThemeFrameStyleConfig", () => {
       getThemeFrameStyleConfig("modern", THEME_FRAME_VARIANTS.shellBrandMark),
     ).toEqual({
       crookedness: 0,
-      strokeWidth: 1.05,
+      strokeWidthRange: [1.05, 1.05],
       strokeWidthVariation: 0,
     });
 
@@ -282,7 +282,7 @@ describe("getThemeFrameStyleConfig", () => {
       getThemeFrameStyleConfig("modern", THEME_FRAME_VARIANTS.shellUserMenu),
     ).toEqual({
       crookedness: 0,
-      strokeWidth: 1,
+      strokeWidthRange: [1, 1],
       strokeWidthVariation: 0,
     });
 
@@ -290,7 +290,7 @@ describe("getThemeFrameStyleConfig", () => {
       getThemeFrameStyleConfig("modern", THEME_FRAME_VARIANTS.shellNavActive),
     ).toEqual({
       crookedness: 0,
-      strokeWidth: 0,
+      strokeWidthRange: [0, 0],
       strokeWidthVariation: 0,
     });
 
@@ -298,7 +298,7 @@ describe("getThemeFrameStyleConfig", () => {
       getThemeFrameStyleConfig("modern", THEME_FRAME_VARIANTS.mediaViewerStage),
     ).toEqual({
       crookedness: 0,
-      strokeWidth: 1,
+      strokeWidthRange: [1, 1],
       strokeWidthVariation: 0,
     });
 
@@ -309,7 +309,7 @@ describe("getThemeFrameStyleConfig", () => {
       ),
     ).toEqual({
       crookedness: 0,
-      strokeWidth: 0,
+      strokeWidthRange: [0, 0],
       strokeWidthVariation: 0,
     });
 
@@ -320,7 +320,7 @@ describe("getThemeFrameStyleConfig", () => {
       ),
     ).toEqual({
       crookedness: 0,
-      strokeWidth: 1,
+      strokeWidthRange: [1, 1],
       strokeWidthVariation: 0,
     });
 
@@ -328,7 +328,7 @@ describe("getThemeFrameStyleConfig", () => {
       getThemeFrameStyleConfig("modern", THEME_FRAME_VARIANTS.generateControl),
     ).toEqual({
       crookedness: 0,
-      strokeWidth: 1,
+      strokeWidthRange: [1, 1],
       strokeWidthVariation: 0,
     });
 
@@ -336,7 +336,7 @@ describe("getThemeFrameStyleConfig", () => {
       getThemeFrameStyleConfig("modern", THEME_FRAME_VARIANTS.accountProfile),
     ).toEqual({
       crookedness: 0,
-      strokeWidth: 0,
+      strokeWidthRange: [0, 0],
       strokeWidthVariation: 0,
     });
 
@@ -344,7 +344,7 @@ describe("getThemeFrameStyleConfig", () => {
       getThemeFrameStyleConfig("modern", THEME_FRAME_VARIANTS.accountPanel),
     ).toEqual({
       crookedness: 0,
-      strokeWidth: 0,
+      strokeWidthRange: [0, 0],
       strokeWidthVariation: 0,
     });
 
@@ -352,7 +352,7 @@ describe("getThemeFrameStyleConfig", () => {
       getThemeFrameStyleConfig("modern", THEME_FRAME_VARIANTS.accountPlanCard),
     ).toEqual({
       crookedness: 0,
-      strokeWidth: 1,
+      strokeWidthRange: [1, 1],
       strokeWidthVariation: 0,
     });
 
@@ -360,7 +360,7 @@ describe("getThemeFrameStyleConfig", () => {
       getThemeFrameStyleConfig("modern", THEME_FRAME_VARIANTS.dialogPanel),
     ).toEqual({
       crookedness: 0,
-      strokeWidth: 1,
+      strokeWidthRange: [1, 1],
       strokeWidthVariation: 0,
     });
 
@@ -371,7 +371,7 @@ describe("getThemeFrameStyleConfig", () => {
       ),
     ).toEqual({
       crookedness: 0,
-      strokeWidth: 1,
+      strokeWidthRange: [1, 1],
       strokeWidthVariation: 0,
     });
 
@@ -382,7 +382,7 @@ describe("getThemeFrameStyleConfig", () => {
       ),
     ).toEqual({
       crookedness: 0,
-      strokeWidth: 1,
+      strokeWidthRange: [1, 1],
       strokeWidthVariation: 0,
     });
   });
@@ -392,7 +392,7 @@ describe("getThemeFrameStyleConfig", () => {
       getThemeFrameStyleConfig("sunset", THEME_FRAME_VARIANTS.docsArticle),
     ).toEqual({
       crookedness: 0,
-      strokeWidth: 1.45,
+      strokeWidthRange: [0.95, 2.15],
       strokeWidthVariation: 0,
     });
 
@@ -403,7 +403,7 @@ describe("getThemeFrameStyleConfig", () => {
       ),
     ).toEqual({
       crookedness: 0,
-      strokeWidth: 0,
+      strokeWidthRange: [0, 0],
       strokeWidthVariation: 0,
     });
 
@@ -411,7 +411,7 @@ describe("getThemeFrameStyleConfig", () => {
       getThemeFrameStyleConfig("sunset", THEME_FRAME_VARIANTS.field),
     ).toEqual({
       crookedness: 0,
-      strokeWidth: 0,
+      strokeWidthRange: [0, 0],
       strokeWidthVariation: 0,
     });
 
@@ -419,7 +419,7 @@ describe("getThemeFrameStyleConfig", () => {
       getThemeFrameStyleConfig("sunset", THEME_FRAME_VARIANTS.shellHeader),
     ).toEqual({
       crookedness: 0,
-      strokeWidth: 1.1,
+      strokeWidthRange: [1.1, 1.1],
       strokeWidthVariation: 0,
     });
 
@@ -427,7 +427,7 @@ describe("getThemeFrameStyleConfig", () => {
       getThemeFrameStyleConfig("sunset", THEME_FRAME_VARIANTS.dialogPanel),
     ).toEqual({
       crookedness: 0,
-      strokeWidth: 1,
+      strokeWidthRange: [1, 1],
       strokeWidthVariation: 0,
     });
   });
@@ -479,9 +479,9 @@ describe("getThemeRuleStyleConfig", () => {
         THEME_RULE_VARIANTS.footerDivider,
       ),
     ).toEqual({
-      crookedness: 9,
-      strokeWidth: 1.4,
-      strokeWidthVariation: 5,
+      crookedness: 4,
+      strokeWidthRange: [0.9, 2.1],
+      strokeWidthVariation: 0.6,
     });
   });
 
@@ -490,7 +490,7 @@ describe("getThemeRuleStyleConfig", () => {
       getThemeRuleStyleConfig("modern", THEME_RULE_VARIANTS.docsSectionDivider),
     ).toEqual({
       crookedness: 0,
-      strokeWidth: 1.3,
+      strokeWidthRange: [0.8, 2],
       strokeWidthVariation: 0,
     });
   });
@@ -500,7 +500,7 @@ describe("getThemeRuleStyleConfig", () => {
       getThemeRuleStyleConfig("sunset", THEME_RULE_VARIANTS.docsSectionDivider),
     ).toEqual({
       crookedness: 0,
-      strokeWidth: 1.3,
+      strokeWidthRange: [0.8, 2],
       strokeWidthVariation: 0,
     });
   });

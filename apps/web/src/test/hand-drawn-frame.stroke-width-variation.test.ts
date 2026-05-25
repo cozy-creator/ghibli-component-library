@@ -33,77 +33,78 @@ function ribbonLayers(layers: HandDrawnFrameStrokeLayer[]) {
 }
 
 describe("createStrokeWidthVariationLayers", () => {
-  it("returns a single baseline layer at variation 0", () => {
-    const strokeWidth = 1.55;
-    const layers = createStrokeWidthVariationLayers(strokeWidth, "seed-0", 0, 5);
+  it("returns a single uniform layer when the range is collapsed", () => {
+    // min === max: width is pinned to the center (no variation possible).
+    const layers = createStrokeWidthVariationLayers([1.55, 1.55], 1, "seed-0");
 
     expect(layers).toHaveLength(1);
-    expect(numericStrokeWidth(layers[0]!)).toBe(strokeWidth);
+    expect(numericStrokeWidth(layers[0]!)).toBe(1.55);
   });
 
-  it("brackets the baseline stroke width with both thinner and thicker layers", () => {
-    const strokeWidth = 1.55;
+  it("returns a single uniform layer at variation 0 over a real range", () => {
+    // variation 0: pick ONE steady width inside the range and hold it — no
+    // ribbon slices, no dry accent.
+    const layers = createStrokeWidthVariationLayers([1, 3], 0, "seed-steady");
+
+    expect(layers).toHaveLength(1);
+    const width = numericStrokeWidth(layers[0]!);
+
+    expect(width).toBeGreaterThanOrEqual(1);
+    expect(width).toBeLessThanOrEqual(3);
+  });
+
+  it("brackets the range center with both thinner and thicker layers", () => {
     const layers = createStrokeWidthVariationLayers(
-      strokeWidth,
+      [1, 3],
+      0.8,
       "seed-center",
-      8,
-      8,
     );
+    const center = 2;
 
-    expect(minStrokeWidth(layers)).toBeLessThan(strokeWidth);
-    expect(maxStrokeWidth(layers)).toBeGreaterThan(strokeWidth);
+    expect(minStrokeWidth(layers)).toBeLessThan(center);
+    expect(maxStrokeWidth(layers)).toBeGreaterThan(center);
   });
 
-  it("increases width variation as the variation control rises", () => {
-    const strokeWidth = 1.55;
-    const seed = "seed-variation";
-    const twoLayers = createStrokeWidthVariationLayers(strokeWidth, seed, 2, 8);
-    const sixLayers = createStrokeWidthVariationLayers(strokeWidth, seed, 6, 8);
-    const tenLayers = createStrokeWidthVariationLayers(strokeWidth, seed, 10, 8);
+  it("keeps every slice within the range bounds", () => {
+    const layers = createStrokeWidthVariationLayers([1, 3], 1, "seed-bounds");
 
-    expect(strokeWidthSpread(sixLayers)).toBeGreaterThan(
-      strokeWidthSpread(twoLayers),
-    );
-    expect(strokeWidthSpread(tenLayers)).toBeGreaterThan(
-      strokeWidthSpread(sixLayers),
+    expect(minStrokeWidth(layers)).toBeGreaterThanOrEqual(1);
+    expect(maxStrokeWidth(layers)).toBeLessThanOrEqual(3);
+  });
+
+  it("reaches further toward the range edges as variation rises", () => {
+    // Same range, higher variation → the oscillation sweeps closer to the
+    // thin/thick extremes, so the observed spread grows.
+    const low = createStrokeWidthVariationLayers([1, 3], 0.3, "seed-amount", {
+      basePath: LONG_EDGE_PATH,
+      shape: "divider",
+    });
+    const high = createStrokeWidthVariationLayers([1, 3], 1, "seed-amount", {
+      basePath: LONG_EDGE_PATH,
+      shape: "divider",
+    });
+
+    expect(strokeWidthSpread(ribbonLayers(high))).toBeGreaterThan(
+      strokeWidthSpread(ribbonLayers(low)),
     );
   });
 
-  it("holds one constant width across the line at frequency 0", () => {
-    // Frequency 0 = pick a single random width within the range and do not vary
-    // it along the line, so every ribbon slice shares one width.
-    const layers = createStrokeWidthVariationLayers(2, "seed-flat", 8, 0, {
+  it("produces multiple ribbon slices spanning toward both bounds", () => {
+    const layers = createStrokeWidthVariationLayers([1, 3], 1, "seed-span", {
       basePath: LONG_EDGE_PATH,
       shape: "divider",
     });
     const ribbons = ribbonLayers(layers);
 
     expect(ribbons.length).toBeGreaterThan(1);
-    expect(strokeWidthSpread(ribbons)).toBe(0);
+    // Slices reach toward both the thin and thick ends of the range.
+    expect(minStrokeWidth(ribbons)).toBeLessThan(2);
+    expect(maxStrokeWidth(ribbons)).toBeGreaterThan(2);
   });
 
-  it("reaches further toward the range edges as frequency rises", () => {
-    // Same range (variation), higher frequency → the oscillation sweeps closer
-    // to the thin/thick extremes, so the observed spread grows.
-    const lowFreq = createStrokeWidthVariationLayers(2, "seed-freq", 8, 2, {
-      basePath: LONG_EDGE_PATH,
-      shape: "divider",
-    });
-    const highFreq = createStrokeWidthVariationLayers(2, "seed-freq", 8, 9, {
-      basePath: LONG_EDGE_PATH,
-      shape: "divider",
-    });
-
-    expect(strokeWidthSpread(ribbonLayers(highFreq))).toBeGreaterThan(
-      strokeWidthSpread(ribbonLayers(lowFreq)),
-    );
-  });
-
-  it("stays deterministic for the same seed and inputs", () => {
-    const strokeWidth = 1.55;
-    const seed = "seed-repeatable";
-    const first = createStrokeWidthVariationLayers(strokeWidth, seed, 8, 8);
-    const second = createStrokeWidthVariationLayers(strokeWidth, seed, 8, 8);
+  it("stays deterministic for the same range, variation, seed and size", () => {
+    const first = createStrokeWidthVariationLayers([1, 3], 0.8, "seed-repeat");
+    const second = createStrokeWidthVariationLayers([1, 3], 0.8, "seed-repeat");
 
     expect(second).toEqual(first);
   });
@@ -113,11 +114,11 @@ describe("createStrokeWidthVariationLayers", () => {
     // at the same variation — this is the length-aware fix. Equal counts would
     // mean the short edge packs the same width changes into less space (jagged)
     // and the long edge spreads them thin (smooth), the reported bug.
-    const shortLayers = createStrokeWidthVariationLayers(2, "seed-len", 6, 4, {
+    const shortLayers = createStrokeWidthVariationLayers([1, 3], 0.6, "seed-len", {
       basePath: SHORT_EDGE_PATH,
       shape: "divider",
     });
-    const longLayers = createStrokeWidthVariationLayers(2, "seed-len", 6, 4, {
+    const longLayers = createStrokeWidthVariationLayers([1, 3], 0.6, "seed-len", {
       basePath: LONG_EDGE_PATH,
       shape: "divider",
     });
@@ -130,24 +131,22 @@ describe("createStrokeWidthVariationLayers", () => {
     expect(longRibbons).toBeGreaterThanOrEqual(shortRibbons * 4);
   });
 
-  it("bounds width amplitude in the same pixel envelope regardless of edge length", () => {
-    // Amplitude is a pixel quantity driven by the variation control, so the
-    // width envelope (the ceiling a slice can reach) is identical for a short
-    // and a long edge — only the NUMBER of slices differs with length, never
-    // how thick/thin the line is allowed to get.
-    const strokeWidth = 2;
-    const shortLayers = createStrokeWidthVariationLayers(strokeWidth, "seed-amp", 7, 7, {
+  it("bounds width in the same range envelope regardless of edge length", () => {
+    // The width envelope (the bounds a slice can reach) is set by the range, so
+    // it is identical for a short and a long edge — only the NUMBER of slices
+    // differs with length, never how thick/thin the line is allowed to get.
+    const shortLayers = createStrokeWidthVariationLayers([1, 3], 0.7, "seed-amp", {
       basePath: SHORT_EDGE_PATH,
       shape: "divider",
     });
-    const longLayers = createStrokeWidthVariationLayers(strokeWidth, "seed-amp", 7, 7, {
+    const longLayers = createStrokeWidthVariationLayers([1, 3], 0.7, "seed-amp", {
       basePath: LONG_EDGE_PATH,
       shape: "divider",
     });
 
-    // Both edges share the SAME pixel envelope — their peaks (and troughs) sit
+    // Both edges share the SAME range envelope — their peaks (and troughs) sit
     // within a small tolerance of each other. Any gap is sampling luck (which
-    // wave point each slice lands on), never a length-driven amplitude change.
+    // wave point each slice lands on), never a length-driven envelope change.
     expect(
       Math.abs(maxStrokeWidth(longLayers) - maxStrokeWidth(shortLayers)),
     ).toBeLessThan(0.3);

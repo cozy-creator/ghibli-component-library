@@ -173,7 +173,7 @@ export function CommunityImageCard({
           contentClassName="max-[402px]:h-full"
           surfaceClassName="bg-[linear-gradient(180deg,rgba(249,243,226,0.98),rgba(239,227,193,0.98))]"
           strokeColor="var(--border)"
-          strokeWidth={1.55}
+          strokeWidthRange={[1.55, 1.55]}
           crookedness={1.5}
         >
           <Card className="gap-0 overflow-hidden border-0 bg-transparent py-0 shadow-none max-[402px]:flex max-[402px]:h-full max-[402px]:flex-col">
@@ -265,7 +265,7 @@ export function CommunityVideoCard({
         className="transition-transform duration-300 group-hover:-translate-y-1"
         surfaceClassName="bg-[linear-gradient(180deg,rgba(249,243,226,0.98),rgba(239,227,193,0.98))]"
         strokeColor="var(--border)"
-        strokeWidth={1.55}
+        strokeWidthRange={[1.55, 1.55]}
         crookedness={0.8}
       >
         <Card className="gap-0 overflow-hidden border-0 bg-transparent py-0 shadow-none">
@@ -397,7 +397,7 @@ export function CommunityEmbedCard({
       className="overflow-hidden"
       surfaceClassName="bg-[color:var(--card)]"
       strokeColor="var(--border)"
-      strokeWidth={1.55}
+      strokeWidthRange={[1.55, 1.55]}
       crookedness={0.6}
     >
       <Card className="border-0 bg-transparent shadow-none">

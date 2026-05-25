@@ -106,7 +106,7 @@ export function AccountUserDisplayBox({
         className="overflow-hidden"
         surfaceClassName="bg-[linear-gradient(180deg,rgba(255,255,255,0.5),rgba(250,244,232,0.96))]"
         strokeColor="var(--border)"
-        strokeWidth={1.65}
+        strokeWidthRange={[1.65, 1.65]}
         crookedness={0.35}
       >
         <Card className="border-0 bg-transparent shadow-none">
@@ -414,7 +414,7 @@ function SubscriptionOfferCard({
       contentClassName="flex h-full flex-col p-5"
       crookedness={3}
       strokeColor={isActive ? "var(--primary-edge)" : "var(--border-soft)"}
-      strokeWidth={1.1}
+      strokeWidthRange={[1.1, 1.1]}
       surfaceClassName={
         isActive
           ? "bg-[color:var(--primary-soft)]"
@@ -467,7 +467,7 @@ export function AccountSubscriptionSection({
       <HandDrawnFrame
         crookedness={0.35}
         strokeColor="var(--border)"
-        strokeWidth={1.65}
+        strokeWidthRange={[1.65, 1.65]}
         surfaceClassName={accountSurfaceClass}
       >
         <Card className="border-0 bg-transparent shadow-none">
@@ -561,7 +561,7 @@ export function AccountApiCreditsSection({
     <HandDrawnFrame
       crookedness={0.35}
       strokeColor="var(--border)"
-      strokeWidth={1.65}
+      strokeWidthRange={[1.65, 1.65]}
       surfaceClassName="bg-[image:var(--surface-panel-gradient)]"
     >
       <Card className="border-0 bg-transparent shadow-none">

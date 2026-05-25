@@ -397,7 +397,7 @@ function AuthProviderButton({ provider }: { provider: AuthProviderAction }) {
         !disabled && "group-hover/auth-provider-frame:bg-white/50",
       )}
       strokeColor="var(--border)"
-      strokeWidth={1.05}
+      strokeWidthRange={[1.05, 1.05]}
       svgClassName="opacity-80"
       crookedness={0.3}
     >

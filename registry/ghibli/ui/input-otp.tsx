@@ -56,7 +56,7 @@ export function InputOTPSlot({
       strokeColor={
         slot?.isActive ? "var(--ring)" : "var(--border)"
       }
-      strokeWidth={slot?.isActive ? 1.7 : 1.25}
+      strokeWidthRange={slot?.isActive ? [1.7, 1.7] : [1.25, 1.25]}
       surfaceClassName="bg-[color:color-mix(in_oklab,var(--paper-soft)_90%,white)]"
       svgClassName="opacity-85"
       crookedness={0.3}

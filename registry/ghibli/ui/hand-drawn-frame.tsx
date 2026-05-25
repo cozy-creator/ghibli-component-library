@@ -60,38 +60,38 @@ export interface HandDrawnFrameProps extends React.HTMLAttributes<HTMLDivElement
    */
   crookedness?: number;
   /**
-   * 0..10 stroke-width variation. Amplitude (thin↔thick swing) is in pixels and
-   * length-independent; the number of width-varying ribbon slices scales with
-   * each edge's pixel length, so the variation has the same spatial frequency
-   * on every edge. 0 renders a uniform-width stroke.
+   * Absolute pixel `[min, max]` bounds for the stroke width. Defaults to
+   * `[1.5, 1.5]`. When `min === max` the width is uniform (no variation,
+   * regardless of `strokeWidthVariation`). The tuple is sorted defensively if
+   * `min > max`.
+   */
+  strokeWidthRange?: [number, number];
+  /**
+   * 0..1 amount the width varies WITHIN `strokeWidthRange`. Defaults to `0`
+   * (a single steady width). Clamped to `[0, 1]`. Higher values oscillate more
+   * frequently AND reach further toward the range's thin/thick bounds; `1` uses
+   * the full range with active oscillation.
    */
   strokeWidthVariation?: number;
-  /**
-   * 0..10 stroke-width *frequency*: how often the width oscillates within the
-   * range set by `strokeWidthVariation`, along the line. 0 = pick one random
-   * width within the range and hold it (uniform along this line, but still
-   * uneven from one component to the next). Higher = more frequent oscillation
-   * that also reaches further toward the range's thin/thick edges.
-   */
-  strokeWidthFrequency?: number;
-  strokeWidth?: number | string;
   svgClassName?: string;
 }
 
-function resolveNumericStrokeWidth(strokeWidth: number | string) {
-  if (typeof strokeWidth === "number") {
-    return Number.isFinite(strokeWidth) ? strokeWidth : null;
+const DEFAULT_STROKE_WIDTH_RANGE: [number, number] = [1.5, 1.5];
+
+// Sorts the tuple defensively (min, max) and falls back to the default range if
+// either entry is non-finite.
+function resolveStrokeWidthRange(
+  range: [number, number] | undefined,
+): [number, number] {
+  if (
+    !range ||
+    !Number.isFinite(range[0]) ||
+    !Number.isFinite(range[1])
+  ) {
+    return DEFAULT_STROKE_WIDTH_RANGE;
   }
 
-  const trimmedStrokeWidth = strokeWidth.trim();
-
-  if (!/^-?(?:\d+\.?\d*|\.\d+)$/.test(trimmedStrokeWidth)) {
-    return null;
-  }
-
-  const numericStrokeWidth = Number(trimmedStrokeWidth);
-
-  return Number.isFinite(numericStrokeWidth) ? numericStrokeWidth : null;
+  return range[0] <= range[1] ? [range[0], range[1]] : [range[1], range[0]];
 }
 
 // Dispatcher: when the sketch is fully "off" (no crookedness and no width
@@ -105,11 +105,14 @@ export function HandDrawnFrame(props: HandDrawnFrameProps) {
   // Default OFF: an unconfigured frame is a plain rectangle (flat CSS path).
   // Sketchiness is opt-in via crookedness / strokeWidthVariation.
   const crookedness = props.crookedness ?? 0;
-  const strokeWidthVariation = props.strokeWidthVariation ?? 0;
+  const variation = Math.min(Math.max(props.strokeWidthVariation ?? 0, 0), 1);
+  const [min, max] = resolveStrokeWidthRange(props.strokeWidthRange);
+  // A surface with no edge crookedness AND a uniform width (variation off or a
+  // collapsed range) is just a rectangle — render it with a plain CSS border.
   const isFlat =
     shape === "surface" &&
     Math.min(Math.max(crookedness, 0), 10) === 0 &&
-    strokeWidthVariation === 0;
+    (variation <= 0 || min === max);
 
   return isFlat ? (
     <HandDrawnFrameFlat {...props} />
@@ -125,12 +128,11 @@ function HandDrawnFrameFlat({
   surfaceClassName,
   strokeColor = "var(--border)",
   fillColor,
-  strokeWidth = 2.4,
+  strokeWidthRange,
   // Sketch-only props: irrelevant on the flat CSS path, destructured out so
   // they are not spread onto the DOM node.
   crookedness,
   strokeWidthVariation,
-  strokeWidthFrequency,
   texture,
   textureOpacity,
   pathClassName,
@@ -140,16 +142,17 @@ function HandDrawnFrameFlat({
 }: HandDrawnFrameProps) {
   void crookedness;
   void strokeWidthVariation;
-  void strokeWidthFrequency;
   void texture;
   void textureOpacity;
   void pathClassName;
   void svgClassName;
   void shape;
 
-  const numericStrokeWidth = resolveNumericStrokeWidth(strokeWidth);
-  const borderWidth =
-    numericStrokeWidth && numericStrokeWidth > 0 ? numericStrokeWidth : 0;
+  // Uniform width: a collapsed range uses its exact value; a real range
+  // (reachable when only crookedness is 0) uses its center.
+  const [min, max] = resolveStrokeWidthRange(strokeWidthRange);
+  const flatWidth = min === max ? min : (min + max) / 2;
+  const borderWidth = flatWidth > 0 ? flatWidth : 0;
 
   return (
     <div
@@ -203,8 +206,7 @@ function HandDrawnFrameSketched({
   textureOpacity = 0.06,
   crookedness = 0,
   strokeWidthVariation = 0,
-  strokeWidthFrequency = 5,
-  strokeWidth = 2.4,
+  strokeWidthRange,
   svgClassName,
   ...props
 }: HandDrawnFrameProps) {
@@ -300,35 +302,24 @@ function HandDrawnFrameSketched({
     return map;
   }, [geometry, outlinePath, shape]);
 
-  const resolvedNumericStrokeWidth = React.useMemo(
-    () => resolveNumericStrokeWidth(strokeWidth),
-    [strokeWidth],
+  const resolvedRange = React.useMemo(
+    () => resolveStrokeWidthRange(strokeWidthRange),
+    [strokeWidthRange],
   );
+  const resolvedVariation = Math.min(Math.max(strokeWidthVariation, 0), 1);
+  const rangeMin = resolvedRange[0];
+  const rangeMax = resolvedRange[1];
 
-  const strokeLayers = React.useMemo<HandDrawnFrameStrokeLayer[]>(() => {
-    if (
-      resolvedNumericStrokeWidth === null ||
-      resolvedNumericStrokeWidth <= 0
-    ) {
-      return [{ strokeWidth }];
-    }
-
-    return createStrokeWidthVariationLayers(
-      resolvedNumericStrokeWidth,
-      `${shape}:${frameId}:stroke-width-variation`,
-      strokeWidthVariation,
-      strokeWidthFrequency,
-      { basePath: outlinePath, shape },
-    );
-  }, [
-    resolvedNumericStrokeWidth,
-    shape,
-    frameId,
-    strokeWidth,
-    strokeWidthVariation,
-    strokeWidthFrequency,
-    outlinePath,
-  ]);
+  const strokeLayers = React.useMemo<HandDrawnFrameStrokeLayer[]>(
+    () =>
+      createStrokeWidthVariationLayers(
+        [rangeMin, rangeMax],
+        resolvedVariation,
+        `${shape}:${frameId}:stroke-width-variation`,
+        { basePath: outlinePath, shape },
+      ),
+    [rangeMin, rangeMax, resolvedVariation, shape, frameId, outlinePath],
+  );
 
   const renderedStrokePaths = React.useMemo(
     () =>
@@ -476,7 +467,7 @@ export function HandDrawnRule({
   strokeColor = "var(--border)",
   crookedness = 0,
   strokeWidthVariation = 0,
-  strokeWidth = 1.1,
+  strokeWidthRange = [1.1, 1.1],
   svgClassName = "opacity-90",
   ...props
 }: HandDrawnRuleProps) {
@@ -488,7 +479,7 @@ export function HandDrawnRule({
       shape="divider"
       strokeColor={strokeColor}
       strokeWidthVariation={strokeWidthVariation}
-      strokeWidth={strokeWidth}
+      strokeWidthRange={strokeWidthRange}
       svgClassName={svgClassName}
       crookedness={crookedness}
     />

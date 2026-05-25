@@ -244,7 +244,7 @@ export function TabsSwitchPlayground() {
                   <HandDrawnFrame
                     contentClassName="px-5 py-5"
                     surfaceClassName="bg-[color:var(--card)]"
-                    strokeWidth={1.4}
+                    strokeWidthRange={[1.4, 1.4]}
                     crookedness={0.6}
                   >
                     <p className="font-[var(--font-heading)] text-xl text-[color:var(--ink-strong)]">

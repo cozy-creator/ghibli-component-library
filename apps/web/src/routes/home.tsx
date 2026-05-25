@@ -172,22 +172,11 @@ const frameCrookednessOptions: FrameRulerOption[] = [
 
 const frameStrokeWidthVariationOptions: FrameRulerOption[] = [
   { label: "0", value: 0 },
+  { label: "0.2", value: 0.2 },
+  { label: "0.4", value: 0.4 },
+  { label: "0.6", value: 0.6 },
+  { label: "0.8", value: 0.8 },
   { label: "1", value: 1 },
-  { label: "2", value: 2 },
-  { label: "4", value: 4 },
-  { label: "6", value: 6 },
-  { label: "8", value: 8 },
-  { label: "10", value: 10 },
-];
-
-const frameStrokeWidthFrequencyOptions: FrameRulerOption[] = [
-  { label: "0", value: 0 },
-  { label: "1", value: 1 },
-  { label: "2", value: 2 },
-  { label: "4", value: 4 },
-  { label: "6", value: 6 },
-  { label: "8", value: 8 },
-  { label: "10", value: 10 },
 ];
 
 const frameStrokeWidthOptions: FrameRulerOption[] = [
@@ -349,9 +338,9 @@ function Specimen({
         <HandDrawnRule
           className="h-4"
           crookedness={0.65}
-          strokeWidth={1.35}
+          strokeWidthRange={[0.85, 2.05]}
           svgClassName="opacity-100"
-          strokeWidthVariation={7}
+          strokeWidthVariation={0.72}
         />
       </div>
       <div className="grid content-start gap-2">
@@ -539,9 +528,9 @@ export function HomePage() {
     null,
   );
   const [frameCrookedness, setFrameCrookedness] = useState(0.5);
-  const [frameStrokeWidthVariation, setFrameStrokeWidthVariation] = useState(4);
-  const [frameStrokeWidthFrequency, setFrameStrokeWidthFrequency] = useState(5);
-  const [frameStrokeWidth, setFrameStrokeWidth] = useState(1.6);
+  const [frameStrokeMin, setFrameStrokeMin] = useState(1.25);
+  const [frameStrokeMax, setFrameStrokeMax] = useState(2);
+  const [frameStrokeVariation, setFrameStrokeVariation] = useState(0.5);
   const editorAttachmentsRef = useRef<GenerateAttachment[]>([]);
   const editorAttachmentIdRef = useRef(0);
   const availableGenerateModelItems =
@@ -645,9 +634,8 @@ export function HomePage() {
 
   const framePreviewSnippet = `<HandDrawnFrame
   crookedness={${frameCrookedness}}
-  strokeWidth={${frameStrokeWidth}}
-  strokeWidthVariation={${frameStrokeWidthVariation}}
-  strokeWidthFrequency={${frameStrokeWidthFrequency}}
+  strokeWidthRange={[${frameStrokeMin}, ${frameStrokeMax}]}
+  strokeWidthVariation={${frameStrokeVariation}}
 >
   ...
 </HandDrawnFrame>`;
@@ -781,25 +769,25 @@ export function HomePage() {
                   value={frameCrookedness}
                 />
                 <FrameRulerField
-                  description="Base stroke width in pixels — the center of the thin↔thick range."
-                  label="Stroke Width"
-                  onValueChange={setFrameStrokeWidth}
+                  description="Thinnest the stroke may get, in pixels. Set Min === Max to opt out of variation entirely."
+                  label="Stroke Width Min"
+                  onValueChange={setFrameStrokeMin}
                   options={frameStrokeWidthOptions}
-                  value={frameStrokeWidth}
+                  value={frameStrokeMin}
                 />
                 <FrameRulerField
-                  description="Width range (constant pixels, not a percentage): how far the line swings thin↔thick around the base. 0 keeps a uniform width."
+                  description="Thickest the stroke may get, in pixels. The width oscillates between Min and Max."
+                  label="Stroke Width Max"
+                  onValueChange={setFrameStrokeMax}
+                  options={frameStrokeWidthOptions}
+                  value={frameStrokeMax}
+                />
+                <FrameRulerField
+                  description="How much the width varies within the range (0..1). 0 keeps a single steady width; 1 uses the full range with active oscillation."
                   label="Stroke Width Variation"
-                  onValueChange={setFrameStrokeWidthVariation}
+                  onValueChange={setFrameStrokeVariation}
                   options={frameStrokeWidthVariationOptions}
-                  value={frameStrokeWidthVariation}
-                />
-                <FrameRulerField
-                  description="How often the width oscillates within that range. 0 holds one random width along the line; higher oscillates more and reaches further toward the edges."
-                  label="Stroke Width Frequency"
-                  onValueChange={setFrameStrokeWidthFrequency}
-                  options={frameStrokeWidthFrequencyOptions}
-                  value={frameStrokeWidthFrequency}
+                  value={frameStrokeVariation}
                 />
               </div>
             </DemoSurface>
@@ -817,9 +805,8 @@ export function HomePage() {
                 <HandDrawnFrame
                   contentClassName="px-5 py-5"
                   surfaceClassName="bg-[color:var(--card)]"
-                  strokeWidth={frameStrokeWidth}
-                  strokeWidthVariation={frameStrokeWidthVariation}
-                  strokeWidthFrequency={frameStrokeWidthFrequency}
+                  strokeWidthRange={[frameStrokeMin, frameStrokeMax]}
+                  strokeWidthVariation={frameStrokeVariation}
                   crookedness={frameCrookedness}
                 >
                   <p className="font-[var(--font-heading)] text-xl text-[color:var(--ink-strong)]">

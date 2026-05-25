@@ -278,7 +278,7 @@ function DuplicateImageModal({
           contentClassName="px-5 py-5"
           surfaceClassName="bg-[color:var(--card)]"
           strokeColor="var(--border)"
-          strokeWidth={1.45}
+          strokeWidthRange={[1.45, 1.45]}
           svgClassName="opacity-70"
           crookedness={0.6}
         >
@@ -694,7 +694,7 @@ export function GeneratePromptComposer({
               "bg-[color:color-mix(in_oklab,var(--paper-soft)_72%,var(--primary)_28%)]",
           )}
           strokeColor={isDraggingOver ? "var(--primary-edge)" : "var(--border)"}
-          strokeWidth={1.25}
+          strokeWidthRange={[1.25, 1.25]}
           svgClassName="opacity-85"
           crookedness={0.3}
         >
@@ -755,7 +755,7 @@ export function GeneratePromptComposer({
                     contentClassName="p-0.5"
                     surfaceClassName="bg-white/45"
                     strokeColor="var(--border-strong)"
-                    strokeWidth={1.85}
+                    strokeWidthRange={[1.85, 1.85]}
                     crookedness={0.7}
                   >
                     <DropdownMenuTrigger asChild>
@@ -781,7 +781,7 @@ export function GeneratePromptComposer({
                       contentClassName="grid gap-0.5 px-1.5 py-1.5"
                       surfaceClassName="bg-popover"
                       strokeColor="var(--border)"
-                      strokeWidth={1.6}
+                      strokeWidthRange={[1.6, 1.6]}
                       crookedness={0.9}
                     >
                       <DropdownMenuItem
@@ -980,7 +980,7 @@ export function GenerateEditorBar({
               className="min-w-0 flex-1"
               surfaceClassName="bg-[color:color-mix(in_oklab,var(--paper-soft)_90%,white)]"
               strokeColor="var(--border)"
-              strokeWidth={1.25}
+              strokeWidthRange={[1.25, 1.25]}
               svgClassName="opacity-85"
               crookedness={0.3}
             >
@@ -1011,7 +1011,7 @@ export function GenerateEditorBar({
             contentClassName="px-4 py-4 md:px-5 md:py-5"
             surfaceClassName="bg-[color:var(--card)]"
             strokeColor="var(--border)"
-            strokeWidth={2.1}
+            strokeWidthRange={[2.1, 2.1]}
             crookedness={0.9}
           >
             <div className="grid gap-4">

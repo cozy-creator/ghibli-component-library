@@ -141,7 +141,7 @@ function ModalCloseButton({
         modalSurfaceClass,
       )}
       strokeColor={modalFrameStrokeColor}
-      strokeWidth={1.05}
+      strokeWidthRange={[1.05, 1.05]}
       svgClassName="opacity-95"
       crookedness={0.55}
     >
@@ -191,7 +191,7 @@ function ExpandedImagePane({
       className="ghibli-community-image-viewer"
       contentClassName="h-full"
       strokeColor={modalFrameSoftStrokeColor}
-      strokeWidth={1.2}
+      strokeWidthRange={[1.2, 1.2]}
       svgClassName="opacity-95"
       crookedness={0.32}
     >
@@ -205,7 +205,7 @@ function ExpandedImagePane({
               className="ghibli-community-image-viewer-stage"
               contentClassName="h-full"
               strokeColor="transparent"
-              strokeWidth={1.15}
+              strokeWidthRange={[1.15, 1.15]}
               svgClassName="opacity-95"
               crookedness={0.9}
             >
@@ -243,7 +243,7 @@ function ExpandedImagePane({
                         modalCalloutTextClass,
                       )}
                       strokeColor={modalFrameBrightStrokeColor}
-                      strokeWidth={1}
+                      strokeWidthRange={[1, 1]}
                       svgClassName="opacity-90"
                       crookedness={0.45}
                     >
@@ -267,7 +267,7 @@ function ExpandedImagePane({
                         modalErrorTextClass,
                       )}
                       strokeColor={modalFrameRaisedStrokeColor}
-                      strokeWidth={1.1}
+                      strokeWidthRange={[1.1, 1.1]}
                       svgClassName="opacity-90"
                       crookedness={0.5}
                     >
@@ -348,7 +348,7 @@ function ExpandedVideoPane({
       className="ghibli-community-video-viewer"
       contentClassName="h-full"
       strokeColor={modalFrameSoftStrokeColor}
-      strokeWidth={1.2}
+      strokeWidthRange={[1.2, 1.2]}
       svgClassName="opacity-95"
       crookedness={0.32}
     >
@@ -369,7 +369,7 @@ function ExpandedVideoPane({
               className="ghibli-community-video-viewer-stage"
               contentClassName="bg-black"
               strokeColor={modalFrameStrokeColor}
-              strokeWidth={1.15}
+              strokeWidthRange={[1.15, 1.15]}
               svgClassName="opacity-95"
               crookedness={0.42}
             >
@@ -424,7 +424,7 @@ function ExpandedVideoPane({
                 modalCalloutTextClass,
               )}
               strokeColor={modalFrameBrightStrokeColor}
-              strokeWidth={1}
+              strokeWidthRange={[1, 1]}
               svgClassName="opacity-90"
               crookedness={0.45}
             >
@@ -448,7 +448,7 @@ function ExpandedVideoPane({
                 modalErrorTextClass,
               )}
               strokeColor={modalFrameRaisedStrokeColor}
-              strokeWidth={1.1}
+              strokeWidthRange={[1.1, 1.1]}
               svgClassName="opacity-90"
               crookedness={0.5}
             >

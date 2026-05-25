@@ -215,25 +215,32 @@ describe("showcase interactions", () => {
     ).getByRole("slider", {
       name: "Stroke Width Variation",
     });
-    const strokeWidthSlider = within(frameSection as HTMLElement).getByRole(
+    const strokeWidthMinSlider = within(frameSection as HTMLElement).getByRole(
       "slider",
       {
-        name: "Stroke Width",
+        name: "Stroke Width Min",
+      },
+    );
+    const strokeWidthMaxSlider = within(frameSection as HTMLElement).getByRole(
+      "slider",
+      {
+        name: "Stroke Width Max",
       },
     );
 
     expect(crookednessSlider).toBeInTheDocument();
     expect(strokeWidthVariationSlider).toBeInTheDocument();
-    expect(strokeWidthSlider).toBeInTheDocument();
+    expect(strokeWidthMinSlider).toBeInTheDocument();
+    expect(strokeWidthMaxSlider).toBeInTheDocument();
 
-    fireEvent.change(strokeWidthVariationSlider, { target: { value: "8" } });
+    fireEvent.change(strokeWidthVariationSlider, { target: { value: "0.6" } });
 
     expect(
       within(frameSection as HTMLElement).getByText("Frame preview"),
     ).toBeInTheDocument();
     expect(
       within(frameSection as HTMLElement).getAllByText(
-        /strokeWidthVariation=\{8\}/,
+        /strokeWidthVariation=\{0\.6\}/,
       ).length,
     ).toBeGreaterThan(0);
     expect(

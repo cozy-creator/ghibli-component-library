@@ -44,7 +44,7 @@ export function TabsSwitch({
       data-slot="tabs-switch"
       surfaceClassName="bg-[color:color-mix(in_oklab,var(--card)_84%,white)]"
       strokeColor="var(--border)"
-      strokeWidth={1.5}
+      strokeWidthRange={[1.5, 1.5]}
       crookedness={0.45}
     >
       <TabsList
@@ -74,7 +74,7 @@ export function TabsSwitch({
               contentClassName="ghibli-tabs-switch-pill-content flex min-w-0 items-center justify-center px-4 py-2 text-center leading-tight max-[424px]:px-2"
               surfaceClassName="bg-[color:color-mix(in_oklab,var(--ring)_22%,white)] opacity-0 transition-opacity duration-200 group-data-[state=active]/tabs-switch-trigger:opacity-100"
               strokeColor="var(--border)"
-              strokeWidth={1.35}
+              strokeWidthRange={[1.35, 1.35]}
               svgClassName="size-full opacity-0 transition-opacity duration-200 group-data-[state=active]/tabs-switch-trigger:opacity-100"
               crookedness={0.9}
             >

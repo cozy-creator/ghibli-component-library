@@ -53,7 +53,7 @@ export function AccountChangeEmailDialog({
           contentClassName="px-5 py-5"
           surfaceClassName="bg-[color:var(--card)]"
           strokeColor="var(--border)"
-          strokeWidth={1.45}
+          strokeWidthRange={[1.45, 1.45]}
           svgClassName="opacity-70"
           crookedness={0.6}
         >
@@ -150,7 +150,7 @@ export function AccountChangePasswordDialog({
           contentClassName="px-5 py-5"
           surfaceClassName="bg-[color:var(--card)]"
           strokeColor="var(--border)"
-          strokeWidth={1.45}
+          strokeWidthRange={[1.45, 1.45]}
           svgClassName="opacity-70"
           crookedness={0.6}
         >
@@ -257,7 +257,7 @@ export function AccountChangeUsernameDialog({
           contentClassName="px-5 py-5"
           surfaceClassName="bg-[color:var(--card)]"
           strokeColor="var(--border)"
-          strokeWidth={1.45}
+          strokeWidthRange={[1.45, 1.45]}
           svgClassName="opacity-70"
           crookedness={0.6}
         >

@@ -15,7 +15,7 @@ export function Input({
       contentClassName="theme-field-frame-content"
       surfaceClassName="theme-field-frame-surface bg-[color:var(--theme-field-background)]"
       strokeColor="var(--theme-field-border)"
-      strokeWidth={1.25}
+      strokeWidthRange={[1.25, 1.25]}
       svgClassName="opacity-85"
       crookedness={0.3}
     >
