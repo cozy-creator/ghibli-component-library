@@ -36,20 +36,36 @@ const widthClassMap: Record<PageWidth, string> = {
   md: "max-w-4xl",
   lg: "max-w-5xl",
   xl: "max-w-7xl",
-  // Edge-to-edge: drop the max width so content (e.g. a media gallery grid)
-  // reaches the page gutters. Only the layout container padding remains.
-  full: "max-w-none"
+  full: "max-w-none",
 };
 
-export function PageShell({ children, className, width = "xl" }: PageShellProps) {
+export function PageShell({
+  children,
+  className,
+  width = "xl",
+}: PageShellProps) {
   return (
-    <div className={cn(layoutContainerClass, widthClassMap[width], "pt-6 pb-6 md:pt-6 md:pb-8", className)}>
+    <div
+      className={cn(
+        layoutContainerClass,
+        widthClassMap[width],
+        "pt-6 pb-6 md:pt-6 md:pb-8",
+        className,
+      )}
+    >
       {children}
     </div>
   );
 }
 
-export function PageHero({ className, title, children, badge, description, actions }: PageHeroProps) {
+export function PageHero({
+  className,
+  title,
+  children,
+  badge,
+  description,
+  actions,
+}: PageHeroProps) {
   return (
     <section className={cn("relative overflow-hidden py-7 md:py-9", className)}>
       <div className="grid gap-3">
@@ -60,7 +76,9 @@ export function PageHero({ className, title, children, badge, description, actio
           </h1>
         ) : null}
         {description ? (
-          <div className="max-w-[64ch] text-sm leading-7 text-muted-foreground">{description}</div>
+          <div className="max-w-[64ch] text-sm leading-7 text-muted-foreground">
+            {description}
+          </div>
         ) : null}
         {children}
         {actions ? <div className="pt-2">{actions}</div> : null}
@@ -75,7 +93,7 @@ export function PageHeroSkeleton({ className }: PageHeroSkeletonProps) {
       className={cn(
         paperSurfaceClass,
         "relative overflow-hidden bg-[linear-gradient(180deg,rgba(255,255,255,0.28),transparent_18rem),color-mix(in_oklab,var(--paper)_99%,white)] px-6 py-7 md:px-8 md:py-9",
-        className
+        className,
       )}
     >
       <div className="grid gap-5">
@@ -104,11 +122,11 @@ export function PageSection({
   children,
   className,
   description,
-  title
+  title,
 }: PageSectionProps) {
   return (
     <section className={cn("grid gap-4", className)}>
-      {(title || description || actions) ? (
+      {title || description || actions ? (
         <div className="flex flex-col gap-3 md:flex-row md:items-end md:justify-between">
           <div className="grid gap-2">
             {title ? (
@@ -117,7 +135,9 @@ export function PageSection({
               </h2>
             ) : null}
             {description ? (
-              <div className="text-sm leading-7 text-muted-foreground">{description}</div>
+              <div className="text-sm leading-7 text-muted-foreground">
+                {description}
+              </div>
             ) : null}
           </div>
           {actions ? <div className="shrink-0">{actions}</div> : null}
