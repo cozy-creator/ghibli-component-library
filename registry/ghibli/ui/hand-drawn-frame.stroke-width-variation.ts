@@ -1,6 +1,7 @@
 import { clamp, type HandDrawnFrameShape } from "./hand-drawn-frame.geometry";
 import {
   type CubicBezier,
+  approximateCubicLength,
   bezierToPathString,
   parseCubicSegments,
   subdivideCubicBezier,
@@ -18,37 +19,34 @@ export type HandDrawnFrameStrokeLayer = {
   dasharray?: string;
   dashoffset?: number;
   opacity?: number;
-  pathJitter?: {
-    anchor: number;
-    control: number;
-  };
   pathLength?: number;
-  pathOffset?: {
-    x: number;
-    y: number;
-  };
-  pathSeed?: string;
   pathVariant?: HandDrawnFrameStrokePathVariant;
   strokeWidth: number | string;
 };
 
 type HandDrawnFrameStrokeWidthVariationOptions = {
+  /**
+   * Pixel-space path the stroke ribbon should follow. When omitted (tests, or
+   * the very first render before the element is measured), a synthetic
+   * reference path is used so the layer math still produces deterministic
+   * output.
+   */
   basePath?: string;
   shape?: HandDrawnFrameShape;
 };
 
 type StrokeWidthVariationProfile = {
   accentBaseOpacity: number;
-  accentExtraCount: number;
   centerWidth: number;
   dryAccentEnabled: boolean;
+  // 0..1 from strokeWidthFrequency: how often the width oscillates within the
+  // [minWidth, maxWidth] range along the line, and how far toward those edges it
+  // reaches. 0 = pick one random width in range and hold it (no variation).
+  frequencyFactor: number;
   intensity: number;
   intensityFactor: number;
-  jitterScale: number;
   maxWidth: number;
   minWidth: number;
-  offsetRetraceEnabled: boolean;
-  ribbonSegmentsPerCurve: number;
 };
 
 type WidthCurveSeed = {
@@ -64,10 +62,29 @@ const SURFACE_SIDES: HandDrawnFrameSurfaceSide[] = [
   "bottom",
   "left",
 ];
+
+/**
+ * Length-aware ribbon density. SVG cannot vary stroke width along one path, so
+ * each cubic is subdivided into many short sub-segments rendered at their own
+ * width. The number of sub-segments is proportional to the cubic's *pixel
+ * length* (one ribbon slice roughly every N px), so a long edge gets many
+ * slices and a short edge gets few — the width variation has the SAME spatial
+ * frequency on every edge regardless of its length, matching the crookedness
+ * fix. (The old code used a fixed slice count per cubic, which packed the same
+ * number of width changes onto short edges → jagged, and spread them thin on
+ * long edges → smooth. This is the bug being fixed.)
+ */
+const RIBBON_PX_PER_SLICE = 9;
+const RIBBON_MIN_SLICES = 2;
+const RIBBON_MAX_SLICES = 48;
+
+// Synthetic reference paths (pixel-space, ~140x90 surface / 240px divider) used
+// only when no measured basePath is supplied (e.g. unit tests).
 const DEFAULT_SURFACE_BASE_PATH =
-  "M1.4 5.3 C 25.8 4.7, 49.8 5.9, 74.4 5.2 C 83.5 5, 91.5 5.4, 98.6 5.1 C 98.1 25.1, 99 38.8, 98.6 50.2 C 98.2 63.8, 99 79, 98.4 94.8 C 74.7 95.4, 50.1 94.2, 25.1 94.9 C 16.8 95.1, 8.9 95, 1.5 94.9 C 1.9 79, 0.9 63.7, 1.4 50.2 C 1.8 37, 1 21, 1.4 5.3 Z";
+  "M 6 6 C 50 4 90 8 134 6 C 136 30 138 60 134 84 C 90 86 50 82 6 84 C 4 60 8 30 6 6 Z";
 const DEFAULT_DIVIDER_BASE_PATH =
-  "M1.2 6 C 11.8 4.95, 22.5 7.15, 33.6 5.85 C 44.6 4.88, 55.3 7.12, 66.1 5.9 C 76.9 4.96, 87.4 6.86, 98.8 5.8";
+  "M 4 6 C 60 4 120 8 180 6 C 200 5 220 7 236 6";
+
 function lerp(start: number, end: number, t: number) {
   return start + (end - start) * t;
 }
@@ -79,26 +96,47 @@ function formatSvgNumber(value: number) {
 function partitionSurfaceSides(
   segments: CubicBezier[],
 ): Record<HandDrawnFrameSurfaceSide, CubicBezier[]> | null {
-  if (segments.length < 8) {
-    return null;
+  // The pixel-space surface outline is one cubic per side (4 cubics total).
+  if (segments.length === 4) {
+    return {
+      bottom: [segments[2]!],
+      left: [segments[3]!],
+      right: [segments[1]!],
+      top: [segments[0]!],
+    };
   }
 
-  return {
-    bottom: [segments[4]!, segments[5]!],
-    left: [segments[6]!, segments[7]!],
-    right: [segments[2]!, segments[3]!],
-    top: [segments[0]!, segments[1]!],
-  };
+  // Older 8-cubic outlines (2 per side) are still partitioned correctly.
+  if (segments.length >= 8) {
+    return {
+      bottom: [segments[4]!, segments[5]!],
+      left: [segments[6]!, segments[7]!],
+      right: [segments[2]!, segments[3]!],
+      top: [segments[0]!, segments[1]!],
+    };
+  }
+
+  return null;
 }
 
-function createWidthCurveSeed(random: () => number): WidthCurveSeed {
-  // 3 sines, with the dominant wave at ~2 humps per side so each edge clearly
-  // reads thick → thin → thick → thin instead of one slow swell. Higher
-  // harmonics break up any obvious sine regularity into hand-drawn-looking
-  // micro-variation.
+function createWidthCurveSeed(
+  random: () => number,
+  frequencyFactor: number,
+): WidthCurveSeed {
+  // 3 sines summed. The dominant wavelength scales with strokeWidthFrequency:
+  // low frequency → few long thick↔thin sweeps; high frequency → many rapid
+  // ones. Higher harmonics break up the obvious sine regularity into
+  // hand-drawn-looking micro-variation. At frequency 0 the base is ~0 so the
+  // curve is effectively flat (the caller picks a single constant width).
+  const base = frequencyFactor * 5;
+
   return {
     amps: [0.6, 0.32, 0.13],
-    freqs: [1.8 + random() * 0.9, 3.4 + random() * 1.2, 6.2 + random() * 1.6],
+    freqs: [
+      base + random() * 0.4,
+      base * 1.9 + random() * 0.6,
+      base * 3.4 + random() * 0.9,
+    ],
     phases: [
       random() * Math.PI * 2,
       random() * Math.PI * 2,
@@ -119,37 +157,71 @@ function evaluateWidthCurve(seed: WidthCurveSeed, t: number) {
   return clamp(value, -1, 1);
 }
 
+// Constant-pixel width swing at full intensity (strokeWidthVariation = 10).
+// The wobble is an absolute pixel amount that does NOT scale with the base
+// stroke width, so a thin line and a thick line get the same hand-drawn
+// pen-pressure variation (matching the constant-pixel crookedness model).
+// Asymmetric — a pen swells thicker more readily than it starves to nothing —
+// keeping the old ~1.5:1 up:down ratio.
+const STROKE_VARIATION_UP_PX = 1.5;
+const STROKE_VARIATION_DOWN_PX = 1.0;
+// Floor so a thin stroke never wobbles down to invisibility.
+const STROKE_VARIATION_MIN_WIDTH_PX = 0.45;
+
 function resolveStrokeWidthVariationProfile(
   strokeWidth: number,
   strokeWidthVariation: number,
+  strokeWidthFrequency: number,
 ): StrokeWidthVariationProfile {
   const intensity = clamp(strokeWidthVariation, 0, 10);
   // Steep curve: 0-5 stays subtle, 5-10 ramps to dramatic.
   const intensityFactor = (intensity / 10) ** 1.55;
-  const lowerExtent = lerp(0, 0.72, intensityFactor);
-  const upperExtent = lerp(0, 1.08, intensityFactor);
+  // Pixel swing is independent of strokeWidth (constant-pixel model). This sets
+  // the RANGE [minWidth, maxWidth] the width can take.
+  const downPx = STROKE_VARIATION_DOWN_PX * intensityFactor;
+  const upPx = STROKE_VARIATION_UP_PX * intensityFactor;
   const minWidth = Math.max(
-    strokeWidth * (1 - lowerExtent),
-    strokeWidth * 0.16,
+    strokeWidth - downPx,
+    STROKE_VARIATION_MIN_WIDTH_PX,
   );
-  const maxWidth = strokeWidth * (1 + upperExtent);
-  const ribbonSegmentsPerCurve =
-    intensity <= 0 ? 0 : clamp(Math.round(4 + intensityFactor * 7), 4, 11);
+  const maxWidth = Math.max(strokeWidth + upPx, minWidth);
+  const frequencyFactor = clamp(strokeWidthFrequency, 0, 10) / 10;
 
   return {
     accentBaseOpacity: 0.22 + intensityFactor * 0.32,
-    accentExtraCount:
-      intensityFactor >= 0.7 ? 2 : intensityFactor >= 0.35 ? 1 : 0,
     centerWidth: strokeWidth,
-    dryAccentEnabled: intensityFactor >= 0.18,
+    dryAccentEnabled: intensityFactor >= 0.18 && frequencyFactor > 0,
+    frequencyFactor,
     intensity,
     intensityFactor,
-    jitterScale: 0.04 + intensityFactor * 0.18,
     maxWidth,
     minWidth,
-    offsetRetraceEnabled: intensityFactor >= 0.42,
-    ribbonSegmentsPerCurve,
   };
+}
+
+/**
+ * Slices to use for a cubic of the given pixel length, at constant density.
+ * Returns 0 when variation is disabled.
+ */
+function ribbonSlicesForLength(
+  lengthPx: number,
+  intensityFactor: number,
+  frequencyFactor: number,
+) {
+  if (intensityFactor <= 0 || !Number.isFinite(lengthPx) || lengthPx <= 0) {
+    return 0;
+  }
+
+  // Densify slices as frequency rises so rapid oscillations are actually
+  // sampled (not aliased) by the ribbon. pxPerSlice shrinks from the base
+  // toward ~1/3 of it at full frequency.
+  const pxPerSlice = RIBBON_PX_PER_SLICE / (1 + frequencyFactor * 2);
+
+  return clamp(
+    Math.round(lengthPx / pxPerSlice),
+    RIBBON_MIN_SLICES,
+    RIBBON_MAX_SLICES,
+  );
 }
 
 function createRibbonLayersForCurves(
@@ -158,52 +230,73 @@ function createRibbonLayersForCurves(
   profile: StrokeWidthVariationProfile,
   layerSeed: string,
 ): HandDrawnFrameStrokeLayer[] {
-  if (curves.length === 0 || profile.ribbonSegmentsPerCurve <= 0) {
+  if (curves.length === 0 || profile.intensityFactor <= 0) {
     return [];
   }
 
   const random = createSeededRandom(layerSeed);
   const subBeziers: CubicBezier[] = [];
 
+  // Length-proportional subdivision: every curve contributes a slice count
+  // matching its pixel length, so width-variation density is uniform across
+  // long and short edges alike.
   for (const curve of curves) {
-    subBeziers.push(
-      ...subdivideCubicBezier(curve, profile.ribbonSegmentsPerCurve),
+    const slices = ribbonSlicesForLength(
+      approximateCubicLength(curve),
+      profile.intensityFactor,
+      profile.frequencyFactor,
     );
+
+    if (slices <= 0) {
+      continue;
+    }
+
+    subBeziers.push(...subdivideCubicBezier(curve, slices));
   }
 
   if (subBeziers.length === 0) {
     return [];
   }
 
-  const curveSeed = createWidthCurveSeed(random);
-  const slices = subBeziers.length;
-  const rawNoise = subBeziers.map((_, index) => {
-    const t = slices === 1 ? 0.5 : index / (slices - 1);
+  const center = (profile.minWidth + profile.maxWidth) / 2;
+  const halfRange = (profile.maxWidth - profile.minWidth) / 2;
 
-    return evaluateWidthCurve(curveSeed, t);
-  });
-  // Stretch each side's noise across its observed min/max so every side
-  // actually reaches both extremes — the line truly goes thin → thick → thin
-  // along its length, instead of clustering near the middle when the random
-  // phases happen to land in a narrow band.
-  const noiseMin = Math.min(...rawNoise);
-  const noiseMax = Math.max(...rawNoise);
-  const noiseSpan = noiseMax - noiseMin;
-  const jitterRange =
-    (profile.maxWidth - profile.minWidth) * 0.05 * profile.intensityFactor;
+  // Frequency 0: pick ONE random width within the range and hold it along the
+  // whole line — uneven across components, but flat within this one.
+  if (profile.frequencyFactor <= 0) {
+    const flatWidth = lerp(profile.minWidth, profile.maxWidth, random());
+
+    return subBeziers.map((bezier) => {
+      const layer: HandDrawnFrameStrokeLayer = {
+        customPath: bezierToPathString(bezier),
+        strokeWidth: formatSvgNumber(flatWidth),
+      };
+
+      if (pathVariant) {
+        layer.pathVariant = pathVariant;
+      }
+
+      return layer;
+    });
+  }
+
+  // Reach: how far toward the range edges the oscillation swings. Low frequency
+  // hugs the mean; high frequency sweeps the full [min, max].
+  const reach = lerp(0.4, 1, profile.frequencyFactor);
+  const curveSeed = createWidthCurveSeed(random, profile.frequencyFactor);
+  const slices = subBeziers.length;
+  const jitterRange = halfRange * 0.08 * profile.frequencyFactor;
 
   return subBeziers.map((bezier, index) => {
-    const normalized =
-      noiseSpan > 0 ? (rawNoise[index]! - noiseMin) / noiseSpan : 0.5;
-    const baseWidth = lerp(profile.minWidth, profile.maxWidth, normalized);
+    const t = slices === 1 ? 0.5 : index / (slices - 1);
+    const wave = evaluateWidthCurve(curveSeed, t); // -1..1
     const width = clamp(
-      baseWidth + (random() - 0.5) * jitterRange,
+      center + wave * halfRange * reach + (random() - 0.5) * jitterRange,
       profile.minWidth,
       profile.maxWidth,
     );
     const layer: HandDrawnFrameStrokeLayer = {
       customPath: bezierToPathString(bezier),
-      pathSeed: `${layerSeed}:ribbon:${index}`,
       strokeWidth: formatSvgNumber(width),
     };
 
@@ -268,7 +361,7 @@ function createDryAccentLayer(
   layerSeed: string,
 ): HandDrawnFrameStrokeLayer {
   const random = createSeededRandom(layerSeed);
-  // Sit close to the base width so the accent reads as ink dryness, not as a
+  // Sit close to the base width so the accent reads as ink dryness, not a
   // second silhouette stacked on top of the ribbon.
   const widthSwing = (random() - 0.5) * 0.18 * profile.centerWidth;
   const strokeWidth = clamp(
@@ -283,12 +376,7 @@ function createDryAccentLayer(
     opacity: formatSvgNumber(
       clamp(profile.accentBaseOpacity + (random() - 0.5) * 0.12, 0.18, 0.68),
     ),
-    pathJitter: {
-      anchor: formatSvgNumber(profile.jitterScale * 0.4),
-      control: formatSvgNumber(profile.jitterScale * 1.05),
-    },
     pathLength: NORMALIZED_PATH_LENGTH,
-    pathSeed: `${layerSeed}:dry`,
     strokeWidth: formatSvgNumber(strokeWidth),
   };
 
@@ -297,91 +385,6 @@ function createDryAccentLayer(
   }
 
   return layer;
-}
-
-function resolveSurfacePathOffset(
-  side: HandDrawnFrameSurfaceSide,
-  offsetDistance: number,
-  driftDistance: number,
-  direction: number,
-) {
-  switch (side) {
-    case "top":
-      return {
-        x: formatSvgNumber(driftDistance),
-        y: formatSvgNumber(offsetDistance * direction),
-      };
-    case "right":
-      return {
-        x: formatSvgNumber(offsetDistance * direction),
-        y: formatSvgNumber(driftDistance),
-      };
-    case "bottom":
-      return {
-        x: formatSvgNumber(-driftDistance),
-        y: formatSvgNumber(-offsetDistance * direction),
-      };
-    case "left":
-      return {
-        x: formatSvgNumber(-offsetDistance * direction),
-        y: formatSvgNumber(-driftDistance),
-      };
-  }
-}
-
-function createOffsetRetraceLayer(
-  side: HandDrawnFrameSurfaceSide,
-  profile: StrokeWidthVariationProfile,
-  layerSeed: string,
-): HandDrawnFrameStrokeLayer {
-  const random = createSeededRandom(layerSeed);
-  const offsetDistance = clamp(
-    0.08 + profile.intensityFactor * 0.22 + random() * 0.1,
-    0.08,
-    0.42,
-  );
-  const driftDistance = (random() - 0.5) * 0.18 * profile.intensityFactor;
-  const direction = random() < 0.5 ? -1 : 1;
-
-  return {
-    opacity: formatSvgNumber(
-      clamp(0.32 + profile.intensityFactor * 0.18 + random() * 0.06, 0.18, 0.6),
-    ),
-    pathJitter: {
-      anchor: formatSvgNumber(profile.jitterScale * 0.7),
-      control: formatSvgNumber(profile.jitterScale * 1.4),
-    },
-    pathOffset: resolveSurfacePathOffset(
-      side,
-      offsetDistance,
-      driftDistance,
-      direction,
-    ),
-    pathSeed: `${layerSeed}:offset`,
-    pathVariant: side,
-    strokeWidth: formatSvgNumber(
-      clamp(
-        profile.centerWidth * (0.78 + random() * 0.22),
-        profile.minWidth * 1.05,
-        profile.maxWidth * 0.92,
-      ),
-    ),
-  } satisfies HandDrawnFrameStrokeLayer;
-}
-
-function pickRandomSurfaceSides(
-  random: () => number,
-  count: number,
-): HandDrawnFrameSurfaceSide[] {
-  const pool = [...SURFACE_SIDES];
-
-  for (let index = pool.length - 1; index > 0; index -= 1) {
-    const swapIndex = Math.floor(random() * (index + 1));
-
-    [pool[index], pool[swapIndex]] = [pool[swapIndex]!, pool[index]!];
-  }
-
-  return pool.slice(0, clamp(count, 0, pool.length));
 }
 
 function createSurfaceLayers(
@@ -434,36 +437,6 @@ function createSurfaceLayers(
     layers.push(
       createDryAccentLayer(primarySide, profile, `${seed}:dry:${primarySide}`),
     );
-
-    if (profile.accentExtraCount >= 1) {
-      const secondarySides: HandDrawnFrameSurfaceSide[] = SURFACE_SIDES.filter(
-        (side) => side !== primarySide,
-      );
-      const secondarySide =
-        secondarySides[Math.floor(dryRandom() * secondarySides.length)]!;
-
-      layers.push(
-        createDryAccentLayer(
-          secondarySide,
-          profile,
-          `${seed}:dry:${secondarySide}`,
-        ),
-      );
-    }
-  }
-
-  if (profile.offsetRetraceEnabled) {
-    const offsetRandom = createSeededRandom(`${seed}:offset:plan`);
-    const offsetSides = pickRandomSurfaceSides(
-      offsetRandom,
-      profile.intensityFactor >= 0.75 ? 2 : 1,
-    );
-
-    for (const side of offsetSides) {
-      layers.push(
-        createOffsetRetraceLayer(side, profile, `${seed}:offset:${side}`),
-      );
-    }
   }
 
   return layers;
@@ -482,23 +455,8 @@ function createDividerLayers(
     },
   ];
 
-  const dividerProfile: StrokeWidthVariationProfile = {
-    ...profile,
-    // Divider is one long Bezier — double the segment count so the ribbon
-    // stays visually smooth across the full span.
-    ribbonSegmentsPerCurve:
-      profile.ribbonSegmentsPerCurve > 0
-        ? clamp(profile.ribbonSegmentsPerCurve * 2, 6, 18)
-        : 0,
-  };
-
   layers.push(
-    ...createRibbonLayersForCurves(
-      cubics,
-      "frame",
-      dividerProfile,
-      `${seed}:divider`,
-    ),
+    ...createRibbonLayersForCurves(cubics, "frame", profile, `${seed}:divider`),
   );
 
   if (profile.dryAccentEnabled) {
@@ -508,22 +466,24 @@ function createDividerLayers(
   return layers;
 }
 
-// SVG cannot vary stroke width along a single path, so we subdivide each cubic
-// Bezier into many small sub-segments and render each at its own width. The
-// result reads as smooth thin → thick → thin variation along the line, instead
-// of the discrete dasharray "blobs" the previous implementation produced.
+// Builds the stack of stroke layers (base outline + per-side width-varying
+// ribbon slices + optional dry-ink accent) for the frame's stroke. `strokeWidth`
+// and the variation amplitude are expressed in pixels; slice counts come from
+// pixel length so density is uniform across edges of any length.
 export function createStrokeWidthVariationLayers(
   strokeWidth: number,
   seed: string,
   strokeWidthVariation: number,
+  strokeWidthFrequency: number,
   options: HandDrawnFrameStrokeWidthVariationOptions = {},
 ): HandDrawnFrameStrokeLayer[] {
   const profile = resolveStrokeWidthVariationProfile(
     strokeWidth,
     strokeWidthVariation,
+    strokeWidthFrequency,
   );
 
-  if (profile.intensity <= 0 || profile.ribbonSegmentsPerCurve <= 0) {
+  if (profile.intensity <= 0 || profile.intensityFactor <= 0) {
     return [{ strokeWidth: formatSvgNumber(strokeWidth) }];
   }
 

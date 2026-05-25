@@ -3,7 +3,6 @@ import { describe, expect, it } from "vitest";
 import {
   createStrokeWidthVariationLayers,
   type HandDrawnFrameStrokeLayer,
-  type HandDrawnFrameStrokePathVariant,
 } from "../../../../registry/ghibli/ui/hand-drawn-frame.stroke-width-variation";
 
 function numericStrokeWidth(layer: HandDrawnFrameStrokeLayer) {
@@ -24,38 +23,30 @@ function strokeWidthSpread(layers: HandDrawnFrameStrokeLayer[]) {
   return maxStrokeWidth(layers) - minStrokeWidth(layers);
 }
 
-function isSurfaceSideVariant(
-  pathVariant: HandDrawnFrameStrokePathVariant | undefined,
-): pathVariant is Exclude<HandDrawnFrameStrokePathVariant, "frame"> {
-  return (
-    pathVariant === "top" ||
-    pathVariant === "right" ||
-    pathVariant === "bottom" ||
-    pathVariant === "left"
-  );
-}
+// A short edge (40px) vs a long edge (400px) as single straight cubics in
+// pixel space — used to prove ribbon density scales with pixel length.
+const SHORT_EDGE_PATH = "M 0 0 C 13 0 27 0 40 0";
+const LONG_EDGE_PATH = "M 0 0 C 133 0 267 0 400 0";
 
-function parseDashArray(layer: HandDrawnFrameStrokeLayer) {
-  return (layer.dasharray ?? "")
-    .split(/\s+/)
-    .map(Number)
-    .filter((segment) => Number.isFinite(segment));
+function ribbonLayers(layers: HandDrawnFrameStrokeLayer[]) {
+  return layers.filter((layer) => layer.customPath);
 }
 
 describe("createStrokeWidthVariationLayers", () => {
-  it("returns a single baseline layer at intensity 0", () => {
+  it("returns a single baseline layer at variation 0", () => {
     const strokeWidth = 1.55;
-    const layers = createStrokeWidthVariationLayers(strokeWidth, "seed-0", 0);
+    const layers = createStrokeWidthVariationLayers(strokeWidth, "seed-0", 0, 5);
 
     expect(layers).toHaveLength(1);
     expect(numericStrokeWidth(layers[0]!)).toBe(strokeWidth);
   });
 
-  it("keeps decorative passes on both sides of the base stroke width", () => {
+  it("brackets the baseline stroke width with both thinner and thicker layers", () => {
     const strokeWidth = 1.55;
     const layers = createStrokeWidthVariationLayers(
       strokeWidth,
       "seed-center",
+      8,
       8,
     );
 
@@ -63,12 +54,12 @@ describe("createStrokeWidthVariationLayers", () => {
     expect(maxStrokeWidth(layers)).toBeGreaterThan(strokeWidth);
   });
 
-  it("increases width variation as intensity rises", () => {
+  it("increases width variation as the variation control rises", () => {
     const strokeWidth = 1.55;
     const seed = "seed-variation";
-    const twoLayers = createStrokeWidthVariationLayers(strokeWidth, seed, 2);
-    const sixLayers = createStrokeWidthVariationLayers(strokeWidth, seed, 6);
-    const tenLayers = createStrokeWidthVariationLayers(strokeWidth, seed, 10);
+    const twoLayers = createStrokeWidthVariationLayers(strokeWidth, seed, 2, 8);
+    const sixLayers = createStrokeWidthVariationLayers(strokeWidth, seed, 6, 8);
+    const tenLayers = createStrokeWidthVariationLayers(strokeWidth, seed, 10, 8);
 
     expect(strokeWidthSpread(sixLayers)).toBeGreaterThan(
       strokeWidthSpread(twoLayers),
@@ -78,185 +69,90 @@ describe("createStrokeWidthVariationLayers", () => {
     );
   });
 
-  it("mixes continuous and gapped decorative layers at higher intensity", () => {
-    const strokeWidth = 1.55;
-    const layers = createStrokeWidthVariationLayers(
-      strokeWidth,
-      "seed-organic-mix",
-      10,
+  it("holds one constant width across the line at frequency 0", () => {
+    // Frequency 0 = pick a single random width within the range and do not vary
+    // it along the line, so every ribbon slice shares one width.
+    const layers = createStrokeWidthVariationLayers(2, "seed-flat", 8, 0, {
+      basePath: LONG_EDGE_PATH,
+      shape: "divider",
+    });
+    const ribbons = ribbonLayers(layers);
+
+    expect(ribbons.length).toBeGreaterThan(1);
+    expect(strokeWidthSpread(ribbons)).toBe(0);
+  });
+
+  it("reaches further toward the range edges as frequency rises", () => {
+    // Same range (variation), higher frequency → the oscillation sweeps closer
+    // to the thin/thick extremes, so the observed spread grows.
+    const lowFreq = createStrokeWidthVariationLayers(2, "seed-freq", 8, 2, {
+      basePath: LONG_EDGE_PATH,
+      shape: "divider",
+    });
+    const highFreq = createStrokeWidthVariationLayers(2, "seed-freq", 8, 9, {
+      basePath: LONG_EDGE_PATH,
+      shape: "divider",
+    });
+
+    expect(strokeWidthSpread(ribbonLayers(highFreq))).toBeGreaterThan(
+      strokeWidthSpread(ribbonLayers(lowFreq)),
     );
-    const decorativeLayers = layers.slice(1);
-
-    expect(decorativeLayers.some((layer) => layer.dasharray)).toBe(true);
-    expect(decorativeLayers.some((layer) => !layer.dasharray)).toBe(true);
-    expect(decorativeLayers.some((layer) => layer.pathJitter)).toBe(true);
-  });
-
-  it("keeps at least one meaningfully thinner expressive pass for contrast", () => {
-    const strokeWidth = 1.55;
-    const layers = createStrokeWidthVariationLayers(
-      strokeWidth,
-      "seed-thin-contrast",
-      10,
-    );
-    const decorativeLayers = layers.slice(1);
-
-    expect(
-      decorativeLayers.some(
-        (layer) => numericStrokeWidth(layer) <= strokeWidth - 0.3,
-      ),
-    ).toBe(true);
-  });
-
-  it("pushes the expressive range toward both very thin and very thick passes near 10", () => {
-    const strokeWidth = 1.55;
-    const layers = createStrokeWidthVariationLayers(
-      strokeWidth,
-      "seed-extreme-contrast",
-      10,
-    );
-
-    expect(minStrokeWidth(layers)).toBeLessThan(strokeWidth * 0.6);
-    expect(maxStrokeWidth(layers)).toBeGreaterThan(strokeWidth * 1.65);
-  });
-
-  it("biases expressive surface layers toward individual side retraces", () => {
-    const strokeWidth = 1.55;
-    const decorativeLayers = createStrokeWidthVariationLayers(
-      strokeWidth,
-      "seed-side-aware",
-      10,
-    ).slice(1);
-    const sideVariants = decorativeLayers
-      .map((layer) => layer.pathVariant)
-      .filter(isSurfaceSideVariant);
-    const sideCounts = sideVariants.reduce<Record<string, number>>(
-      (counts, sideVariant) => {
-        counts[sideVariant] = (counts[sideVariant] ?? 0) + 1;
-        return counts;
-      },
-      {},
-    );
-
-    expect(decorativeLayers.length).toBeLessThanOrEqual(120);
-    expect(sideVariants.length).toBeGreaterThanOrEqual(2);
-    expect(new Set(sideVariants).size).toBeGreaterThanOrEqual(2);
-    expect(Math.max(...Object.values(sideCounts))).toBeGreaterThan(1);
-    expect(
-      sideVariants.some(
-        (sideVariant) => sideVariant === "top" || sideVariant === "bottom",
-      ),
-    ).toBe(true);
-    expect(
-      sideVariants.some(
-        (sideVariant) => sideVariant === "left" || sideVariant === "right",
-      ),
-    ).toBe(true);
-  });
-
-  it("keeps both horizontal sides engaged at the top of the expressive range", () => {
-    const strokeWidth = 1.55;
-    const sideVariants = createStrokeWidthVariationLayers(
-      strokeWidth,
-      "seed-horizontal-balance",
-      10,
-    )
-      .slice(1)
-      .map((layer) => layer.pathVariant)
-      .filter(isSurfaceSideVariant);
-
-    expect(sideVariants).toContain("top");
-    expect(sideVariants).toContain("bottom");
-  });
-
-  it("can create partial horizontal retraces so top and bottom keep mixed thin and thick moments", () => {
-    const strokeWidth = 1.55;
-    const horizontalPartialVariants = createStrokeWidthVariationLayers(
-      strokeWidth,
-      "seed-horizontal-fragments",
-      10,
-    )
-      .slice(1)
-      .filter(
-        (layer) =>
-          layer.dasharray &&
-          (layer.pathVariant === "top" || layer.pathVariant === "bottom"),
-      )
-      .map((layer) => layer.pathVariant);
-
-    expect(horizontalPartialVariants.length).toBeGreaterThan(0);
-  });
-
-  it("adds subtle offset retraces so overlapping pressure passes can sit beside the scaffold", () => {
-    const strokeWidth = 1.55;
-    const retraceLayers = createStrokeWidthVariationLayers(
-      strokeWidth,
-      "seed-offset-retrace",
-      10,
-    )
-      .slice(1)
-      .filter(
-        (layer) => layer.pathOffset && isSurfaceSideVariant(layer.pathVariant),
-      );
-
-    expect(retraceLayers.length).toBeGreaterThan(0);
-    expect(retraceLayers.some((layer) => (layer.opacity ?? 0) < 0.7)).toBe(
-      true,
-    );
-  });
-
-  it("builds irregular dry gaps instead of evenly repeating stripes", () => {
-    const strokeWidth = 1.55;
-    const partialLayers = createStrokeWidthVariationLayers(
-      strokeWidth,
-      "seed-dry-gap-variation",
-      10,
-    )
-      .slice(1)
-      .filter((layer) => layer.dasharray);
-
-    expect(
-      partialLayers.some((layer) => {
-        const dashArray = parseDashArray(layer);
-        const gaps = dashArray.filter((_, index) => index % 2 === 1);
-
-        if (gaps.length < 2) {
-          return false;
-        }
-
-        const minGap = Math.min(...gaps);
-        const maxGap = Math.max(...gaps);
-        const distinctGapCount = new Set(gaps.map((gap) => gap.toFixed(1)))
-          .size;
-
-        return maxGap >= 6 && maxGap > minGap * 1.7 && distinctGapCount >= 3;
-      }),
-    ).toBe(true);
-  });
-
-  it("keeps divider variation on the shared path instead of splitting into sides", () => {
-    const strokeWidth = 1.55;
-    const decorativeLayers = createStrokeWidthVariationLayers(
-      strokeWidth,
-      "seed-divider",
-      10,
-      { shape: "divider" },
-    ).slice(1);
-
-    expect(decorativeLayers.length).toBeGreaterThan(0);
-    expect(
-      decorativeLayers.every(
-        (layer) => !layer.pathVariant || layer.pathVariant === "frame",
-      ),
-    ).toBe(true);
   });
 
   it("stays deterministic for the same seed and inputs", () => {
     const strokeWidth = 1.55;
     const seed = "seed-repeatable";
-    const first = createStrokeWidthVariationLayers(strokeWidth, seed, 8);
-    const second = createStrokeWidthVariationLayers(strokeWidth, seed, 8);
+    const first = createStrokeWidthVariationLayers(strokeWidth, seed, 8, 8);
+    const second = createStrokeWidthVariationLayers(strokeWidth, seed, 8, 8);
 
     expect(second).toEqual(first);
+  });
+
+  it("scales ribbon slice count with edge pixel length (density is constant)", () => {
+    // A long edge must get proportionally MORE ribbon slices than a short edge
+    // at the same variation — this is the length-aware fix. Equal counts would
+    // mean the short edge packs the same width changes into less space (jagged)
+    // and the long edge spreads them thin (smooth), the reported bug.
+    const shortLayers = createStrokeWidthVariationLayers(2, "seed-len", 6, 4, {
+      basePath: SHORT_EDGE_PATH,
+      shape: "divider",
+    });
+    const longLayers = createStrokeWidthVariationLayers(2, "seed-len", 6, 4, {
+      basePath: LONG_EDGE_PATH,
+      shape: "divider",
+    });
+
+    const shortRibbons = ribbonLayers(shortLayers).length;
+    const longRibbons = ribbonLayers(longLayers).length;
+
+    expect(longRibbons).toBeGreaterThan(shortRibbons);
+    // ~10x the length should produce many more slices, not a fixed count.
+    expect(longRibbons).toBeGreaterThanOrEqual(shortRibbons * 4);
+  });
+
+  it("bounds width amplitude in the same pixel envelope regardless of edge length", () => {
+    // Amplitude is a pixel quantity driven by the variation control, so the
+    // width envelope (the ceiling a slice can reach) is identical for a short
+    // and a long edge — only the NUMBER of slices differs with length, never
+    // how thick/thin the line is allowed to get.
+    const strokeWidth = 2;
+    const shortLayers = createStrokeWidthVariationLayers(strokeWidth, "seed-amp", 7, 7, {
+      basePath: SHORT_EDGE_PATH,
+      shape: "divider",
+    });
+    const longLayers = createStrokeWidthVariationLayers(strokeWidth, "seed-amp", 7, 7, {
+      basePath: LONG_EDGE_PATH,
+      shape: "divider",
+    });
+
+    // Both edges share the SAME pixel envelope — their peaks (and troughs) sit
+    // within a small tolerance of each other. Any gap is sampling luck (which
+    // wave point each slice lands on), never a length-driven amplitude change.
+    expect(
+      Math.abs(maxStrokeWidth(longLayers) - maxStrokeWidth(shortLayers)),
+    ).toBeLessThan(0.3);
+    expect(
+      Math.abs(minStrokeWidth(longLayers) - minStrokeWidth(shortLayers)),
+    ).toBeLessThan(0.3);
   });
 });
