@@ -1,4 +1,11 @@
-import type { HandDrawnFrameShape } from "./hand-drawn-frame.geometry";
+import { clamp, type HandDrawnFrameShape } from "./hand-drawn-frame.geometry";
+import {
+  type CubicBezier,
+  bezierToPathString,
+  parseCubicSegments,
+  subdivideCubicBezier,
+} from "./hand-drawn-frame.bezier";
+import { createSeededRandom } from "./hand-drawn-frame.random";
 
 export type HandDrawnFrameSurfaceSide = "top" | "right" | "bottom" | "left";
 
@@ -44,10 +51,6 @@ type StrokeWidthVariationProfile = {
   ribbonSegmentsPerCurve: number;
 };
 
-type Point = [number, number];
-
-type CubicBezier = [Point, Point, Point, Point];
-
 type WidthCurveSeed = {
   amps: number[];
   freqs: number[];
@@ -65,155 +68,12 @@ const DEFAULT_SURFACE_BASE_PATH =
   "M1.4 5.3 C 25.8 4.7, 49.8 5.9, 74.4 5.2 C 83.5 5, 91.5 5.4, 98.6 5.1 C 98.1 25.1, 99 38.8, 98.6 50.2 C 98.2 63.8, 99 79, 98.4 94.8 C 74.7 95.4, 50.1 94.2, 25.1 94.9 C 16.8 95.1, 8.9 95, 1.5 94.9 C 1.9 79, 0.9 63.7, 1.4 50.2 C 1.8 37, 1 21, 1.4 5.3 Z";
 const DEFAULT_DIVIDER_BASE_PATH =
   "M1.2 6 C 11.8 4.95, 22.5 7.15, 33.6 5.85 C 44.6 4.88, 55.3 7.12, 66.1 5.9 C 76.9 4.96, 87.4 6.86, 98.8 5.8";
-const PATH_TOKEN_PATTERN = /[A-Za-z]|-?\d*\.?\d+/g;
-
-function clamp(value: number, min: number, max: number) {
-  return Math.min(max, Math.max(min, value));
-}
-
 function lerp(start: number, end: number, t: number) {
   return start + (end - start) * t;
 }
 
 function formatSvgNumber(value: number) {
   return Number(value.toFixed(3));
-}
-
-function hashSeed(value: string) {
-  let hash = 2166136261;
-
-  for (let index = 0; index < value.length; index += 1) {
-    hash ^= value.charCodeAt(index);
-    hash = Math.imul(hash, 16777619);
-  }
-
-  return hash >>> 0;
-}
-
-function createSeededRandom(seed: string) {
-  let state = hashSeed(seed) || 0x6d2b79f5;
-
-  return () => {
-    state += 0x6d2b79f5;
-
-    let value = state;
-
-    value = Math.imul(value ^ (value >>> 15), value | 1);
-    value ^= value + Math.imul(value ^ (value >>> 7), value | 61);
-
-    return ((value ^ (value >>> 14)) >>> 0) / 4294967296;
-  };
-}
-
-function lerpPoint(a: Point, b: Point, t: number): Point {
-  return [a[0] + (b[0] - a[0]) * t, a[1] + (b[1] - a[1]) * t];
-}
-
-function splitCubicBezier(
-  bezier: CubicBezier,
-  t: number,
-): [CubicBezier, CubicBezier] {
-  const [p0, p1, p2, p3] = bezier;
-  const p01 = lerpPoint(p0, p1, t);
-  const p12 = lerpPoint(p1, p2, t);
-  const p23 = lerpPoint(p2, p3, t);
-  const p012 = lerpPoint(p01, p12, t);
-  const p123 = lerpPoint(p12, p23, t);
-  const p0123 = lerpPoint(p012, p123, t);
-
-  return [
-    [p0, p01, p012, p0123],
-    [p0123, p123, p23, p3],
-  ];
-}
-
-function subdivideCubicBezier(
-  bezier: CubicBezier,
-  count: number,
-): CubicBezier[] {
-  if (count <= 1) {
-    return [bezier];
-  }
-
-  const subdivisions: CubicBezier[] = [];
-  let remaining = bezier;
-
-  for (let i = 1; i < count; i += 1) {
-    const t = 1 / (count - i + 1);
-    const [left, right] = splitCubicBezier(remaining, t);
-
-    subdivisions.push(left);
-    remaining = right;
-  }
-
-  subdivisions.push(remaining);
-
-  return subdivisions;
-}
-
-function bezierToPathString(bezier: CubicBezier) {
-  const [p0, p1, p2, p3] = bezier;
-
-  return `M ${formatSvgNumber(p0[0])} ${formatSvgNumber(p0[1])} C ${formatSvgNumber(p1[0])} ${formatSvgNumber(p1[1])} ${formatSvgNumber(p2[0])} ${formatSvgNumber(p2[1])} ${formatSvgNumber(p3[0])} ${formatSvgNumber(p3[1])}`;
-}
-
-function parseCubicSegments(path: string): CubicBezier[] {
-  const tokens = path.match(PATH_TOKEN_PATTERN) ?? [];
-  const segments: CubicBezier[] = [];
-  let index = 0;
-  let currentX = 0;
-  let currentY = 0;
-  let activeCommand = "";
-
-  while (index < tokens.length) {
-    const token = tokens[index]!;
-
-    if (/^[A-Za-z]$/.test(token)) {
-      activeCommand = token;
-      index += 1;
-      continue;
-    }
-
-    if (activeCommand === "M" || activeCommand === "m") {
-      const x = Number(tokens[index]);
-      const y = Number(tokens[index + 1]);
-
-      currentX = activeCommand === "m" ? currentX + x : x;
-      currentY = activeCommand === "m" ? currentY + y : y;
-      index += 2;
-      activeCommand = activeCommand === "m" ? "l" : "L";
-      continue;
-    }
-
-    if (activeCommand === "C" || activeCommand === "c") {
-      const x1 = Number(tokens[index]);
-      const y1 = Number(tokens[index + 1]);
-      const x2 = Number(tokens[index + 2]);
-      const y2 = Number(tokens[index + 3]);
-      const x3 = Number(tokens[index + 4]);
-      const y3 = Number(tokens[index + 5]);
-      const isRelative = activeCommand === "c";
-      const p0: Point = [currentX, currentY];
-      const p1: Point = isRelative ? [currentX + x1, currentY + y1] : [x1, y1];
-      const p2: Point = isRelative ? [currentX + x2, currentY + y2] : [x2, y2];
-      const p3: Point = isRelative ? [currentX + x3, currentY + y3] : [x3, y3];
-
-      segments.push([p0, p1, p2, p3]);
-      currentX = p3[0];
-      currentY = p3[1];
-      index += 6;
-      continue;
-    }
-
-    if (activeCommand === "Z" || activeCommand === "z") {
-      index += 1;
-      continue;
-    }
-
-    break;
-  }
-
-  return segments;
 }
 
 function partitionSurfaceSides(
