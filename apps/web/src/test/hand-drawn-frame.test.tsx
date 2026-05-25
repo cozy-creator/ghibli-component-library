@@ -3,22 +3,49 @@ import { render, screen } from "@testing-library/react";
 import { HandDrawnFrame, HandDrawnRule } from "@ghibli/ui";
 
 describe("hand-drawn frame", () => {
-  it("renders the divider helper with divider geometry", () => {
-    const { container } = render(<HandDrawnRule data-testid="rule" />);
+  it("renders the divider helper with divider geometry when sketchy", () => {
+    const { container } = render(
+      <HandDrawnRule
+        data-testid="rule"
+        crookedness={5}
+        strokeWidthVariation={6}
+      />,
+    );
 
     const svg = container.querySelector("[data-testid='rule'] svg");
 
     expect(svg).not.toBeNull();
-    expect(svg).toHaveAttribute("viewBox", "0 0 100 12");
+    expect(svg).toHaveAttribute("viewBox", "0 0 240 12");
     expect(
       container.querySelectorAll("[data-testid='rule'] svg > path").length,
     ).toBeGreaterThan(1);
   });
 
-  it("always clips the content layer to the generated frame", () => {
+  it("renders a plain CSS box (no SVG) when crookedness and variation are off", () => {
+    // The default is OFF: an unconfigured frame is a flat rectangle rendered
+    // with a CSS border, skipping the SVG/geometry machinery entirely.
     const { container } = render(
       <HandDrawnFrame
         contentClassName="px-4 py-4"
+        data-testid="frame"
+        surfaceClassName="bg-[color:var(--card)]"
+        strokeWidth={1.55}
+      >
+        <div>Flat content</div>
+      </HandDrawnFrame>,
+    );
+
+    expect(
+      container.querySelector("[data-testid='frame'] svg"),
+    ).toBeNull();
+    expect(screen.getByText("Flat content")).not.toBeNull();
+  });
+
+  it("always clips the content layer to the generated frame when sketchy", () => {
+    const { container } = render(
+      <HandDrawnFrame
+        contentClassName="px-4 py-4"
+        crookedness={5}
         data-testid="frame"
         surfaceClassName="bg-[color:var(--card)]"
         strokeWidth={1.55}
@@ -42,9 +69,10 @@ describe("hand-drawn frame", () => {
     );
   });
 
-  it("uses a single stroke at stroke-width variation 0", () => {
+  it("uses a single stroke at stroke-width variation 0 (sketchy)", () => {
     const { container } = render(
       <HandDrawnFrame
+        crookedness={5}
         data-testid="frame"
         strokeWidth={2.2}
         strokeWidthVariation={0}

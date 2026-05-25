@@ -67,26 +67,6 @@ export const paperFieldClass = fieldSurfaceClass;
 export const dialogFrameSurfaceClass =
   "[background:var(--theme-dialog-frame-background)]";
 
-export const dialogPrimaryActionClass = cn(
-  "border-[color:var(--theme-dialog-primary-border)]",
-  "[border-width:var(--theme-dialog-primary-border-width)]",
-  "text-[color:var(--theme-dialog-primary-foreground)]",
-  "[font-family:var(--theme-dialog-primary-font-family)]",
-  "shadow-[var(--theme-dialog-primary-shadow)]",
-  "hover:translate-y-[var(--theme-dialog-primary-hover-y)]",
-  "hover:bg-[color:var(--theme-dialog-primary-hover-background)]",
-  "hover:text-[color:var(--theme-dialog-primary-hover-foreground)]",
-  "active:translate-y-[var(--theme-dialog-primary-active-y)]",
-  "active:shadow-[var(--theme-dialog-primary-active-shadow)]",
-);
-
-export const cartoonButtonFrameClass = cn(
-  "border-2 border-[color:color-mix(in_oklab,var(--border)_58%,var(--ink-strong))] font-medium shadow-[inset_0_1px_0_color-mix(in_oklab,var(--paper-soft)_60%,transparent),0_3px_0_color-mix(in_oklab,var(--ink-strong)_38%,transparent)]",
-  "[font-family:'Comic_Sans_MS','Chalkboard_SE',cursive]",
-  "hover:-translate-y-[1px] active:translate-y-[2px]",
-  "active:shadow-[inset_0_1px_0_color-mix(in_oklab,var(--paper-soft)_48%,transparent),0_1px_0_color-mix(in_oklab,var(--ink-strong)_44%,transparent)]",
-);
-
 export const contrastIconButtonClass = cn(
   "border border-[color:color-mix(in_oklab,var(--ink-strong)_58%,transparent)]",
   "bg-[color:color-mix(in_oklab,var(--ink-strong)_88%,transparent)]",

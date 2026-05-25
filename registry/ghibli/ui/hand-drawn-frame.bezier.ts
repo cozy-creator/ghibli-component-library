@@ -54,6 +54,35 @@ export function subdivideCubicBezier(
   return subdivisions;
 }
 
+/**
+ * Cheap polyline approximation of a cubic Bezier's arc length (in the same
+ * units as its control points — pixels here). Samples the curve and sums the
+ * chord lengths; accurate enough to drive length-proportional subdivision.
+ */
+export function approximateCubicLength(bezier: CubicBezier, samples = 8) {
+  const [p0, p1, p2, p3] = bezier;
+  let length = 0;
+  let prevX = p0[0];
+  let prevY = p0[1];
+
+  for (let index = 1; index <= samples; index += 1) {
+    const t = index / samples;
+    const mt = 1 - t;
+    const a = mt * mt * mt;
+    const b = 3 * mt * mt * t;
+    const c = 3 * mt * t * t;
+    const d = t * t * t;
+    const x = a * p0[0] + b * p1[0] + c * p2[0] + d * p3[0];
+    const y = a * p0[1] + b * p1[1] + c * p2[1] + d * p3[1];
+
+    length += Math.hypot(x - prevX, y - prevY);
+    prevX = x;
+    prevY = y;
+  }
+
+  return length;
+}
+
 export function bezierToPathString(bezier: CubicBezier) {
   const [p0, p1, p2, p3] = bezier;
 

@@ -816,9 +816,6 @@ export function GeneratePromptComposer({
                 />
               </div>
 
-              <span className="truncate text-xs text-muted-foreground">
-                {attachments.length > 0 ? "" : "Drag photos or files here"}
-              </span>
             </div>
 
             {isDraggingOver ? (

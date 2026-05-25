@@ -7,281 +7,25 @@ import {
   type HandDrawnFrameStrokePathVariant,
 } from "./hand-drawn-frame.stroke-width-variation";
 import {
-  clamp,
-  interpolatePath,
+  buildHandDrawnGeometry,
+  geometryToOutlinePath,
+  geometryToSidePath,
+  geometryViewBox,
   normalizePathToObjectBoundingBox,
-  perturbPath,
-  resolveCrookednessCompensation,
-  type HandDrawnFrameCrookednessCompensation,
-  type HandDrawnFrameJitterConfig,
   type HandDrawnFrameShape,
+  type HandDrawnFrameSize,
 } from "./hand-drawn-frame.geometry";
-
-const HAND_DRAWN_STEADY_PATH = `M1.4 5.3
-  C 25.8 4.7, 49.8 5.9, 74.4 5.2
-  C 83.5 5, 91.5 5.4, 98.6 5.1
-
-  C 98.1 25.1, 99 38.8, 98.6 50.2
-  C 98.2 63.8, 99 79, 98.4 94.8
-
-  C 74.7 95.4, 50.1 94.2, 25.1 94.9
-  C 16.8 95.1, 8.9 95, 1.5 94.9
-
-  C 1.9 79, 0.9 63.7, 1.4 50.2
-  C 1.8 37, 1 21, 1.4 5.3
-  Z`;
-
-const HAND_DRAWN_STEADY_STRAIGHT_PATH = `M1.4 5.3
-  C 25.8 5.3, 49.8 5.3, 74.4 5.3
-  C 83.5 5.3, 91.5 5.3, 98.6 5.3
-
-  C 98.6 25.1, 98.6 38.8, 98.6 50.2
-  C 98.6 63.8, 98.6 79, 98.6 94.8
-
-  C 74.7 94.8, 50.1 94.8, 25.1 94.8
-  C 16.8 94.8, 8.9 94.8, 1.5 94.8
-
-  C 1.5 79, 1.5 63.7, 1.5 50.2
-  C 1.5 37, 1.5 21, 1.5 5.3
-  Z`;
-
-const HAND_DRAWN_DIVIDER_PATH = `M1.2 6
-  C 11.8 4.95, 22.5 7.15, 33.6 5.85
-  C 44.6 4.88, 55.3 7.12, 66.1 5.9
-  C 76.9 4.96, 87.4 6.86, 98.8 5.8`;
-
-const HAND_DRAWN_DIVIDER_STRAIGHT_PATH = `M1.2 6
-  C 11.8 6, 22.5 6, 33.6 6
-  C 44.6 6, 55.3 6, 66.1 6
-  C 76.9 6, 87.4 6, 98.8 6`;
-
-const HAND_DRAWN_FRAME_PATH_TOKEN_PATTERN = /[A-Za-z]|-?\d*\.?\d+/g;
-
-type HandDrawnFramePathConfig = {
-  crooked: string;
-  straight: string;
-};
-
-type HandDrawnFrameShapeConfig = {
-  defaultIntensity: number;
-  jitter: HandDrawnFrameJitterConfig;
-  paths: HandDrawnFramePathConfig[];
-  viewBox: string;
-};
-
-type HandDrawnFrameSize = {
-  width: number;
-  height: number;
-};
 
 type HandDrawnFrameSurfacePathVariantMap = Partial<
   Record<HandDrawnFrameStrokePathVariant, string>
 >;
 
-type HandDrawnFrameSurfacePathSegment = {
-  start: [string, string];
-  values: [string, string, string, string, string, string];
-};
-
-function resolveNumericStrokeWidth(strokeWidth: number | string) {
-  if (typeof strokeWidth === "number") {
-    return Number.isFinite(strokeWidth) ? strokeWidth : null;
-  }
-
-  const trimmedStrokeWidth = strokeWidth.trim();
-
-  if (!/^-?(?:\d+\.?\d*|\.\d+)$/.test(trimmedStrokeWidth)) {
-    return null;
-  }
-
-  const numericStrokeWidth = Number(trimmedStrokeWidth);
-
-  return Number.isFinite(numericStrokeWidth) ? numericStrokeWidth : null;
-}
-
-function offsetPath(
-  path: string,
-  offset: HandDrawnFrameStrokeLayer["pathOffset"],
-) {
-  if (!offset || (offset.x === 0 && offset.y === 0)) {
-    return path;
-  }
-
-  const tokens = path.match(HAND_DRAWN_FRAME_PATH_TOKEN_PATTERN) ?? [];
-  let axis: "x" | "y" = "x";
-  let command = "";
-
-  return tokens
-    .map((token) => {
-      if (/^[A-Za-z]$/.test(token)) {
-        command = token;
-
-        if (/[MLCQST]/.test(token) || token === "H") {
-          axis = "x";
-        } else if (token === "V") {
-          axis = "y";
-        }
-
-        return token;
-      }
-
-      const value = Number(token);
-
-      if (Number.isNaN(value)) {
-        return token;
-      }
-
-      if (command === "H") {
-        return (value + offset.x).toFixed(3);
-      }
-
-      if (command === "V") {
-        return (value + offset.y).toFixed(3);
-      }
-
-      const translatedValue =
-        axis === "x" ? value + offset.x : value + offset.y;
-
-      axis = axis === "x" ? "y" : "x";
-
-      return translatedValue.toFixed(3);
-    })
-    .join(" ");
-}
-
-function resolveSurfacePathVariantMap(
-  path: string,
-): HandDrawnFrameSurfacePathVariantMap | null {
-  const tokens = path.match(HAND_DRAWN_FRAME_PATH_TOKEN_PATTERN) ?? [];
-
-  if (tokens[0] !== "M" || tokens.length < 10) {
-    return null;
-  }
-
-  let tokenIndex = 1;
-  const moveX = tokens[tokenIndex];
-  const moveY = tokens[tokenIndex + 1];
-
-  if (!moveX || !moveY) {
-    return null;
-  }
-
-  tokenIndex += 2;
-
-  const segments: HandDrawnFrameSurfacePathSegment[] = [];
-  let currentPoint: [string, string] = [moveX, moveY];
-
-  while (tokenIndex < tokens.length) {
-    const command = tokens[tokenIndex];
-
-    tokenIndex += 1;
-
-    if (command === "Z" || command === "z") {
-      break;
-    }
-
-    if (command !== "C") {
-      return null;
-    }
-
-    const values = tokens.slice(tokenIndex, tokenIndex + 6);
-
-    if (
-      values.length < 6 ||
-      values.some((value) => !value || /[A-Za-z]/.test(value))
-    ) {
-      return null;
-    }
-
-    const resolvedValues = [
-      values[0]!,
-      values[1]!,
-      values[2]!,
-      values[3]!,
-      values[4]!,
-      values[5]!,
-    ] as [string, string, string, string, string, string];
-
-    segments.push({
-      start: currentPoint,
-      values: resolvedValues,
-    });
-    currentPoint = [resolvedValues[4], resolvedValues[5]];
-    tokenIndex += 6;
-  }
-
-  if (segments.length !== 8) {
-    return null;
-  }
-
-  const createSidePath = (startIndex: number) => {
-    const sideSegments = segments.slice(startIndex, startIndex + 2);
-    const startPoint = sideSegments[0]?.start;
-
-    if (!startPoint || sideSegments.length !== 2) {
-      return null;
-    }
-
-    return `M ${startPoint[0]} ${startPoint[1]} ${sideSegments
-      .map((segment) => `C ${segment.values.join(" ")}`)
-      .join(" ")}`;
-  };
-
-  const top = createSidePath(0);
-  const right = createSidePath(2);
-  const bottom = createSidePath(4);
-  const left = createSidePath(6);
-
-  if (!top || !right || !bottom || !left) {
-    return null;
-  }
-
-  return {
-    bottom,
-    frame: path,
-    left,
-    right,
-    top,
-  } satisfies HandDrawnFrameSurfacePathVariantMap;
-}
-
-function resolveStrokePathVariantMap(
-  shape: HandDrawnFrameShape,
-  path: string,
-): HandDrawnFrameSurfacePathVariantMap {
-  if (shape !== "surface") {
-    return { frame: path } satisfies HandDrawnFrameSurfacePathVariantMap;
-  }
-
-  return resolveSurfacePathVariantMap(path) ?? { frame: path };
-}
-
-const HAND_DRAWN_FRAME_SHAPES: Record<
-  HandDrawnFrameShape,
-  HandDrawnFrameShapeConfig
-> = {
-  surface: {
-    defaultIntensity: 5,
-    jitter: { anchor: 0.14, control: 0.46 },
-    paths: [
-      {
-        crooked: HAND_DRAWN_STEADY_PATH,
-        straight: HAND_DRAWN_STEADY_STRAIGHT_PATH,
-      },
-    ],
-    viewBox: "1.24 4.15 97.52 91.5",
-  },
-  divider: {
-    defaultIntensity: 0.5,
-    jitter: { anchor: 0.08, control: 0.26 },
-    paths: [
-      {
-        crooked: HAND_DRAWN_DIVIDER_PATH,
-        straight: HAND_DRAWN_DIVIDER_STRAIGHT_PATH,
-      },
-    ],
-    viewBox: "0 0 100 12",
-  },
+// Reference pixel size used before the element has been measured (first paint /
+// SSR). The geometry is rebuilt at the real size once the ResizeObserver fires;
+// this just keeps the first frame sensible instead of empty.
+const FALLBACK_SIZE: Record<HandDrawnFrameShape, HandDrawnFrameSize> = {
+  surface: { height: 90, width: 140 },
+  divider: { height: 12, width: 240 },
 };
 
 export interface HandDrawnFrameProps extends React.HTMLAttributes<HTMLDivElement> {
@@ -306,13 +50,147 @@ export interface HandDrawnFrameProps extends React.HTMLAttributes<HTMLDivElement
   texture?: boolean;
   /** 0..1 opacity of the paper-grain overlay. */
   textureOpacity?: number;
+  /**
+   * 0..10 hand-wobble of the border. Interpreted as a max deviation amplitude
+   * in *pixels* (≈0.55px per unit), constant regardless of edge length. The
+   * NUMBER of wobbles along an edge scales with the edge's pixel length, so a
+   * wide-short box gets many gentle wobbles on its long sides and few on its
+   * short sides — all four edges share the same per-pixel deviation density. 0
+   * renders a perfectly straight rectangle.
+   */
   crookedness?: number;
+  /**
+   * 0..10 stroke-width variation. Amplitude (thin↔thick swing) is in pixels and
+   * length-independent; the number of width-varying ribbon slices scales with
+   * each edge's pixel length, so the variation has the same spatial frequency
+   * on every edge. 0 renders a uniform-width stroke.
+   */
   strokeWidthVariation?: number;
+  /**
+   * 0..10 stroke-width *frequency*: how often the width oscillates within the
+   * range set by `strokeWidthVariation`, along the line. 0 = pick one random
+   * width within the range and hold it (uniform along this line, but still
+   * uneven from one component to the next). Higher = more frequent oscillation
+   * that also reaches further toward the range's thin/thick edges.
+   */
+  strokeWidthFrequency?: number;
   strokeWidth?: number | string;
   svgClassName?: string;
 }
 
-export function HandDrawnFrame({
+function resolveNumericStrokeWidth(strokeWidth: number | string) {
+  if (typeof strokeWidth === "number") {
+    return Number.isFinite(strokeWidth) ? strokeWidth : null;
+  }
+
+  const trimmedStrokeWidth = strokeWidth.trim();
+
+  if (!/^-?(?:\d+\.?\d*|\.\d+)$/.test(trimmedStrokeWidth)) {
+    return null;
+  }
+
+  const numericStrokeWidth = Number(trimmedStrokeWidth);
+
+  return Number.isFinite(numericStrokeWidth) ? numericStrokeWidth : null;
+}
+
+// Dispatcher: when the sketch is fully "off" (no crookedness and no width
+// variation) a surface is just a rectangle — render it with a plain CSS border
+// instead of paying for a ResizeObserver, pixel-space geometry, SVG path
+// generation and a clip-path. This branch has NO hooks, so the expensive
+// sketched component never mounts in that case (e.g. the modern/sunset/ocean
+// themes flatten every variant to 0/0).
+export function HandDrawnFrame(props: HandDrawnFrameProps) {
+  const shape = props.shape ?? "surface";
+  // Default OFF: an unconfigured frame is a plain rectangle (flat CSS path).
+  // Sketchiness is opt-in via crookedness / strokeWidthVariation.
+  const crookedness = props.crookedness ?? 0;
+  const strokeWidthVariation = props.strokeWidthVariation ?? 0;
+  const isFlat =
+    shape === "surface" &&
+    Math.min(Math.max(crookedness, 0), 10) === 0 &&
+    strokeWidthVariation === 0;
+
+  return isFlat ? (
+    <HandDrawnFrameFlat {...props} />
+  ) : (
+    <HandDrawnFrameSketched {...props} />
+  );
+}
+
+function HandDrawnFrameFlat({
+  children,
+  className,
+  contentClassName,
+  surfaceClassName,
+  strokeColor = "var(--border)",
+  fillColor,
+  strokeWidth = 2.4,
+  // Sketch-only props: irrelevant on the flat CSS path, destructured out so
+  // they are not spread onto the DOM node.
+  crookedness,
+  strokeWidthVariation,
+  strokeWidthFrequency,
+  texture,
+  textureOpacity,
+  pathClassName,
+  svgClassName,
+  shape,
+  ...props
+}: HandDrawnFrameProps) {
+  void crookedness;
+  void strokeWidthVariation;
+  void strokeWidthFrequency;
+  void texture;
+  void textureOpacity;
+  void pathClassName;
+  void svgClassName;
+  void shape;
+
+  const numericStrokeWidth = resolveNumericStrokeWidth(strokeWidth);
+  const borderWidth =
+    numericStrokeWidth && numericStrokeWidth > 0 ? numericStrokeWidth : 0;
+
+  return (
+    <div
+      className={cn("relative rounded-[var(--theme-radius-md)]", className)}
+      {...props}
+    >
+      {fillColor !== undefined ? (
+        <div
+          aria-hidden="true"
+          className="pointer-events-none absolute inset-0 z-0 rounded-[inherit]"
+          style={{ background: fillColor }}
+        />
+      ) : surfaceClassName ? (
+        <div
+          aria-hidden="true"
+          className={cn(
+            "pointer-events-none absolute inset-0 z-0 overflow-hidden rounded-[inherit]",
+            surfaceClassName,
+          )}
+        />
+      ) : null}
+      <div
+        className={cn(
+          "relative z-10 overflow-hidden rounded-[inherit]",
+          contentClassName,
+        )}
+      >
+        {children}
+      </div>
+      {borderWidth > 0 ? (
+        <div
+          aria-hidden="true"
+          className="pointer-events-none absolute inset-0 z-20 rounded-[inherit]"
+          style={{ border: `${borderWidth}px solid ${strokeColor}` }}
+        />
+      ) : null}
+    </div>
+  );
+}
+
+function HandDrawnFrameSketched({
   children,
   className,
   contentClassName,
@@ -323,23 +201,19 @@ export function HandDrawnFrame({
   fillColor,
   texture,
   textureOpacity = 0.06,
-  crookedness = 5,
-  strokeWidthVariation = 4,
+  crookedness = 0,
+  strokeWidthVariation = 0,
+  strokeWidthFrequency = 5,
   strokeWidth = 2.4,
   svgClassName,
   ...props
 }: HandDrawnFrameProps) {
-  const { defaultIntensity, jitter, paths, viewBox } =
-    HAND_DRAWN_FRAME_SHAPES[shape];
   const frameId = React.useId();
   const frameRef = React.useRef<HTMLDivElement | null>(null);
   const [frameSize, setFrameSize] = React.useState<HandDrawnFrameSize | null>(
     null,
   );
-  const resolvedIntensity = React.useMemo(
-    () => clamp(crookedness ?? defaultIntensity, 0, 10),
-    [defaultIntensity, crookedness],
-  );
+  const resolvedCrookedness = Math.min(Math.max(crookedness, 0), 10);
 
   React.useEffect(() => {
     const node = frameRef.current;
@@ -353,8 +227,6 @@ export function HandDrawnFrame({
       const roundedHeight = Math.round(height);
 
       if (roundedWidth <= 0 || roundedHeight <= 0) {
-        setFrameSize(null);
-
         return;
       }
 
@@ -391,120 +263,87 @@ export function HandDrawnFrame({
     };
   }, []);
 
-  const crookednessCompensation =
-    React.useMemo<HandDrawnFrameCrookednessCompensation>(
-      () =>
-        resolveCrookednessCompensation(
-          shape,
-          viewBox,
-          frameSize?.width,
-          frameSize?.height,
-        ),
-      [frameSize?.height, frameSize?.width, shape, viewBox],
-    );
+  // Geometry is built in pixel space at the measured (or fallback) size so the
+  // perturbation density and amplitude are honest screen pixels.
+  const geometrySize = frameSize ?? FALLBACK_SIZE[shape];
+  const geometry = React.useMemo(
+    () =>
+      buildHandDrawnGeometry(
+        shape,
+        geometrySize,
+        resolvedCrookedness,
+        `${shape}:${frameId}`,
+      ),
+    [shape, geometrySize, resolvedCrookedness, frameId],
+  );
+
+  const viewBox = React.useMemo(() => geometryViewBox(geometry), [geometry]);
+  const outlinePath = React.useMemo(
+    () => geometryToOutlinePath(geometry),
+    [geometry],
+  );
+
+  // Per-side smooth paths so the stroke-width ribbon can follow each edge.
+  const sidePaths = React.useMemo<HandDrawnFrameSurfacePathVariantMap>(() => {
+    if (shape !== "surface") {
+      return { frame: outlinePath };
+    }
+
+    const map: HandDrawnFrameSurfacePathVariantMap = { frame: outlinePath };
+
+    for (const edge of geometry.edges) {
+      if (edge.side !== "frame") {
+        map[edge.side] = geometryToSidePath(edge);
+      }
+    }
+
+    return map;
+  }, [geometry, outlinePath, shape]);
+
   const resolvedNumericStrokeWidth = React.useMemo(
     () => resolveNumericStrokeWidth(strokeWidth),
     [strokeWidth],
   );
-  const generatedPaths = React.useMemo(() => {
-    const scaledJitter = {
-      anchor: jitter.anchor * resolvedIntensity,
-      control: jitter.control * resolvedIntensity,
-    };
 
-    return paths.map(({ crooked, straight }, index) =>
-      perturbPath(
-        interpolatePath(
-          straight,
-          crooked,
-          resolvedIntensity,
-          crookednessCompensation,
-        ),
-        viewBox,
-        scaledJitter,
-        `${shape}:${frameId}:1:${index}`,
-        crookednessCompensation,
-      ),
-    );
-  }, [
-    crookednessCompensation,
-    jitter.control,
-    jitter.anchor,
-    paths,
-    frameId,
-    resolvedIntensity,
-    viewBox,
-    shape,
-  ]);
-  const strokeLayersByPath = React.useMemo<
-    HandDrawnFrameStrokeLayer[][]
-  >(() => {
+  const strokeLayers = React.useMemo<HandDrawnFrameStrokeLayer[]>(() => {
     if (
       resolvedNumericStrokeWidth === null ||
       resolvedNumericStrokeWidth <= 0
     ) {
-      return generatedPaths.map(() => [{ strokeWidth }]);
+      return [{ strokeWidth }];
     }
 
-    return generatedPaths.map((path, index) =>
-      createStrokeWidthVariationLayers(
-        resolvedNumericStrokeWidth,
-        `${shape}:${frameId}:stroke-width-variation:${index}`,
-        strokeWidthVariation,
-        { basePath: path, shape },
-      ),
+    return createStrokeWidthVariationLayers(
+      resolvedNumericStrokeWidth,
+      `${shape}:${frameId}:stroke-width-variation`,
+      strokeWidthVariation,
+      strokeWidthFrequency,
+      { basePath: outlinePath, shape },
     );
   }, [
-    generatedPaths,
     resolvedNumericStrokeWidth,
-    frameId,
     shape,
+    frameId,
     strokeWidth,
     strokeWidthVariation,
+    strokeWidthFrequency,
+    outlinePath,
   ]);
-  const strokePathVariantsByPath = React.useMemo<
-    HandDrawnFrameSurfacePathVariantMap[]
-  >(
-    () =>
-      generatedPaths.map((path) => resolveStrokePathVariantMap(shape, path)),
-    [generatedPaths, shape],
-  );
-  const renderedStrokePathsByPath = React.useMemo(
-    () =>
-      generatedPaths.map((path, pathIndex) =>
-        strokeLayersByPath[pathIndex]!.map((layer, layerIndex) => {
-          const variantBasePath =
-            layer.customPath ??
-            strokePathVariantsByPath[pathIndex]?.[
-              layer.pathVariant ?? "frame"
-            ] ??
-            path;
-          const offsetBasePath = layer.pathOffset
-            ? offsetPath(variantBasePath, layer.pathOffset)
-            : variantBasePath;
 
-          return layer.pathJitter
-            ? perturbPath(
-                offsetBasePath,
-                viewBox,
-                layer.pathJitter,
-                layer.pathSeed ??
-                  `${shape}:${frameId}:stroke-layer-path:${pathIndex}:${layerIndex}`,
-                crookednessCompensation,
-              )
-            : offsetBasePath;
-        }),
-      ),
-    [
-      crookednessCompensation,
-      frameId,
-      generatedPaths,
-      shape,
-      strokePathVariantsByPath,
-      strokeLayersByPath,
-      viewBox,
-    ],
+  const renderedStrokePaths = React.useMemo(
+    () =>
+      strokeLayers.map((layer) => {
+        if (layer.customPath) {
+          return layer.customPath;
+        }
+
+        const variant = layer.pathVariant ?? "frame";
+
+        return sidePaths[variant] ?? outlinePath;
+      }),
+    [strokeLayers, sidePaths, outlinePath],
   );
+
   const clipPathId = React.useMemo(
     () => `hand-drawn-frame-clip-${frameId.replace(/[^a-zA-Z0-9_-]/g, "")}`,
     [frameId],
@@ -512,10 +351,11 @@ export function HandDrawnFrame({
   const clipPath = React.useMemo(
     () =>
       normalizePathToObjectBoundingBox(
-        generatedPaths[0] ?? paths[0]!.crooked,
-        viewBox,
+        outlinePath,
+        geometry.width,
+        geometry.height,
       ),
-    [generatedPaths, paths, viewBox],
+    [outlinePath, geometry.width, geometry.height],
   );
   const clippedLayerStyle = React.useMemo(
     () => ({
@@ -525,8 +365,6 @@ export function HandDrawnFrame({
     [clipPathId],
   );
 
-  // The crooked outline path shared by the fill, stroke, and clip.
-  const outlinePath = generatedPaths[0] ?? paths[0]!.crooked;
   // Texture defaults on for solid-color fills (buttons), off for CSS-background
   // surfaces unless explicitly enabled — large panels stay clean by default.
   const showTexture =
@@ -604,27 +442,25 @@ export function HandDrawnFrame({
           </clipPath>
         </defs>
 
-        {generatedPaths.map((path, pathIndex) =>
-          strokeLayersByPath[pathIndex]!.map((layer, layerIndex) => (
-            <path
-              key={`${shape}-${pathIndex}-${layerIndex}`}
-              className={pathClassName}
-              d={renderedStrokePathsByPath[pathIndex]![layerIndex] ?? path}
-              fill="none"
-              pathLength={layer.pathLength}
-              strokeDasharray={layer.dasharray}
-              strokeDashoffset={layer.dashoffset}
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              strokeWidth={layer.strokeWidth}
-              style={{
-                opacity: layer.opacity,
-                stroke: strokeColor,
-              }}
-              vectorEffect="non-scaling-stroke"
-            />
-          )),
-        )}
+        {strokeLayers.map((layer, layerIndex) => (
+          <path
+            key={`${shape}-${layerIndex}`}
+            className={pathClassName}
+            d={renderedStrokePaths[layerIndex] ?? outlinePath}
+            fill="none"
+            pathLength={layer.pathLength}
+            strokeDasharray={layer.dasharray}
+            strokeDashoffset={layer.dashoffset}
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            strokeWidth={layer.strokeWidth}
+            style={{
+              opacity: layer.opacity,
+              stroke: strokeColor,
+            }}
+            vectorEffect="non-scaling-stroke"
+          />
+        ))}
       </svg>
     </div>
   );
@@ -638,8 +474,8 @@ export type HandDrawnRuleProps = Omit<
 export function HandDrawnRule({
   className,
   strokeColor = "var(--border)",
-  crookedness = 0.5,
-  strokeWidthVariation = 5,
+  crookedness = 0,
+  strokeWidthVariation = 0,
   strokeWidth = 1.1,
   svgClassName = "opacity-90",
   ...props
