@@ -180,6 +180,16 @@ const frameStrokeWidthVariationOptions: FrameRulerOption[] = [
   { label: "10", value: 10 },
 ];
 
+const frameStrokeWidthFrequencyOptions: FrameRulerOption[] = [
+  { label: "0", value: 0 },
+  { label: "1", value: 1 },
+  { label: "2", value: 2 },
+  { label: "4", value: 4 },
+  { label: "6", value: 6 },
+  { label: "8", value: 8 },
+  { label: "10", value: 10 },
+];
+
 const frameStrokeWidthOptions: FrameRulerOption[] = [
   { label: "0.5", value: 0.5 },
   { label: "1", value: 1 },
@@ -530,6 +540,7 @@ export function HomePage() {
   );
   const [frameCrookedness, setFrameCrookedness] = useState(0.5);
   const [frameStrokeWidthVariation, setFrameStrokeWidthVariation] = useState(4);
+  const [frameStrokeWidthFrequency, setFrameStrokeWidthFrequency] = useState(5);
   const [frameStrokeWidth, setFrameStrokeWidth] = useState(1.6);
   const editorAttachmentsRef = useRef<GenerateAttachment[]>([]);
   const editorAttachmentIdRef = useRef(0);
@@ -634,8 +645,9 @@ export function HomePage() {
 
   const framePreviewSnippet = `<HandDrawnFrame
   crookedness={${frameCrookedness}}
-  strokeWidthVariation={${frameStrokeWidthVariation}}
   strokeWidth={${frameStrokeWidth}}
+  strokeWidthVariation={${frameStrokeWidthVariation}}
+  strokeWidthFrequency={${frameStrokeWidthFrequency}}
 >
   ...
 </HandDrawnFrame>`;
@@ -755,32 +767,39 @@ export function HomePage() {
         <Specimen
           id="component-hand-drawn-frame"
           installName="hand-drawn-frame"
-          note="The frame primitive exposes a surface and divider API with crookedness compensation and stroke-width variation controls."
+          note="The frame primitive exposes a surface and divider API with crookedness, stroke-width range, and oscillation-frequency controls. It is off (a plain CSS rectangle) by default — sketchiness is opt-in."
           title="Hand Drawn Frame"
         >
           <div className="grid gap-4 lg:grid-cols-[minmax(0,18rem)_minmax(0,1fr)]">
             <DemoSurface className={forestWoodSurfaceClass}>
               <div className="grid gap-3">
                 <FrameRulerField
-                  description="Lower values keep the frame closer to a steady surface."
+                  description="Max wobble amplitude in pixels. 0 draws a straight rectangle (the flat, SVG-free fast path)."
                   label="Crookedness"
                   onValueChange={setFrameCrookedness}
                   options={frameCrookednessOptions}
                   value={frameCrookedness}
                 />
                 <FrameRulerField
-                  description="Higher values add more layered stroke drift."
+                  description="Base stroke width in pixels — the center of the thin↔thick range."
+                  label="Stroke Width"
+                  onValueChange={setFrameStrokeWidth}
+                  options={frameStrokeWidthOptions}
+                  value={frameStrokeWidth}
+                />
+                <FrameRulerField
+                  description="Width range (constant pixels, not a percentage): how far the line swings thin↔thick around the base. 0 keeps a uniform width."
                   label="Stroke Width Variation"
                   onValueChange={setFrameStrokeWidthVariation}
                   options={frameStrokeWidthVariationOptions}
                   value={frameStrokeWidthVariation}
                 />
                 <FrameRulerField
-                  description="Use the ruler to push the base line from fine to bold."
-                  label="Stroke Width"
-                  onValueChange={setFrameStrokeWidth}
-                  options={frameStrokeWidthOptions}
-                  value={frameStrokeWidth}
+                  description="How often the width oscillates within that range. 0 holds one random width along the line; higher oscillates more and reaches further toward the edges."
+                  label="Stroke Width Frequency"
+                  onValueChange={setFrameStrokeWidthFrequency}
+                  options={frameStrokeWidthFrequencyOptions}
+                  value={frameStrokeWidthFrequency}
                 />
               </div>
             </DemoSurface>
@@ -800,6 +819,7 @@ export function HomePage() {
                   surfaceClassName="bg-[color:var(--card)]"
                   strokeWidth={frameStrokeWidth}
                   strokeWidthVariation={frameStrokeWidthVariation}
+                  strokeWidthFrequency={frameStrokeWidthFrequency}
                   crookedness={frameCrookedness}
                 >
                   <p className="font-[var(--font-heading)] text-xl text-[color:var(--ink-strong)]">
