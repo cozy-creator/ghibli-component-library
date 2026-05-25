@@ -11,12 +11,12 @@ import type { ThemeId } from "./theme-types";
 
 type ThemeFrameStyleConfig = Pick<
   HandDrawnFrameProps,
-  "crookedness" | "strokeWidth" | "strokeWidthVariation"
+  "crookedness" | "strokeWidthRange" | "strokeWidthVariation"
 >;
 
 type ThemeRuleStyleConfig = Pick<
   HandDrawnRuleProps,
-  "crookedness" | "strokeWidth" | "strokeWidthVariation"
+  "crookedness" | "strokeWidthRange" | "strokeWidthVariation"
 >;
 
 export const THEME_FRAME_VARIANTS = {
@@ -70,186 +70,186 @@ export type ThemeRuleVariant =
 const DEFAULT_THEME_FRAME_CONFIG = {
   [THEME_FRAME_VARIANTS.accountPanel]: {
     crookedness: 0.35,
-    strokeWidth: 1.65,
-    strokeWidthVariation: 4,
+    strokeWidthRange: [1.15, 2.35],
+    strokeWidthVariation: 0.54,
   },
   [THEME_FRAME_VARIANTS.accountPlanCard]: {
     crookedness: 3,
-    strokeWidth: 1.1,
-    strokeWidthVariation: 4,
+    strokeWidthRange: [0.6, 1.8],
+    strokeWidthVariation: 0.54,
   },
   [THEME_FRAME_VARIANTS.accountPlanCardSkeleton]: {
     crookedness: 0.35,
-    strokeWidth: 1.1,
-    strokeWidthVariation: 4,
+    strokeWidthRange: [0.6, 1.8],
+    strokeWidthVariation: 0.54,
   },
   [THEME_FRAME_VARIANTS.accountProfile]: {
     crookedness: 0.35,
-    strokeWidth: 1.65,
-    strokeWidthVariation: 4,
+    strokeWidthRange: [1.15, 2.35],
+    strokeWidthVariation: 0.54,
   },
   [THEME_FRAME_VARIANTS.authProviderButton]: {
     crookedness: 0.3,
-    strokeWidth: 1.05,
-    strokeWidthVariation: 4,
+    strokeWidthRange: [0.55, 1.75],
+    strokeWidthVariation: 0.54,
   },
   [THEME_FRAME_VARIANTS.communityEmbedCard]: {
     crookedness: 0.6,
-    strokeWidth: 1.55,
-    strokeWidthVariation: 4,
+    strokeWidthRange: [1.05, 2.25],
+    strokeWidthVariation: 0.54,
   },
   [THEME_FRAME_VARIANTS.communityImageCard]: {
     crookedness: 1.5,
-    strokeWidth: 1.55,
-    strokeWidthVariation: 4,
+    strokeWidthRange: [1.05, 2.25],
+    strokeWidthVariation: 0.54,
   },
   [THEME_FRAME_VARIANTS.communityTabsActive]: {
     crookedness: 0.9,
-    strokeWidth: 1.35,
-    strokeWidthVariation: 4,
+    strokeWidthRange: [0.85, 2.05],
+    strokeWidthVariation: 0.54,
   },
   [THEME_FRAME_VARIANTS.communityTabsShell]: {
     crookedness: 0.45,
-    strokeWidth: 1.5,
-    strokeWidthVariation: 4,
+    strokeWidthRange: [1, 2.2],
+    strokeWidthVariation: 0.54,
   },
   [THEME_FRAME_VARIANTS.communityVideoCard]: {
     crookedness: 0.8,
-    strokeWidth: 1.55,
-    strokeWidthVariation: 4,
+    strokeWidthRange: [1.05, 2.25],
+    strokeWidthVariation: 0.54,
   },
   [THEME_FRAME_VARIANTS.dialogPanel]: {
     crookedness: 0.6,
-    strokeWidth: 1.45,
-    strokeWidthVariation: 4,
+    strokeWidthRange: [0.95, 2.15],
+    strokeWidthVariation: 0.54,
   },
   [THEME_FRAME_VARIANTS.docsArticle]: {
     crookedness: 0.1,
-    strokeWidth: 1.45,
-    strokeWidthVariation: 2.5,
+    strokeWidthRange: [0.95, 2.15],
+    strokeWidthVariation: 0.45,
   },
   [THEME_FRAME_VARIANTS.docsCallout]: {
     crookedness: 0.6,
-    strokeWidth: 1.2,
-    strokeWidthVariation: 4,
+    strokeWidthRange: [0.7, 1.9],
+    strokeWidthVariation: 0.54,
   },
   [THEME_FRAME_VARIANTS.docsSidebar]: {
     crookedness: 0.6,
-    strokeWidth: 1.45,
-    strokeWidthVariation: 4,
+    strokeWidthRange: [0.95, 2.15],
+    strokeWidthVariation: 0.54,
   },
   [THEME_FRAME_VARIANTS.docsTable]: {
     crookedness: 0.6,
-    strokeWidth: 1.2,
-    strokeWidthVariation: 4,
+    strokeWidthRange: [0.7, 1.9],
+    strokeWidthVariation: 0.54,
   },
   [THEME_FRAME_VARIANTS.field]: {
     crookedness: 0.3,
-    strokeWidth: 1.25,
-    strokeWidthVariation: 4,
+    strokeWidthRange: [0.75, 1.95],
+    strokeWidthVariation: 0.54,
   },
   [THEME_FRAME_VARIANTS.generateAttachmentTrigger]: {
     crookedness: 0.7,
-    strokeWidth: 1.85,
-    strokeWidthVariation: 4,
+    strokeWidthRange: [1.35, 2.55],
+    strokeWidthVariation: 0.54,
   },
   [THEME_FRAME_VARIANTS.generateComposer]: {
     crookedness: 0.3,
-    strokeWidth: 1.25,
-    strokeWidthVariation: 4,
+    strokeWidthRange: [0.75, 1.95],
+    strokeWidthVariation: 0.54,
   },
   [THEME_FRAME_VARIANTS.generateControl]: {
     crookedness: 0.3,
-    strokeWidth: 1.25,
-    strokeWidthVariation: 4,
+    strokeWidthRange: [0.75, 1.95],
+    strokeWidthVariation: 0.54,
   },
   [THEME_FRAME_VARIANTS.generateDialog]: {
     crookedness: 0.6,
-    strokeWidth: 1.45,
-    strokeWidthVariation: 4,
+    strokeWidthRange: [0.95, 2.15],
+    strokeWidthVariation: 0.54,
   },
   [THEME_FRAME_VARIANTS.generateEditorPanel]: {
     crookedness: 0.9,
-    strokeWidth: 2.1,
-    strokeWidthVariation: 4,
+    strokeWidthRange: [1.6, 2.8],
+    strokeWidthVariation: 0.54,
   },
   [THEME_FRAME_VARIANTS.generateEditorSummary]: {
     crookedness: 0.3,
-    strokeWidth: 1.25,
-    strokeWidthVariation: 4,
+    strokeWidthRange: [0.75, 1.95],
+    strokeWidthVariation: 0.54,
   },
   [THEME_FRAME_VARIANTS.mediaViewerChrome]: {
     crookedness: 0.55,
-    strokeWidth: 1.05,
-    strokeWidthVariation: 4,
+    strokeWidthRange: [0.55, 1.75],
+    strokeWidthVariation: 0.54,
   },
   [THEME_FRAME_VARIANTS.mediaViewerDetails]: {
     crookedness: 0.3,
-    strokeWidth: 1.15,
-    strokeWidthVariation: 4,
+    strokeWidthRange: [0.65, 1.85],
+    strokeWidthVariation: 0.54,
   },
   [THEME_FRAME_VARIANTS.mediaViewerError]: {
     crookedness: 0.5,
-    strokeWidth: 1.1,
-    strokeWidthVariation: 4,
+    strokeWidthRange: [0.6, 1.8],
+    strokeWidthVariation: 0.54,
   },
   [THEME_FRAME_VARIANTS.mediaViewerImagePane]: {
     crookedness: 0.9,
-    strokeWidth: 1.15,
-    strokeWidthVariation: 4,
+    strokeWidthRange: [0.65, 1.85],
+    strokeWidthVariation: 0.54,
   },
   [THEME_FRAME_VARIANTS.mediaViewerStage]: {
     crookedness: 0.32,
-    strokeWidth: 1.2,
-    strokeWidthVariation: 4,
+    strokeWidthRange: [0.7, 1.9],
+    strokeWidthVariation: 0.54,
   },
   [THEME_FRAME_VARIANTS.mediaViewerStatus]: {
     crookedness: 0.45,
-    strokeWidth: 1,
-    strokeWidthVariation: 4,
+    strokeWidthRange: [0.5, 1.7],
+    strokeWidthVariation: 0.54,
   },
   [THEME_FRAME_VARIANTS.mediaViewerVideoPane]: {
     crookedness: 0.42,
-    strokeWidth: 1.15,
-    strokeWidthVariation: 4,
+    strokeWidthRange: [0.65, 1.85],
+    strokeWidthVariation: 0.54,
   },
   [THEME_FRAME_VARIANTS.shellBrandMark]: {
     crookedness: 0.7,
-    strokeWidth: 1.85,
-    strokeWidthVariation: 4,
+    strokeWidthRange: [1.35, 2.55],
+    strokeWidthVariation: 0.54,
   },
   [THEME_FRAME_VARIANTS.shellHeader]: {
     crookedness: 0.5,
-    strokeWidth: 2.1,
-    strokeWidthVariation: 4,
+    strokeWidthRange: [1.6, 2.8],
+    strokeWidthVariation: 0.54,
   },
   [THEME_FRAME_VARIANTS.shellNavActive]: {
     crookedness: 0.69,
-    strokeWidth: 1.1,
-    strokeWidthVariation: 4,
+    strokeWidthRange: [0.6, 1.8],
+    strokeWidthVariation: 0.54,
   },
   [THEME_FRAME_VARIANTS.shellUserChip]: {
     crookedness: 0.45,
-    strokeWidth: 1.9,
-    strokeWidthVariation: 4,
+    strokeWidthRange: [1.4, 2.6],
+    strokeWidthVariation: 0.54,
   },
   [THEME_FRAME_VARIANTS.shellUserMenu]: {
     crookedness: 0.8,
-    strokeWidth: 1.6,
-    strokeWidthVariation: 4,
+    strokeWidthRange: [1.1, 2.3],
+    strokeWidthVariation: 0.54,
   },
 } as const satisfies Record<ThemeFrameVariant, ThemeFrameStyleConfig>;
 
 const DEFAULT_THEME_RULE_CONFIG = {
   [THEME_RULE_VARIANTS.docsSectionDivider]: {
-    crookedness: 8,
-    strokeWidth: 1.3,
-    strokeWidthVariation: 5,
+    crookedness: 4,
+    strokeWidthRange: [0.8, 2],
+    strokeWidthVariation: 0.6,
   },
   [THEME_RULE_VARIANTS.footerDivider]: {
-    crookedness: 9,
-    strokeWidth: 1.4,
-    strokeWidthVariation: 5,
+    crookedness: 4,
+    strokeWidthRange: [0.9, 2.1],
+    strokeWidthVariation: 0.6,
   },
 } as const satisfies Record<ThemeRuleVariant, ThemeRuleStyleConfig>;
 
@@ -272,130 +272,130 @@ const MODERN_RULE_CONFIG: Pick<
 const MODERN_THEME_FRAME_CONFIG = {
   [THEME_FRAME_VARIANTS.accountPanel]: {
     ...MODERN_FRAME_CONFIG,
-    strokeWidth: 0,
+    strokeWidthRange: [0, 0],
   },
   [THEME_FRAME_VARIANTS.accountPlanCard]: {
     ...MODERN_FRAME_CONFIG,
-    strokeWidth: 1,
+    strokeWidthRange: [1, 1],
   },
   [THEME_FRAME_VARIANTS.accountPlanCardSkeleton]: {
     ...MODERN_FRAME_CONFIG,
-    strokeWidth: 1,
+    strokeWidthRange: [1, 1],
   },
   [THEME_FRAME_VARIANTS.accountProfile]: {
     ...MODERN_FRAME_CONFIG,
-    strokeWidth: 0,
+    strokeWidthRange: [0, 0],
   },
   [THEME_FRAME_VARIANTS.authProviderButton]: {
     ...MODERN_FRAME_CONFIG,
-    strokeWidth: 1,
+    strokeWidthRange: [1, 1],
   },
   [THEME_FRAME_VARIANTS.communityEmbedCard]: {
     ...MODERN_FRAME_CONFIG,
-    strokeWidth: 1,
+    strokeWidthRange: [1, 1],
   },
   [THEME_FRAME_VARIANTS.communityImageCard]: {
     ...MODERN_FRAME_CONFIG,
-    strokeWidth: 0,
+    strokeWidthRange: [0, 0],
   },
   [THEME_FRAME_VARIANTS.communityTabsActive]: {
     ...MODERN_FRAME_CONFIG,
-    strokeWidth: 0,
+    strokeWidthRange: [0, 0],
   },
   [THEME_FRAME_VARIANTS.communityTabsShell]: {
     ...MODERN_FRAME_CONFIG,
-    strokeWidth: 1,
+    strokeWidthRange: [1, 1],
   },
   [THEME_FRAME_VARIANTS.communityVideoCard]: {
     ...MODERN_FRAME_CONFIG,
-    strokeWidth: 0,
+    strokeWidthRange: [0, 0],
   },
   [THEME_FRAME_VARIANTS.dialogPanel]: {
     ...MODERN_FRAME_CONFIG,
-    strokeWidth: 1,
+    strokeWidthRange: [1, 1],
   },
   [THEME_FRAME_VARIANTS.docsArticle]: MODERN_FRAME_CONFIG,
   [THEME_FRAME_VARIANTS.docsCallout]: MODERN_FRAME_CONFIG,
   [THEME_FRAME_VARIANTS.docsSidebar]: {
     ...MODERN_FRAME_CONFIG,
-    strokeWidth: 1,
+    strokeWidthRange: [1, 1],
   },
   [THEME_FRAME_VARIANTS.docsTable]: MODERN_FRAME_CONFIG,
   [THEME_FRAME_VARIANTS.field]: {
     ...MODERN_FRAME_CONFIG,
-    strokeWidth: 0,
+    strokeWidthRange: [0, 0],
   },
   [THEME_FRAME_VARIANTS.generateAttachmentTrigger]: {
     ...MODERN_FRAME_CONFIG,
-    strokeWidth: 1,
+    strokeWidthRange: [1, 1],
   },
   [THEME_FRAME_VARIANTS.generateComposer]: {
     ...MODERN_FRAME_CONFIG,
-    strokeWidth: 1,
+    strokeWidthRange: [1, 1],
   },
   [THEME_FRAME_VARIANTS.generateControl]: {
     ...MODERN_FRAME_CONFIG,
-    strokeWidth: 1,
+    strokeWidthRange: [1, 1],
   },
   [THEME_FRAME_VARIANTS.generateDialog]: {
     ...MODERN_FRAME_CONFIG,
-    strokeWidth: 1,
+    strokeWidthRange: [1, 1],
   },
   [THEME_FRAME_VARIANTS.generateEditorPanel]: {
     ...MODERN_FRAME_CONFIG,
-    strokeWidth: 1,
+    strokeWidthRange: [1, 1],
   },
   [THEME_FRAME_VARIANTS.generateEditorSummary]: {
     ...MODERN_FRAME_CONFIG,
-    strokeWidth: 1,
+    strokeWidthRange: [1, 1],
   },
   [THEME_FRAME_VARIANTS.mediaViewerChrome]: {
     ...MODERN_FRAME_CONFIG,
-    strokeWidth: 1,
+    strokeWidthRange: [1, 1],
   },
   [THEME_FRAME_VARIANTS.mediaViewerDetails]: {
     ...MODERN_FRAME_CONFIG,
-    strokeWidth: 1,
+    strokeWidthRange: [1, 1],
   },
   [THEME_FRAME_VARIANTS.mediaViewerError]: {
     ...MODERN_FRAME_CONFIG,
-    strokeWidth: 1,
+    strokeWidthRange: [1, 1],
   },
   [THEME_FRAME_VARIANTS.mediaViewerImagePane]: {
     ...MODERN_FRAME_CONFIG,
-    strokeWidth: 0,
+    strokeWidthRange: [0, 0],
   },
   [THEME_FRAME_VARIANTS.mediaViewerStage]: {
     ...MODERN_FRAME_CONFIG,
-    strokeWidth: 1,
+    strokeWidthRange: [1, 1],
   },
   [THEME_FRAME_VARIANTS.mediaViewerStatus]: {
     ...MODERN_FRAME_CONFIG,
-    strokeWidth: 1,
+    strokeWidthRange: [1, 1],
   },
   [THEME_FRAME_VARIANTS.mediaViewerVideoPane]: {
     ...MODERN_FRAME_CONFIG,
-    strokeWidth: 1,
+    strokeWidthRange: [1, 1],
   },
   [THEME_FRAME_VARIANTS.shellBrandMark]: {
     ...MODERN_FRAME_CONFIG,
-    strokeWidth: 1.05,
+    strokeWidthRange: [1.05, 1.05],
   },
   [THEME_FRAME_VARIANTS.shellHeader]: {
     ...MODERN_FRAME_CONFIG,
-    strokeWidth: 1.1,
+    strokeWidthRange: [1.1, 1.1],
   },
   [THEME_FRAME_VARIANTS.shellNavActive]: {
     ...MODERN_FRAME_CONFIG,
-    strokeWidth: 0,
+    strokeWidthRange: [0, 0],
   },
   [THEME_FRAME_VARIANTS.shellUserChip]: {
     ...MODERN_FRAME_CONFIG,
-    strokeWidth: 1,
+    strokeWidthRange: [1, 1],
   },
   [THEME_FRAME_VARIANTS.shellUserMenu]: {
     ...MODERN_FRAME_CONFIG,
-    strokeWidth: 1,
+    strokeWidthRange: [1, 1],
   },
 } as const satisfies Partial<
   Record<ThemeFrameVariant, Partial<ThemeFrameStyleConfig>>
@@ -417,7 +417,7 @@ const THEME_FRAME_CONFIG_OVERRIDES: Partial<
   "ghibli-forest": {
     [THEME_FRAME_VARIANTS.shellHeader]: {
       crookedness: 0,
-      strokeWidth: 1.9,
+      strokeWidthRange: [1.9, 1.9],
       strokeWidthVariation: 0,
     },
   },

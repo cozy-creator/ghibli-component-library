@@ -77,7 +77,7 @@ export function GenerateModeToggle({
       className="inline-block w-full sm:w-auto"
       surfaceClassName="bg-[color:var(--paper-soft)]"
       strokeColor="var(--border)"
-      strokeWidth={1.25}
+      strokeWidthRange={[1.25, 1.25]}
       svgClassName="opacity-85"
       crookedness={0.3}
     >
@@ -392,7 +392,7 @@ export function GenerateModelSelect({
         className="w-full sm:w-56"
         surfaceClassName="bg-[color:var(--paper-soft)]"
         strokeColor="var(--border)"
-        strokeWidth={1.25}
+        strokeWidthRange={[1.25, 1.25]}
         svgClassName="opacity-85"
         crookedness={0.3}
       >

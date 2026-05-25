@@ -63,9 +63,9 @@ export function CartoonButton({
     >
       <HandDrawnFrame
         className="w-full transition-[filter] duration-150 group-hover:brightness-[1.05]"
-        crookedness={1.4}
-        strokeWidth={2}
-        strokeWidthVariation={2}
+        crookedness={3}
+        strokeWidthRange={[1.4, 2.6]}
+        strokeWidthVariation={0.5}
         strokeColor="color-mix(in oklab, var(--cartoon-button-bg) 45%, var(--ink-strong))"
         fillColor="var(--cartoon-button-bg)"
         contentClassName={cn(

@@ -146,7 +146,7 @@ export function ChangeThemeModal({
           contentClassName="px-5 py-5"
           crookedness={0.6}
           strokeColor="var(--border)"
-          strokeWidth={1.45}
+          strokeWidthRange={[1.45, 1.45]}
           surfaceClassName="bg-[color:var(--card)]"
           svgClassName="opacity-70"
         >

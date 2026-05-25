@@ -61,7 +61,7 @@ export function AuthDialog({
           contentClassName="px-5 py-5"
           surfaceClassName="bg-[color:var(--card)]"
           strokeColor="var(--border)"
-          strokeWidth={1.45}
+          strokeWidthRange={[1.45, 1.45]}
           svgClassName="opacity-70"
           crookedness={0.6}
         >

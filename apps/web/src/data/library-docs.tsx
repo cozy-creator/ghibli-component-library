@@ -534,7 +534,7 @@ export const componentDocs: DocItem[] = [
             <HandDrawnFrame
               contentClassName="px-5 py-4"
               surfaceClassName="bg-[color:var(--paper)]"
-              strokeWidth={1.6}
+              strokeWidthRange={[1.6, 1.6]}
               crookedness={0.5}
             >
               <div className="grid gap-2">
@@ -546,7 +546,7 @@ export const componentDocs: DocItem[] = [
                 </span>
               </div>
             </HandDrawnFrame>
-            <HandDrawnRule crookedness={0.5} strokeWidth={1.1} />
+            <HandDrawnRule crookedness={0.5} strokeWidthRange={[1.1, 1.1]} />
           </div>
         ),
         snippet: snippet(
@@ -558,14 +558,14 @@ export const componentDocs: DocItem[] = [
   surfaceClassName="bg-[color:var(--paper)]"
   contentClassName="px-5 py-4"
   crookedness={0.5}
-  strokeWidth={1.6}
+  strokeWidthRange={[1.6, 1.6]}
 >
   Content
 </HandDrawnFrame>
 
 <HandDrawnRule
   crookedness={0.5}
-  strokeWidth={1.1}
+  strokeWidthRange={[1.1, 1.1]}
 />`,
         ),
         title: "Frame + divider",
@@ -590,14 +590,14 @@ export const componentDocs: DocItem[] = [
         <HandDrawnFrame
           contentClassName="px-5 py-4"
           surfaceClassName="bg-[color:var(--paper)]"
-          strokeWidth={1.6}
+          strokeWidthRange={[1.6, 1.6]}
           crookedness={0.5}
         >
           <div className="text-sm text-[color:var(--ink-strong)]">
             Framed surface
           </div>
         </HandDrawnFrame>
-        <HandDrawnRule crookedness={0.5} strokeWidth={1.1} />
+        <HandDrawnRule crookedness={0.5} strokeWidthRange={[1.1, 1.1]} />
       </div>
     ),
     related: ["separator", "card", "layout-shell"],
@@ -608,7 +608,7 @@ export const componentDocs: DocItem[] = [
     usageSnippet: snippet(
       "Basic usage",
       "tsx",
-      `<HandDrawnFrame surfaceClassName="bg-[color:var(--paper)]" contentClassName="px-4 py-3" crookedness={0.3} strokeWidth={1.25}>Toolbar</HandDrawnFrame>`,
+      `<HandDrawnFrame surfaceClassName="bg-[color:var(--paper)]" contentClassName="px-4 py-3" crookedness={0.3} strokeWidthRange={[1.25, 1.25]}>Toolbar</HandDrawnFrame>`,
     ),
   },
   {

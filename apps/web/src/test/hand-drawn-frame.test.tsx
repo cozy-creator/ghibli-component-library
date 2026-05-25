@@ -8,7 +8,8 @@ describe("hand-drawn frame", () => {
       <HandDrawnRule
         data-testid="rule"
         crookedness={5}
-        strokeWidthVariation={6}
+        strokeWidthRange={[1, 3]}
+        strokeWidthVariation={0.6}
       />,
     );
 
@@ -29,7 +30,7 @@ describe("hand-drawn frame", () => {
         contentClassName="px-4 py-4"
         data-testid="frame"
         surfaceClassName="bg-[color:var(--card)]"
-        strokeWidth={1.55}
+        strokeWidthRange={[1.55, 1.55]}
       >
         <div>Flat content</div>
       </HandDrawnFrame>,
@@ -48,7 +49,7 @@ describe("hand-drawn frame", () => {
         crookedness={5}
         data-testid="frame"
         surfaceClassName="bg-[color:var(--card)]"
-        strokeWidth={1.55}
+        strokeWidthRange={[1.55, 1.55]}
       >
         <div>Clipped content</div>
       </HandDrawnFrame>,
@@ -74,7 +75,7 @@ describe("hand-drawn frame", () => {
       <HandDrawnFrame
         crookedness={5}
         data-testid="frame"
-        strokeWidth={2.2}
+        strokeWidthRange={[2.2, 2.2]}
         strokeWidthVariation={0}
       >
         Content
@@ -93,8 +94,8 @@ describe("hand-drawn frame", () => {
     const { container } = render(
       <HandDrawnFrame
         data-testid="frame"
-        strokeWidth={2.2}
-        strokeWidthVariation={8}
+        strokeWidthRange={[1.4, 3]}
+        strokeWidthVariation={0.7}
       >
         Content
       </HandDrawnFrame>,
@@ -114,8 +115,8 @@ describe("hand-drawn frame", () => {
     const { container } = render(
       <HandDrawnFrame
         data-testid="frame"
-        strokeWidth={2.2}
-        strokeWidthVariation={10}
+        strokeWidthRange={[1.4, 3]}
+        strokeWidthVariation={1}
       >
         Content
       </HandDrawnFrame>,
@@ -138,8 +139,8 @@ describe("hand-drawn frame", () => {
         children: "Content",
         crookedness,
         "data-testid": "frame",
-        strokeWidth: 2.2,
-        strokeWidthVariation: 10,
+        strokeWidthRange: [1.4, 3] as [number, number],
+        strokeWidthVariation: 1,
       } as const;
       const { container, rerender } = render(<HandDrawnFrame {...props} />);
 
@@ -177,8 +178,8 @@ describe("hand-drawn frame", () => {
       children: "Content",
       "data-testid": "frame",
       crookedness: 5,
-      strokeWidth: 2.2,
-      strokeWidthVariation: 10,
+      strokeWidthRange: [1.4, 3] as [number, number],
+      strokeWidthVariation: 1,
     } as const;
     const { container, rerender } = render(<HandDrawnFrame {...props} />);
 

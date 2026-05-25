@@ -12,7 +12,7 @@ export function Textarea({
       className="w-full"
       surfaceClassName="bg-[color:color-mix(in_oklab,var(--paper-soft)_90%,white)]"
       strokeColor="var(--border)"
-      strokeWidth={1.25}
+      strokeWidthRange={[1.25, 1.25]}
       svgClassName="opacity-85"
       crookedness={0.3}
     >

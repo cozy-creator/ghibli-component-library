@@ -45,7 +45,7 @@ export function CommunityAssetDetailsPanel({
         detailsPanelStrongTextClass,
       )}
       strokeColor={detailsPanelStrokeColor}
-      strokeWidth={1.15}
+      strokeWidthRange={[1.15, 1.15]}
       svgClassName="opacity-90"
       crookedness={0.3}
     >
