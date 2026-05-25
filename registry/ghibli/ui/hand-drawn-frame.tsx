@@ -290,6 +290,22 @@ export interface HandDrawnFrameProps extends React.HTMLAttributes<HTMLDivElement
   shape?: HandDrawnFrameShape;
   surfaceClassName?: string;
   strokeColor?: string;
+  /**
+   * Solid color used to fill the crooked path itself, so the filled region's
+   * edges wobble in lockstep with the stroke instead of being a straight
+   * rectangle behind it. When set, the SVG paints the fill and the
+   * `surfaceClassName` <div> is skipped. Leave undefined for surfaces that need
+   * a CSS background (gradients, images, backdrop-blur) — those keep using the
+   * clipped `surfaceClassName` layer.
+   */
+  fillColor?: string;
+  /**
+   * Adds a subtle paper-grain texture over the fill. Defaults to on for
+   * `fillColor` surfaces (buttons); large CSS-background panels can opt out.
+   */
+  texture?: boolean;
+  /** 0..1 opacity of the paper-grain overlay. */
+  textureOpacity?: number;
   crookedness?: number;
   strokeWidthVariation?: number;
   strokeWidth?: number | string;
@@ -304,6 +320,9 @@ export function HandDrawnFrame({
   shape = "surface",
   surfaceClassName,
   strokeColor = "var(--border)",
+  fillColor,
+  texture,
+  textureOpacity = 0.06,
   crookedness = 5,
   strokeWidthVariation = 4,
   strokeWidth = 2.4,
@@ -506,9 +525,55 @@ export function HandDrawnFrame({
     [clipPathId],
   );
 
+  // The crooked outline path shared by the fill, stroke, and clip.
+  const outlinePath = generatedPaths[0] ?? paths[0]!.crooked;
+  // Texture defaults on for solid-color fills (buttons), off for CSS-background
+  // surfaces unless explicitly enabled — large panels stay clean by default.
+  const showTexture =
+    shape === "surface" &&
+    (texture ?? (fillColor !== undefined && surfaceClassName === undefined));
+  const textureFilterId = `hand-drawn-frame-grain-${frameId.replace(
+    /[^a-zA-Z0-9_-]/g,
+    "",
+  )}`;
+
   return (
     <div className={cn("relative", className)} ref={frameRef} {...props}>
-      {surfaceClassName ? (
+      {/* Fill: paint the crooked path itself so the filled region's edges wobble
+          in lockstep with the stroke (no straight rectangle behind it). */}
+      {fillColor !== undefined ? (
+        <svg
+          aria-hidden="true"
+          className="pointer-events-none absolute inset-0 z-0 block h-full w-full overflow-visible"
+          preserveAspectRatio="none"
+          viewBox={viewBox}
+        >
+          {showTexture ? (
+            <defs>
+              <filter id={textureFilterId}>
+                <feTurbulence
+                  baseFrequency="0.9"
+                  numOctaves={2}
+                  result="grain"
+                  seed={1}
+                  stitchTiles="stitch"
+                  type="fractalNoise"
+                />
+                <feColorMatrix in="grain" type="saturate" values="0" />
+              </filter>
+            </defs>
+          ) : null}
+          <path d={outlinePath} fill={fillColor} stroke="none" />
+          {showTexture ? (
+            <path
+              d={outlinePath}
+              fill="black"
+              stroke="none"
+              style={{ filter: `url(#${textureFilterId})`, opacity: textureOpacity }}
+            />
+          ) : null}
+        </svg>
+      ) : surfaceClassName ? (
         <div
           aria-hidden="true"
           className={cn(
