@@ -3,3 +3,7 @@ packages:
   - examples/*
   - packages/*
 
+ignoreScripts: true
+enablePrePostScripts: false
+dangerouslyAllowAllBuilds: false
+verifyDepsBeforeRun: error

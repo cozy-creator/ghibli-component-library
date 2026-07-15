@@ -194,7 +194,7 @@ pnpm smoke:registry
 
 Each time you edit `registry/ghibli/**` or `registry.json`, the built `/r/*.json` needs to be refreshed on the host. Two options:
 
-- **Git-integrated hosts** (GitHub Pages Action, Cloudflare Pages, Netlify, Vercel): configure them to run `pnpm build:web` on every push to `main` and publish `apps/web/dist/` — nothing to maintain in the repo.
+- **Git-integrated hosts** (GitHub Pages Action, Cloudflare Pages, Netlify, Vercel): configure them to run `pnpm build:web` on every push to `master` and publish `apps/web/dist/` — nothing to maintain in the repo.
 - **Manual hosts**: add a CI job or local script that uploads `apps/web/dist/` after `pnpm build:web`.
 
 ---
@@ -208,6 +208,9 @@ pnpm install
 pnpm dev            # showcase app on the default Vite port
 pnpm dev:storybook  # isolated component inspection
 ```
+
+Dependency lifecycle scripts are disabled by `pnpm-workspace.yaml`; installs
+only lay out the locked dependency graph.
 
 `pnpm dev` runs `registry:build` first so `/r/*.json` is in sync with the current source.
 
