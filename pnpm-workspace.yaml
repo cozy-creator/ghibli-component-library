@@ -4,6 +4,7 @@ packages:
   - packages/*
 
 ignoreScripts: true
+ignorePnpmfile: true
 enablePrePostScripts: false
 dangerouslyAllowAllBuilds: false
 verifyDepsBeforeRun: error
