@@ -5,6 +5,14 @@ packages:
 
 ignoreScripts: true
 ignorePnpmfile: true
+strictDepBuilds: true
 enablePrePostScripts: false
 dangerouslyAllowAllBuilds: false
 verifyDepsBeforeRun: error
+
+minimumReleaseAge: 1440
+minimumReleaseAgeStrict: true
+minimumReleaseAgeIgnoreMissingTime: false
+trustPolicy: no-downgrade
+trustLockfile: false
+blockExoticSubdeps: true
