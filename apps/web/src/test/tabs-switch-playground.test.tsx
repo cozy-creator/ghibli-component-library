@@ -90,6 +90,20 @@ describe("TabsSwitchPlayground component", () => {
     expect(screen.getByText(/disabled: true/)).toBeInTheDocument();
   });
 
+  it("selects the next enabled tab when the active tab is disabled", async () => {
+    const user = userEvent.setup();
+    const { preview } = renderPlayground();
+
+    await user.click(screen.getAllByRole("checkbox", { name: "Disabled" })[0]!);
+
+    expect(within(preview).getByRole("tab", { name: "Updates" })).toBeDisabled();
+    expect(within(preview).getByRole("tab", { name: "Media" })).toHaveAttribute(
+      "data-state",
+      "active",
+    );
+    expect(screen.getByText(/<Tabs defaultValue="media">/)).toBeInTheDocument();
+  });
+
   it("resets the playground controls, preview, and snippet", async () => {
     const user = userEvent.setup();
     const { preview } = renderPlayground();
