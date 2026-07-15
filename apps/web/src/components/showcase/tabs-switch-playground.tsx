@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from "react";
+import { useMemo, useState } from "react";
 
 import {
   Button,
@@ -166,14 +166,6 @@ export function TabsSwitchPlayground() {
     [state],
   );
 
-  useEffect(() => {
-    if (safeActiveIndex === -1 || safeActiveIndex === state.activeIndex) {
-      return;
-    }
-
-    setState((current) => ({ ...current, activeIndex: safeActiveIndex }));
-  }, [safeActiveIndex, state.activeIndex]);
-
   const updateLabel = (index: number, label: string) =>
     setState((current) => ({
       ...current,
@@ -197,6 +189,9 @@ export function TabsSwitchPlayground() {
 
       return {
         ...current,
+        activeIndex: nextItems[current.activeIndex]?.disabled
+          ? nextItems.findIndex((item) => !item.disabled)
+          : current.activeIndex,
         items: nextItems,
       };
     });
