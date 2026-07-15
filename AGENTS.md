@@ -4,7 +4,7 @@ This file provides guidance to Codex (Codex.ai/code) when working with code in t
 
 ## Commands
 
-All commands are run from the repo root unless noted. Package manager is `pnpm@9.14.2` (pinned via `packageManager`).
+All commands are run from the repo root unless noted. Package manager is `pnpm@11.0.0` (pinned via `packageManager`). Dependency lifecycle scripts are disabled by workspace policy.
 
 - `pnpm dev` — builds the registry, then starts the Vite showcase (`apps/web`). The registry build must run first because `apps/web` serves `/r/*.json` from `public/r`.
 - `pnpm dev:storybook` — isolated component inspection surface.

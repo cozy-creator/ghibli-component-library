@@ -3,7 +3,7 @@
   "version": "0.0.0",
   "private": true,
   "type": "module",
-  "packageManager": "pnpm@9.14.2",
+  "packageManager": "pnpm@11.0.0",
   "scripts": {
     "build": "pnpm registry:build && turbo run build",
     "build:web": "pnpm registry:build && pnpm --filter @ghibli/web build",
