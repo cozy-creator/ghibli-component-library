@@ -216,7 +216,7 @@ createRoot(root).render(
 `
   );
 
-  await run("pnpm", ["install"], { cwd: tempDir });
+  await run("pnpm", ["install", "--ignore-scripts"], { cwd: tempDir });
   await run("pnpm", ["build:web"], { cwd: rootDir });
 
   const server = spawn(
