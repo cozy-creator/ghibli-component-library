@@ -1,0 +1,13 @@
+/* A sheet of paper, as a `background` value and as a class. make_paper.py makes the tiles and says why they're three. */
+:root {
+  --paper-cream: url("./cream-flecks.webp") 0 0 / 1021px 1021px, url("./cream-clouds.webp") 0 0 / 2003px 2003px, url("./cream.webp") 0 0 / 512px 512px, #f1e7d4;
+  --paper-ink: url("./ink-flecks.webp") 0 0 / 1021px 1021px, url("./ink-clouds.webp") 0 0 / 2003px 2003px, url("./ink.webp") 0 0 / 512px 512px, #141415;
+}
+
+.paper-cream {
+  background: var(--paper-cream);
+}
+
+.paper-ink {
+  background: var(--paper-ink);
+}
