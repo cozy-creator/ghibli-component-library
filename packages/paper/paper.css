@@ -1,6 +1,7 @@
 /* A sheet of paper, as a `background` value and as a class. make_paper.py makes the tiles and says why they're three. */
 :root {
   --paper-cream: url("./cream-flecks.webp") 0 0 / 1021px 1021px, url("./cream-clouds.webp") 0 0 / 2003px 2003px, url("./cream.webp") 0 0 / 512px 512px, #ecdfc7;
+  --paper-sky: url("./cream-flecks.webp") 0 0 / 1021px 1021px, url("./cream-clouds.webp") 0 0 / 2003px 2003px, url("./sky-wash.webp") 0 0 / 100% 100% no-repeat, url("./cream.webp") 0 0 / 512px 512px, #ecdfc7;
   --paper-ink: url("./ink-flecks.webp") 0 0 / 1021px 1021px, url("./ink-clouds.webp") 0 0 / 2003px 2003px, url("./ink.webp") 0 0 / 512px 512px, #141415;
 }
 
@@ -10,4 +11,56 @@
 
 .paper-ink {
   background: var(--paper-ink);
+}
+
+/* Clouds drifting behind what's in an element, which must be positioned and whose own content has no background. Only `transform` moves,
+   on layers of their own, so it costs the page's thread nothing. */
+.paper-sky {
+  isolation: isolate;
+  overflow: hidden;
+}
+
+.paper-sky::before,
+.paper-sky::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  z-index: -1;
+  background: url("./sky-clouds.webp") 0 0 / auto 100% repeat-x;
+  pointer-events: none;
+  will-change: transform;
+}
+
+.paper-sky::before {
+  top: 17%;
+  width: calc(100% + 1000px);
+  height: 325px;
+  opacity: 0.6;
+  animation: paper-drift-far 420s linear infinite;
+}
+
+.paper-sky::after {
+  top: 3%;
+  width: calc(100% + 1600px);
+  height: 520px;
+  animation: paper-drift-near 260s linear infinite;
+}
+
+@keyframes paper-drift-far {
+  to {
+    transform: translate3d(-1000px, 0, 0);
+  }
+}
+
+@keyframes paper-drift-near {
+  to {
+    transform: translate3d(-1600px, 0, 0);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .paper-sky::before,
+  .paper-sky::after {
+    animation: none;
+  }
 }
