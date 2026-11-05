@@ -93,7 +93,7 @@ export const footerColumns = [
 export const utilityItems = [
   {
     external: true,
-    href: "https://github.com/rodrigoluz/ghibli-component-library",
+    href: "https://github.com/cozy-creator/ghibli-component-library",
     icon: <GitHubHeaderIcon />,
     iconOnly: true,
     label: "GitHub",

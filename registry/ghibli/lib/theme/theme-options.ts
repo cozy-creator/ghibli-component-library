@@ -1,4 +1,4 @@
-import type { ThemeId } from "./theme-types";
+import { THEME_IDS, type ThemeId } from "./theme-types";
 
 export type ThemeOptionId = ThemeId;
 
@@ -51,13 +51,7 @@ export const THEME_OPTIONS = [
   },
 ] as const satisfies readonly ThemeOption[];
 
-export const AVAILABLE_THEME_IDS = [
-  "hand-drawn-paper",
-  "ghibli-forest",
-  "modern",
-  "sunset",
-  "ocean",
-] as const satisfies readonly ThemeId[];
+export const AVAILABLE_THEME_IDS = THEME_IDS;
 
 export type AvailableThemeId = (typeof AVAILABLE_THEME_IDS)[number];
 

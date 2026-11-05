@@ -1,7 +1,7 @@
 import * as React from "react";
 
 import { HandDrawnFrame } from "@/components/ui/hand-drawn-frame";
-import { cn, paperFieldClass } from "@/lib/utils";
+import { cn, fieldRingClass, paperFieldClass } from "@/lib/utils";
 
 export function Input({
   className,
@@ -11,7 +11,7 @@ export function Input({
 }: React.ComponentProps<"input">) {
   return (
     <HandDrawnFrame
-      className={cn("ghibli-input-frame w-full", disabled && "opacity-60")}
+      className={cn("ghibli-input-frame w-full", fieldRingClass, disabled && "opacity-60")}
       contentClassName="theme-field-frame-content"
       surfaceClassName="theme-field-frame-surface bg-[color:var(--theme-field-background)]"
       strokeColor="var(--theme-field-border)"

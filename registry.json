@@ -135,7 +135,7 @@
           "paper": "#eece84",
           "paper-soft": "#faf4e8",
           "muted": "#eadfcb",
-          "muted-foreground": "#7a6857",
+          "muted-foreground": "#5f4e3f",
           "primary": "#587855",
           "primary-foreground": "#faf5ea",
           "primary-edge": "#527054",
@@ -146,7 +146,7 @@
           "border": "#a16410",
           "border-soft": "#e5d9c8",
           "border-strong": "#a88e70",
-          "ring": "#8fb39a",
+          "ring": "#557d61",
           "danger": "#ca755d",
           "danger-foreground": "#fff7f1",
           "danger-edge": "#aa5b43",
@@ -174,10 +174,10 @@
           "shadow-raised": "none",
           "texture-paper": "radial-gradient(circle at 1px 1px, rgba(87, 65, 46, 0.06) 1px, transparent 0)",
           "input": "#f1e7d6",
-          "destructive": "#ca755d",
+          "destructive": "#a8452b",
           "destructive-foreground": "#fff7f1",
           "destructive-soft-border": "#d8a091",
-          "success": "#6f8f5e",
+          "success": "#47703a",
           "theme-dialog-shadow": "none",
           "z-toast": "60",
           "texture-paper-overlay-image": "radial-gradient(circle at 1px 1px, rgba(87, 65, 46, 0.05) 1px, transparent 0)"
@@ -220,6 +220,14 @@
           "::selection": {
             "color": "var(--ink-strong)",
             "background": "rgba(239, 187, 117, 0.45)"
+          },
+          "@media (prefers-reduced-motion: reduce)": {
+            "*, ::before, ::after": {
+              "animation-duration": "0.01ms !important",
+              "animation-iteration-count": "1 !important",
+              "transition-duration": "0.01ms !important",
+              "scroll-behavior": "auto !important"
+            }
           }
         },
         "@layer utilities": {
