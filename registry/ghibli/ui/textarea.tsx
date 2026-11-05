@@ -1,7 +1,7 @@
 import * as React from "react";
 
 import { HandDrawnFrame } from "@/components/ui/hand-drawn-frame";
-import { cn } from "@/lib/utils";
+import { cn, fieldRingClass } from "@/lib/utils";
 
 export function Textarea({
   className,
@@ -9,7 +9,7 @@ export function Textarea({
 }: React.ComponentProps<"textarea">) {
   return (
     <HandDrawnFrame
-      className="w-full"
+      className={cn("w-full", fieldRingClass)}
       surfaceClassName="bg-[color:color-mix(in_oklab,var(--paper-soft)_90%,white)]"
       strokeColor="var(--border)"
       strokeWidthRange={[1.25, 1.25]}

@@ -427,7 +427,7 @@ html[data-theme="hand-drawn-paper"] {
   --theme-field-border-width: 1px;
   --theme-field-foreground: var(--foreground);
   --theme-field-placeholder: var(--muted-foreground);
-  --theme-field-focus-border: var(--border);
+  --theme-field-focus-border: var(--ring);
   --theme-button-outline-background: var(--card);
   --theme-button-outline-background-hover: var(--paper-soft);
   --theme-button-outline-border: var(--border-strong);
@@ -610,7 +610,7 @@ html[data-theme="hand-drawn-paper"] {
   --ink-strong: #33241a;
   --ink-soft: #7d6552;
   --muted: #eadfcb;
-  --muted-foreground: #7a6857;
+  --muted-foreground: #5f4e3f;
   --footer-muted-foreground: var(--ink-soft);
 
   /* Brand / accent */
@@ -629,11 +629,11 @@ html[data-theme="hand-drawn-paper"] {
   --border-strong: #a88e70;
   --border-faint: rgba(165, 137, 112, 0.18);
   --input: #f1e7d6;
-  --ring: #8fb39a;
+  --ring: #557d61;
 
   /* Status */
-  --success: #7b9d68;
-  --destructive: #ca755d;
+  --success: #47703a;
+  --destructive: #a8452b;
   --destructive-foreground: #fff7f1;
   --destructive-edge: #aa5b43;
   --destructive-soft: rgba(202, 117, 93, 0.08);
@@ -755,7 +755,7 @@ html[data-theme="ghibli-forest"] {
   --theme-field-border-width: 1px;
   --theme-field-foreground: var(--foreground);
   --theme-field-placeholder: var(--muted-foreground);
-  --theme-field-focus-border: var(--border);
+  --theme-field-focus-border: var(--ring);
   --theme-button-outline-background: var(--card);
   --theme-button-outline-background-hover: var(--paper-soft);
   --theme-button-outline-border: var(--border-strong);
@@ -3048,6 +3048,17 @@ html[data-theme="ocean"] [data-theme-frame-variant="generate-composer"] {
 
   *:focus-visible {
     outline: none;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    *,
+    ::before,
+    ::after {
+      animation-duration: 0.01ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.01ms !important;
+      scroll-behavior: auto !important;
+    }
   }
 
   a {

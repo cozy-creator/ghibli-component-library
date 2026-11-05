@@ -11,6 +11,9 @@ export const layoutContainerClass = "mx-auto w-full max-w-7xl px-4 md:px-6";
 export const focusRingClass =
   "outline-none focus-visible:ring-2 focus-visible:ring-[color:var(--ring)] focus-visible:ring-offset-2 focus-visible:ring-offset-[color:var(--background)]";
 
+export const fieldRingClass =
+  "focus-within:ring-2 focus-within:ring-[color:var(--ring)] focus-within:ring-offset-2 focus-within:ring-offset-[color:var(--background)]";
+
 export const docsCodeBlockSurfaceClass = cn(
   "relative isolate overflow-hidden rounded-[var(--theme-radius-md)] border border-[color:var(--theme-docs-code-border)] [background:var(--theme-docs-code-background)] text-[color:var(--theme-docs-code-foreground)]",
   "shadow-[inset_0_1px_0_color-mix(in_oklab,var(--paper-soft)_14%,transparent),inset_0_18px_28px_color-mix(in_oklab,var(--paper-soft)_4%,transparent),inset_0_-28px_48px_color-mix(in_oklab,var(--foreground)_22%,transparent),0_14px_28px_color-mix(in_oklab,var(--ink-strong)_10%,transparent)]",

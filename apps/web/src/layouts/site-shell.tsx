@@ -11,7 +11,7 @@ import {
   mockHeaderAvatarUrl,
 } from "@/apps/web/src/components/site-header-icons";
 
-const repoUrl = "https://github.com/rodrigoluz/ghibli-component-library";
+const repoUrl = "https://github.com/cozy-creator/ghibli-component-library";
 const discordUrl = "#";
 
 function jumpToAnchor(anchorId: string) {

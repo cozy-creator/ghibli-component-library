@@ -105,8 +105,7 @@ function useToastItems() {
 function ToastViewport({ className }: { className?: string }) {
   const [items, setItems] = useToastItems();
 
-  if (items.length === 0) return null;
-
+  // Always mounted: a screen reader announces changes to a live region it already knows, so one added with its first toast says nothing.
   return (
     <div
       aria-live="polite"
