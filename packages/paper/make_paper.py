@@ -8,7 +8,7 @@ large and what stands out, so the 512 px tile holds neither: its fibres and grai
 why it shows no grid even at 25%. Flecks are on 1024, and clouds of formation on a tile of their own, 128 px and drawn at 2048, as they
 hold nothing fine.
 
-The sky is a blue wash that comes and goes down the sheet, and one tile of picture-book clouds that paper.css draws twice and drifts.
+The sky is a blue wash that comes and goes down the sheet, and one tile of picture-book clouds that paper.css drifts.
 """
 
 import sys
@@ -23,6 +23,9 @@ PERIOD = 2048
 SKY_WIDTH = PERIOD
 SKY_HEIGHT = 600
 SKY_TOP = 40
+SKY_FAR_DOWN = 230
+SKY_FAR_ACROSS = 700
+SKY_FAR_FAINT = 0.6
 SKY_CLOUDS = ((180, 300, 430), (660, 170, 300), (1080, 410, 520), (1500, 230, 270), (1840, 450, 340))
 SCALE = 3
 
@@ -178,9 +181,13 @@ def sky_clouds(rng, out):
     alpha = np.maximum(soft * 0.3, line * 0.34)
     premultiplied = np.dstack((colour * alpha[..., None], alpha * 255))
     small = Image.fromarray(np.clip(premultiplied, 0, 255).round().astype("uint8"), "RGBa").resize((SKY_WIDTH, SKY_HEIGHT), Image.Resampling.LANCZOS)
-    tile = Image.new("RGBA", (PERIOD, PERIOD), (0, 0, 0, 0))
-    tile.paste(small.convert("RGBA"), (0, SKY_TOP))
-    tile.save(out, quality=60, alpha_quality=62, method=6)
+    tile = Image.new("RGBa", (PERIOD, PERIOD), (0, 0, 0, 0))
+    tile.paste(small, (0, SKY_TOP))
+    near = np.asarray(tile, dtype=float)
+    # A fainter set behind, in the same tile: a second drifting layer of its own costs more to composite than it's worth.
+    far = np.roll(near, (SKY_FAR_DOWN, SKY_FAR_ACROSS), axis=(0, 1)) * SKY_FAR_FAINT
+    both = near + far * (1 - near[..., 3:] / 255)
+    Image.fromarray(np.clip(both, 0, 255).round().astype("uint8"), "RGBa").convert("RGBA").save(out, quality=60, alpha_quality=62, method=6)
 
 
 def sky_wash(rng, out):
