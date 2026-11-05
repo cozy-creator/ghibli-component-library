@@ -188,8 +188,8 @@ def sky_wash(rng, out):
     width, height = 192, 192
     down = np.arange(height)[:, None] / height
     fade = (0.5 + 0.5 * np.cos(2 * np.pi * (down - 0.16))) ** 2.2
-    uneven = np.clip(1 + wide_band(rng, height, width, 0.01, 0.07) * 0.14, 0, 2)
-    alpha = np.clip(fade * uneven * 0.44, 0, 1) * 255
+    uneven = np.clip(1 + wide_band(rng, height, width, 0.006, 0.03) * 0.08, 0, 2)
+    alpha = np.clip(fade * uneven * 0.3, 0, 1) * 255
     layer = Image.merge("RGBA", (*(Image.new("L", (width, height), channel) for channel in (0x7f, 0xb6, 0xeb)), Image.fromarray(alpha.round().astype("uint8"))))
     layer.save(out, quality=70, alpha_quality=80, method=6)
 
