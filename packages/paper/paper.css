@@ -1,8 +1,8 @@
-/* A sheet of paper, as a `background` value and as a class. make_paper.py makes the tiles and says why they're three. */
+/* A sheet of paper, as a `background` value and as a class. make_paper.py makes the tiles, all on a 2048 px period. */
 :root {
-  --paper-cream: url("./cream-flecks.webp") 0 0 / 1021px 1021px, url("./cream-clouds.webp") 0 0 / 2003px 2003px, url("./cream.webp") 0 0 / 512px 512px, #ecdfc7;
-  --paper-sky: url("./cream-flecks.webp") 0 0 / 1021px 1021px, url("./cream-clouds.webp") 0 0 / 2003px 2003px, url("./sky-wash.webp") 0 0 / 100% 100% no-repeat, url("./cream.webp") 0 0 / 512px 512px, #ecdfc7;
-  --paper-ink: url("./ink-flecks.webp") 0 0 / 1021px 1021px, url("./ink-clouds.webp") 0 0 / 2003px 2003px, url("./ink.webp") 0 0 / 512px 512px, #141415;
+  --paper-cream: url("./cream-flecks.webp") 0 0 / 1024px 1024px, url("./cream-clouds.webp") 0 0 / 2048px 2048px, url("./cream.webp") 0 0 / 512px 512px, #ecdfc7;
+  --paper-sky: url("./cream-flecks.webp") 0 0 / 1024px 1024px, url("./cream-clouds.webp") 0 0 / 2048px 2048px, url("./sky-wash.webp") 0 0 / 2048px 2048px, url("./cream.webp") 0 0 / 512px 512px, #ecdfc7;
+  --paper-ink: url("./ink-flecks.webp") 0 0 / 1024px 1024px, url("./ink-clouds.webp") 0 0 / 2048px 2048px, url("./ink.webp") 0 0 / 512px 512px, #141415;
 }
 
 .paper-cream {
@@ -13,54 +13,45 @@
   background: var(--paper-ink);
 }
 
-/* Clouds drifting behind what's in an element, which must be positioned and whose own content has no background. Only `transform` moves,
-   on layers of their own, so it costs the page's thread nothing. */
-.paper-sky {
-  isolation: isolate;
-  overflow: hidden;
-}
-
-.paper-sky::before,
-.paper-sky::after {
-  content: "";
+/* A sheet that travels with what's on it. Set `transform` on it, moved by no more than a 2048 px wrap, scaled no lower than 0.5: it's sized
+   for that, and it's on a layer of its own, so moving it repaints nothing. Its clouds drift by `transform` too. */
+.paper-world {
   position: absolute;
   left: 0;
-  z-index: -1;
-  background: url("./sky-clouds.webp") 0 0 / auto 100% repeat-x;
+  top: 0;
+  width: calc(200vw + 2048px);
+  height: calc(200vh + 2048px);
+  background: var(--paper-sky);
   pointer-events: none;
+  transform-origin: 0 0;
   will-change: transform;
 }
 
-.paper-sky::before {
-  top: 17%;
-  width: calc(100% + 1000px);
-  height: 325px;
+.paper-world::before,
+.paper-world::after {
+  content: "";
+  position: absolute;
+  inset: 0 -2048px 0 0;
+  background: url("./sky-clouds.webp") 0 0 / 2048px 2048px;
+  will-change: transform;
+  animation: paper-drift 260s linear infinite;
+}
+
+.paper-world::before {
+  background-position: 700px 230px;
   opacity: 0.6;
-  animation: paper-drift-far 420s linear infinite;
+  animation-duration: 420s;
 }
 
-.paper-sky::after {
-  top: 3%;
-  width: calc(100% + 1600px);
-  height: 520px;
-  animation: paper-drift-near 260s linear infinite;
-}
-
-@keyframes paper-drift-far {
+@keyframes paper-drift {
   to {
-    transform: translate3d(-1000px, 0, 0);
-  }
-}
-
-@keyframes paper-drift-near {
-  to {
-    transform: translate3d(-1600px, 0, 0);
+    transform: translate3d(-2048px, 0, 0);
   }
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .paper-sky::before,
-  .paper-sky::after {
+  .paper-world::before,
+  .paper-world::after {
     animation: none;
   }
 }
