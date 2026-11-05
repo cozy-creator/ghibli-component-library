@@ -28,20 +28,14 @@
   will-change: transform;
 }
 
-.paper-world::before,
+/* Steps of about 0.66 px, twelve a second: as smooth as the eye needs at this speed, and four frames in five have nothing to draw. */
 .paper-world::after {
   content: "";
   position: absolute;
   inset: 0 -2048px 0 0;
   background: url("./sky-clouds.webp") 0 0 / 2048px 2048px;
   will-change: transform;
-  animation: paper-drift 260s linear infinite;
-}
-
-.paper-world::before {
-  background-position: 700px 230px;
-  opacity: 0.6;
-  animation-duration: 420s;
+  animation: paper-drift 260s steps(3120) infinite;
 }
 
 @keyframes paper-drift {
@@ -51,7 +45,6 @@
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .paper-world::before,
   .paper-world::after {
     animation: none;
   }
