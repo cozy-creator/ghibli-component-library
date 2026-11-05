@@ -3,11 +3,12 @@
     uv run --no-project --with numpy --with pillow python make_paper.py [out dir]
 
 Same seed, same files. Each tile wraps: noise is shaped in frequency space, which is periodic, and each fibre is drawn at every
-wrapped position. A sheet is three tiles of coprime sizes, so they never line up. The eye finds a lattice by what's large and what stands out, so the
-512 px tile holds neither: its fibres and grain have every wavelength over 48 px taken out, which is why it shows no grid even at
-25%. Clouds of formation get a tile of their own, 127 px and drawn at 2003, as they hold nothing fine. Flecks get 1021.
+wrapped position. Every tile repeats on 2048 px, so `.paper-world` can wrap by that much as it pans and nothing jumps. The eye finds a lattice by what's
+large and what stands out, so the 512 px tile holds neither: its fibres and grain have every wavelength over 48 px taken out, which is
+why it shows no grid even at 25%. Flecks are on 1024, and clouds of formation on a tile of their own, 128 px and drawn at 2048, as they
+hold nothing fine.
 
-The sky is a blue wash, faded down the sheet, and one tile of picture-book clouds that paper.css draws twice and drifts.
+The sky is a blue wash that comes and goes down the sheet, and one tile of picture-book clouds that paper.css draws twice and drifts.
 """
 
 import sys
@@ -16,11 +17,13 @@ import numpy as np
 from PIL import Image, ImageDraw, ImageFilter
 
 SHEET = 512
-FLECKS = 1021
-CLOUDS = 127
-SKY_WIDTH = 1600
-SKY_HEIGHT = 520
-SKY_CLOUDS = ((150, 300, 430), (560, 170, 300), (880, 400, 520), (1230, 230, 270), (1500, 440, 340))
+FLECKS = 1024
+CLOUDS = 128
+PERIOD = 2048
+SKY_WIDTH = PERIOD
+SKY_HEIGHT = 600
+SKY_TOP = 40
+SKY_CLOUDS = ((180, 300, 430), (660, 170, 300), (1080, 410, 520), (1500, 230, 270), (1840, 450, 340))
 SCALE = 3
 
 
@@ -175,13 +178,16 @@ def sky_clouds(rng, out):
     alpha = np.maximum(soft * 0.3, line * 0.34)
     premultiplied = np.dstack((colour * alpha[..., None], alpha * 255))
     small = Image.fromarray(np.clip(premultiplied, 0, 255).round().astype("uint8"), "RGBa").resize((SKY_WIDTH, SKY_HEIGHT), Image.Resampling.LANCZOS)
-    small.convert("RGBA").save(out, quality=60, alpha_quality=62, method=6)
+    tile = Image.new("RGBA", (PERIOD, PERIOD), (0, 0, 0, 0))
+    tile.paste(small.convert("RGBA"), (0, SKY_TOP))
+    tile.save(out, quality=60, alpha_quality=62, method=6)
 
 
 def sky_wash(rng, out):
-    """The blue, faded down the sheet: nothing past two thirds of the way, and a little uneven, as a brush leaves it. Soft, so it's small."""
-    width, height = 192, 120
-    fade = np.clip(1 - np.linspace(0, 1, height)[:, None] / 0.68, 0, 1) ** 1.5
+    """The blue, coming and going down the sheet and strongest behind the clouds, a little uneven as a brush leaves it. Soft, so it's small."""
+    width, height = 192, 192
+    down = np.arange(height)[:, None] / height
+    fade = (0.5 + 0.5 * np.cos(2 * np.pi * (down - 0.16))) ** 2.2
     uneven = np.clip(1 + wide_band(rng, height, width, 0.01, 0.07) * 0.14, 0, 2)
     alpha = np.clip(fade * uneven * 0.44, 0, 1) * 255
     layer = Image.merge("RGBA", (*(Image.new("L", (width, height), channel) for channel in (0x7f, 0xb6, 0xeb)), Image.fromarray(alpha.round().astype("uint8"))))

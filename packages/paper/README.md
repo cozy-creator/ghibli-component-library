@@ -8,7 +8,7 @@ A paper texture for a whole page: cream, and a dark `ink` to match. Pre-rendered
 .canvas { background: var(--paper-cream); } /* or class="paper-cream" */
 ```
 
-For a faded blue sky on the same sheet, use `--paper-sky`, and add `class="paper-sky"` for picture-book clouds drifting behind the content. It moves with `transform` only, and stops under `prefers-reduced-motion`.
+For a faded blue sky with drifting picture-book clouds, use `--paper-sky`. To have it travel with a canvas, use `class="paper-world"`, which says in `paper.css` how to move it. Clouds drift with `transform` only, and stop under `prefers-reduced-motion`.
 
 Cream averages `#ecdfc7`; ink `#141415`. Keep text at 4.5:1 against the darkest fibres, not only that average.
 
