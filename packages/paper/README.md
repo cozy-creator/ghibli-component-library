@@ -8,7 +8,7 @@ A paper texture for a whole page: cream, and a dark `ink` to match. Pre-rendered
 .canvas { background: var(--paper-cream); } /* or class="paper-cream" */
 ```
 
-Cream averages `#f1e7d4`; ink `#141415`. Keep text at 4.5:1 against the darkest fibres, not only that average.
+Cream averages `#ecdfc7`; ink `#141415`. Keep text at 4.5:1 against the darkest fibres, not only that average.
 
 **How it was made:** every pixel comes from `make_paper.py`, seeded, so running it gives the same files. There's no scan, stock image or model output in here. Its header says how the tiles avoid a visible repeat.
 
