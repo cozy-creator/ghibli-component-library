@@ -45,11 +45,15 @@
 }
 
 /* A landscape in place of the sheet behind a canvas: the sky, then mountains, hills and a meadow, each a layer of its own that a pan moves
-   by `transform` at its `--rate` of the pan, wrapped by its own width past the window (each child's `offsetWidth` less the landscape's). It
-   sits at the bottom of the window whatever the canvas does, and is larger on a taller one. The sky is the sheet, cream under it, with
-   the clouds painted on: one opaque layer where the sheet and its clouds were two. */
+   by `transform`. Across, by its `--rate` of the pan, wrapped by its own width past the window (each child's `offsetWidth` less the
+   landscape's). Up and down, by its `--rate-y` of the pan, eased to a stop: for a pan of y px, at most `--reach` × the scale either way,
+   it moves `--rate-y` × (y − y³ / 3 reach²), so 2/3 × `--rate-y` × reach at the most. Each layer's fill goes on below it further than
+   the layer in front can move away from it, and the sky reaches past the window by more than it moves, so no edge shows. At rest it
+   sits at the bottom of the window, and is larger on a taller one. The sky is the sheet, cream under it, with the clouds painted on: one
+   opaque layer where the sheet and its clouds were two. */
 .paper-landscape {
   --landscape-scale: 1;
+  --reach: 1500;
   position: absolute;
   inset: 0;
   overflow: hidden;
@@ -64,8 +68,9 @@
 
 .paper-landscape-sky {
   --rate: 0.03;
-  top: 0;
-  bottom: 0;
+  --rate-y: 0.02;
+  top: -32px;
+  bottom: -32px;
   width: calc(100% + 2048px);
   background: url("./sky-clouds.webp") 0 0 / 2048px 2048px repeat-x, url("./landscape-sky.webp") 0 0 / 2048px 100% repeat-x, var(--paper-cream);
 }
@@ -80,9 +85,24 @@
   background: var(--tile) 0 0 / var(--period) 100% repeat-x;
 }
 
+.paper-landscape-mountains::after,
+.paper-landscape-hills::after,
+.paper-landscape-meadow::after {
+  content: "";
+  position: absolute;
+  top: 100%;
+  left: 0;
+  right: 0;
+  height: calc(var(--fill) * var(--landscape-scale));
+  background: var(--fill-tile) 0 0 / calc(512px * var(--landscape-scale)) repeat;
+}
+
 .paper-landscape-mountains {
   --rate: 0.08;
+  --rate-y: 0.06;
   --tile: url("./landscape-mountains.webp");
+  --fill-tile: url("./landscape-mountains-fill.webp");
+  --fill: 110px;
   --width: 6144px;
   --height: 280px;
   --bottom: 175px;
@@ -90,7 +110,10 @@
 
 .paper-landscape-hills {
   --rate: 0.2;
+  --rate-y: 0.15;
   --tile: url("./landscape-hills.webp");
+  --fill-tile: url("./landscape-hills-fill.webp");
+  --fill: 170px;
   --width: 4096px;
   --height: 190px;
   --bottom: 96px;
@@ -98,7 +121,10 @@
 
 .paper-landscape-meadow {
   --rate: 0.4;
+  --rate-y: 0.3;
   --tile: url("./landscape-meadow.webp");
+  --fill-tile: url("./landscape-meadow-fill.webp");
+  --fill: 330px;
   --width: 3072px;
   --height: 224px;
   --bottom: 0px;

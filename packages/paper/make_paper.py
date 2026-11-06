@@ -12,7 +12,9 @@ The sky is a blue wash that comes and goes down the sheet, and one tile of pictu
 
 The landscape is a sky (the cream sheet with the sky's clouds on it, in paper.css) and three layers over it, each a tile that wraps across
 only, each painted on the cream sheet itself (tooth, flecks and all), so where one hides the sky it shows the same paper: mountains repeat on 6144 px, hills on 4096 and the meadow on 3072, each wider than a
-4K window at the size it's drawn there, and as each pans at its own rate, the three rarely line up as they did.
+4K window at the size it's drawn there, and as each pans at its own rate, the three rarely line up as they did. Each one's foot eases to
+a single tone, and a tile of that tone on the sheet (`-fill`) goes on below it, so a pan up or down that moves the layers apart shows
+more of a layer and never its edge.
 """
 
 import sys
@@ -271,9 +273,18 @@ def pencil(rng, colour, shape, ink, strength):
     return colour * (1 - stroke[..., None]) + np.array(ink, dtype=float) * stroke[..., None]
 
 
-def save_layer(colour, alpha, out):
+def save_layer(colour, alpha, out, paper, scale):
+    """The layer, its foot eased over its last 40 px to one tone on the sheet, and that tone below it as `<out>-fill`: a tile a pan up
+    shows beneath the layer, so the layer goes on down with no edge."""
+    height = colour.shape[0]
+    tone = colour[-round(6 * scale):].reshape(-1, 3).mean(axis=0)
+    toward = np.clip((np.arange(height) - (height - 40 * scale)) / (40 * scale), 0, 1)[:, None, None] ** 2
+    colour = colour * (1 - toward) + paper * (tone / paper.reshape(-1, 3).mean(axis=0)) * toward
     rgba = np.dstack((np.clip(colour, 0, 255), np.clip(alpha, 0, 1) * 255)).round().astype("uint8")
-    Image.fromarray(rgba, "RGBA").save(out, quality=82, alpha_quality=90, method=6)
+    Image.fromarray(rgba, "RGBA").save(f"{out}.webp", quality=82, alpha_quality=90, method=6)
+    sheet = np.asarray(Image.open(out.rsplit("/", 1)[0] + "/cream.webp").convert("RGB"), dtype=float)
+    below = sheet * (tone / sheet.reshape(-1, 3).mean(axis=0))
+    Image.fromarray(np.clip(below, 0, 255).round().astype("uint8")).save(f"{out}-fill.webp", quality=82, method=6)
 
 
 def mountains(rng, paper, out):
@@ -297,7 +308,7 @@ def mountains(rng, paper, out):
         amount *= 1 + 0.05 * granulate(rng, height, width, scale)
         colour = colour * (1 - here[..., None]) + pigment(paper, (0xa2, 0xb0, 0xc4), np.clip(amount, 0, 1)) * here[..., None]
         cover = np.maximum(cover, here)
-    save_layer(colour, cover, out)
+    save_layer(colour, cover, out, paper, scale)
 
 
 def bushes(rng, width, height, scale, count, low, high, size, ground):
@@ -330,7 +341,7 @@ def hills(rng, paper, out):
     amount += 0.12 * np.exp(-np.clip(depth, 0, None) / (4 * scale)) + 0.22 * blur(clumps, 2 * scale) * (depth < 4 * scale)
     amount *= 1 + 0.05 * granulate(rng, height, width, scale)
     colour = pencil(rng, pigment(paper, (0xa6, 0xb8, 0x92), np.clip(amount, 0, 1)), cover, (0x6e, 0x7c, 0x62), 0.25)
-    save_layer(colour, cover, out)
+    save_layer(colour, cover, out, paper, scale)
 
 
 def tree(draw, rng, x, ground, scale):
@@ -360,8 +371,7 @@ def fence(draw, x, ground, posts, scale):
 
 
 def meadow(rng, paper, out):
-    """The meadow nearest: a warm green line with trees in twos and threes and a fence, fading to bare paper at the bottom, as a
-    painter leaves the foreground."""
+    """The meadow nearest: a warm green line with trees in twos and threes and a fence."""
     scale, (width, height) = LAND_SCALE["meadow"], LAND_SIZE["meadow"]
     width, height = round(width * scale), round(height * scale)
     ridge = line(rng, width, 2400 * scale, 700 * scale) * 9 * scale + line(rng, width, 300 * scale, 60 * scale) * 1.6 * scale
@@ -381,10 +391,7 @@ def meadow(rng, paper, out):
     trunk, crown, lit, rails = (np.asarray(layers[name], dtype=float) / 255 for name in ("trunk", "crown", "lit", "fence"))
     crown = wobble(rng, blur(crown, 0.8 * scale), 2 * scale)
     lit = blur(lit * crown, 3 * scale)
-    bottom = height - rows
-    brush = line(rng, width, 900 * scale, 160 * scale)[None, :] * 6 * scale
-    fade = np.clip((bottom - 6 * scale + brush) / (56 * scale), 0, 1) ** 1.5
-    ground_cover = edge(depth, 1.2 * scale) * fade
+    ground_cover = edge(depth, 1.2 * scale)
     amount = 0.52 * (1 + 0.06 * wide_band(rng, height, width, 1 / (500 * scale), 1 / (60 * scale)))
     amount += 0.16 * np.exp(-np.clip(depth, 0, None) / (4 * scale))
     amount *= 1 + 0.06 * granulate(rng, height, width, scale)
@@ -394,7 +401,7 @@ def meadow(rng, paper, out):
     wood = np.clip(trunk * (1 - crown) + rails * 0.8, 0, 1)
     colour = colour * (1 - wood[..., None]) + pigment(paper, (0x9a, 0x86, 0x6a), np.full(wood.shape, 0.9)) * wood[..., None]
     colour = pencil(rng, colour, np.maximum(edge(depth, 1.2 * scale), crown), (0x6a, 0x76, 0x58), 0.26)
-    save_layer(colour, np.maximum(ground_cover, np.maximum(crown, wood)), out)
+    save_layer(colour, np.maximum(ground_cover, np.maximum(crown, wood)), out, paper, scale)
 
 
 def landscape_sky(rng, out):
@@ -415,7 +422,7 @@ def landscape(out):
     for name, paint, seed in (("mountains", mountains, 9), ("hills", hills, 10), ("meadow", meadow, 11)):
         (width, height), scale = LAND_SIZE[name], LAND_SCALE[name]
         paper = paper_under(cream, flecks, round(height * scale), round(width * scale), scale)
-        paint(np.random.default_rng(seed), paper, f"{out}/landscape-{name}.webp")
+        paint(np.random.default_rng(seed), paper, f"{out}/landscape-{name}")
     landscape_sky(np.random.default_rng(12), f"{out}/landscape-sky.webp")
 
 
