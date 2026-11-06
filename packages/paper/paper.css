@@ -44,6 +44,90 @@
   }
 }
 
+/* A landscape in place of the sheet behind a canvas: the sky, then mountains, hills and a meadow, each a layer of its own that a pan moves
+   by `transform` at its `--rate` of the pan, wrapped by its own width past the window (each child's `offsetWidth` less the landscape's). It
+   sits at the bottom of the window whatever the canvas does, and is larger on a taller one. The sky is the sheet, cream under it, with
+   the clouds painted on: one opaque layer where the sheet and its clouds were two. */
+.paper-landscape {
+  --landscape-scale: 1;
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  pointer-events: none;
+}
+
+.paper-landscape > * {
+  position: absolute;
+  left: 0;
+  will-change: transform;
+}
+
+.paper-landscape-sky {
+  --rate: 0.03;
+  top: 0;
+  bottom: 0;
+  width: calc(100% + 2048px);
+  background: url("./sky-clouds.webp") 0 0 / 2048px 2048px repeat-x, url("./landscape-sky.webp") 0 0 / 2048px 100% repeat-x, var(--paper-cream);
+}
+
+.paper-landscape-mountains,
+.paper-landscape-hills,
+.paper-landscape-meadow {
+  --period: calc(var(--width) * var(--landscape-scale));
+  bottom: calc(var(--bottom) * var(--landscape-scale));
+  width: calc(100% + var(--period));
+  height: calc(var(--height) * var(--landscape-scale));
+  background: var(--tile) 0 0 / var(--period) 100% repeat-x;
+}
+
+.paper-landscape-mountains {
+  --rate: 0.08;
+  --tile: url("./landscape-mountains.webp");
+  --width: 6144px;
+  --height: 280px;
+  --bottom: 175px;
+}
+
+.paper-landscape-hills {
+  --rate: 0.2;
+  --tile: url("./landscape-hills.webp");
+  --width: 4096px;
+  --height: 190px;
+  --bottom: 96px;
+}
+
+.paper-landscape-meadow {
+  --rate: 0.4;
+  --tile: url("./landscape-meadow.webp");
+  --width: 3072px;
+  --height: 224px;
+  --bottom: 0px;
+}
+
+@media (max-height: 999px) {
+  .paper-landscape {
+    --landscape-scale: 0.85;
+  }
+}
+
+@media (max-height: 760px) {
+  .paper-landscape {
+    --landscape-scale: 0.72;
+  }
+}
+
+@media (min-height: 1300px) {
+  .paper-landscape {
+    --landscape-scale: 1.2;
+  }
+}
+
+@media (min-height: 1700px) {
+  .paper-landscape {
+    --landscape-scale: 1.45;
+  }
+}
+
 @media (prefers-reduced-motion: reduce) {
   .paper-world::after {
     animation: none;

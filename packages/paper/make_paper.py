@@ -9,6 +9,10 @@ why it shows no grid even at 25%. Flecks are on 1024, and clouds of formation on
 hold nothing fine.
 
 The sky is a blue wash that comes and goes down the sheet, and one tile of picture-book clouds that paper.css drifts.
+
+The landscape is a sky (the cream sheet with the sky's clouds on it, in paper.css) and three layers over it, each a tile that wraps across
+only, each painted on the cream sheet itself (tooth, flecks and all), so where one hides the sky it shows the same paper: mountains repeat on 6144 px, hills on 4096 and the meadow on 3072, each wider than a
+4K window at the size it's drawn there, and as each pans at its own rate, the three rarely line up as they did.
 """
 
 import sys
@@ -28,6 +32,10 @@ SKY_FAR_ACROSS = 700
 SKY_FAR_FAINT = 0.6
 SKY_CLOUDS = ((180, 300, 430), (660, 170, 300), (1080, 410, 520), (1500, 230, 270), (1840, 450, 340))
 SCALE = 3
+# Each landscape layer's tile, in CSS px at the landscape's own scale 1: how far it goes before it repeats, and how tall. Drawn at
+# LAND_SCALE tile px to a CSS px, so it's sharp on a 2x screen where it's sharp enough to need it.
+LAND_SIZE = {"mountains": (6144, 280), "hills": (4096, 190), "meadow": (3072, 224)}
+LAND_SCALE = {"mountains": 1, "hills": 1.5, "meadow": 2}
 
 
 def band(rng, size, low, high):
@@ -156,11 +164,11 @@ def puffs(rng):
     return np.asarray(canvas, dtype=float) / 255
 
 
-def wobble(rng, field):
-    """Moves each pixel a little, so an edge is drawn and not compass-true."""
+def wobble(rng, field, reach=12):
+    """Moves each pixel up to about `reach` px, so an edge is drawn and not compass-true."""
     height, width = field.shape
-    dy = (wide_band(rng, height, width, 0.0012, 0.008) * 12).round().astype(int)
-    dx = (wide_band(rng, height, width, 0.0012, 0.008) * 12).round().astype(int)
+    dy = (wide_band(rng, height, width, 0.0012, 0.008) * reach).round().astype(int)
+    dx = (wide_band(rng, height, width, 0.0012, 0.008) * reach).round().astype(int)
     rows, columns = np.indices(field.shape)
     return field[np.clip(rows + dy, 0, height - 1), (columns + dx) % width]
 
@@ -201,6 +209,216 @@ def sky_wash(rng, out):
     layer.save(out, quality=70, alpha_quality=80, method=6)
 
 
+def line(rng, width, longest, shortest):
+    """Noise along a line that wraps, holding only wavelengths between `shortest` and `longest` px, at unit deviation."""
+    frequency = np.fft.rfftfreq(width)
+    shaped = np.fft.irfft(np.fft.rfft(rng.standard_normal(width)) * ((frequency > 1 / longest) & (frequency < 1 / shortest)), width)
+    return shaped / shaped.std()
+
+
+def across(x, at, width):
+    """How far each of `x` is from `at`, the short way round a tile `width` wide."""
+    return (x - at + width / 2) % width - width / 2
+
+
+def peaks(rng, width, count, low, high, broad):
+    """A range of mountains: pointed, a little rounded at the top, slopes that fall away concave, the tallest wins where two meet."""
+    x = np.arange(width)
+    ridge = np.zeros(width)
+    for at in np.sort(rng.uniform(0, width, count)):
+        tall, wide = rng.uniform(low, high), rng.uniform(*broad)
+        reach = np.sqrt(across(x, at, width) ** 2 + 30**2) - 30
+        ridge = np.maximum(ridge, tall * np.clip(1 - reach / wide, 0, 1) ** 1.4)
+    return ridge
+
+
+def edge(depth, soft):
+    """Coverage of a wash whose edge is `depth` px away, below it positive: softened over `soft` px, as wet paint stops."""
+    return np.clip(0.5 + depth / (2 * soft), 0, 1)
+
+
+def pigment(paper, colour, amount):
+    """`paper` (rows, columns, rgb) with a wash of `colour` at `amount` (rows, columns), 0 to 1, laid over it: the paper's tooth shows
+    through, as the colour scales it rather than covering it."""
+    flat = np.array([0xef, 0xe3, 0xcb], dtype=float)
+    return paper * (1 + amount[..., None] * (np.array(colour, dtype=float) / flat - 1))
+
+
+def granulate(rng, height, width, scale):
+    """Pigment settling in the paper's hollows: fine, uneven, at unit deviation."""
+    return wide_band(rng, height, width, 1 / (5 * scale), 1 / (1.6 * scale))
+
+
+def paper_under(cream, flecks, height, width, scale):
+    """The cream sheet, flecks and all, at `scale` tile px to its px: what each landscape layer is painted on, so where it hides the
+    sheet it shows the same paper."""
+    wide, down = int(np.ceil(width / scale / FLECKS)) + 1, int(np.ceil(height / scale / FLECKS)) + 1
+    tiled = Image.new("RGBA", (FLECKS * wide, FLECKS * down))
+    for i in range(wide * FLECKS // SHEET):
+        for j in range(down * FLECKS // SHEET):
+            tiled.paste(cream, (i * SHEET, j * SHEET))
+    for i in range(wide):
+        for j in range(down):
+            tiled.alpha_composite(flecks, (i * FLECKS, j * FLECKS))
+    tiled = tiled.resize((round(tiled.width * scale), round(tiled.height * scale)), Image.Resampling.BICUBIC)
+    return np.asarray(tiled.convert("RGB"), dtype=float)[:height, :width]
+
+
+def pencil(rng, colour, shape, ink, strength):
+    """`colour` with a broken pencil line round `shape`, a coverage softened at its edge, as the sky's clouds have."""
+    height, width = shape.shape
+    stroke = np.clip(shape * (1 - shape) * 4, 0, 1) * np.clip(wide_band(rng, height, width, 0.002, 0.02) * 0.6 + 0.6, 0, 1) * strength
+    return colour * (1 - stroke[..., None]) + np.array(ink, dtype=float) * stroke[..., None]
+
+
+def save_layer(colour, alpha, out):
+    rgba = np.dstack((np.clip(colour, 0, 255), np.clip(alpha, 0, 1) * 255)).round().astype("uint8")
+    Image.fromarray(rgba, "RGBA").save(out, quality=82, alpha_quality=90, method=6)
+
+
+def mountains(rng, paper, out):
+    """Far mountains in blue-grey, a paler range behind a nearer one: a lit face to the upper left and a shaded one, a little snow on
+    the tallest, and haze toward their feet."""
+    scale, (width, height) = LAND_SCALE["mountains"], LAND_SIZE["mountains"]
+    width, height = round(width * scale), round(height * scale)
+    rows = np.arange(height)[:, None]
+    colour, cover = paper, np.zeros((height, width))
+    for faint, low, high, count in ((0.5, 120, 225, 9), (1.0, 60, 190, 14)):
+        ridge = peaks(rng, width, count, low * scale, high * scale, (320 * scale, 760 * scale))
+        ridge += line(rng, width, 1200 * scale, 300 * scale) * 6 * scale + line(rng, width, 320 * scale, 60 * scale) * 2 * scale
+        depth = rows - (height - 45 * scale - ridge)[None, :]
+        here = edge(depth, 1.2 * scale)
+        slope = np.convolve(np.pad(np.gradient(ridge), 40, mode="wrap"), np.ones(81) / 81, "valid")
+        shaded = np.clip(0.5 - slope * 3, 0, 1)[None, :] * np.exp(-np.clip(depth, 0, None) / (90 * scale))
+        snow = np.clip((ridge[None, :] - 175 * scale) / (30 * scale), 0, 1) * np.clip(1 - depth / (24 * scale), 0, 1)
+        haze = np.clip(1 - depth / (200 * scale), 0.4, 1)
+        amount = (0.36 + 0.34 * shaded) * haze * (1 + 0.07 * wide_band(rng, height, width, 1 / (500 * scale), 1 / (60 * scale)))
+        amount = faint * (amount * (1 - 0.65 * snow) + 0.12 * np.exp(-np.clip(depth, 0, None) / (3 * scale)))
+        amount *= 1 + 0.05 * granulate(rng, height, width, scale)
+        colour = colour * (1 - here[..., None]) + pigment(paper, (0xa2, 0xb0, 0xc4), np.clip(amount, 0, 1)) * here[..., None]
+        cover = np.maximum(cover, here)
+    save_layer(colour, cover, out)
+
+
+def bushes(rng, width, height, scale, count, low, high, size, ground):
+    """Round bushes and trees of a few puffs each along `ground` (a row per column), as coverage, drawn at every wrapped position."""
+    canvas = Image.new("L", (width, height), 0)
+    draw = ImageDraw.Draw(canvas)
+    for at in rng.uniform(0, width, count):
+        crown = rng.uniform(low, high) * scale
+        base = ground[int(at) % width]
+        for _ in range(int(rng.integers(3, 6))):
+            radius = crown * rng.uniform(0.45, 0.7)
+            cx = at + rng.uniform(-0.5, 0.5) * crown
+            cy = base - crown * rng.uniform(0.35, 0.9) * size
+            for shift in (-width, 0, width):
+                draw.ellipse((cx + shift - radius, cy - radius, cx + shift + radius, cy + radius), fill=255)
+    return np.asarray(canvas, dtype=float) / 255
+
+
+def hills(rng, paper, out):
+    """Rolling sage hills, darker where the wash stopped at their crest, a few bushes on them, and lighter as they near the meadow."""
+    scale, (width, height) = LAND_SCALE["hills"], LAND_SIZE["hills"]
+    width, height = round(width * scale), round(height * scale)
+    ridge = line(rng, width, 2400 * scale, 500 * scale) * 16 * scale + line(rng, width, 420 * scale, 120 * scale) * 4 * scale
+    top = (height - 134 * scale - ridge).round()
+    rows = np.arange(height)[:, None]
+    depth = rows - top[None, :]
+    clumps = bushes(rng, width, height, scale, 26, 8, 20, 0.8, top + 6 * scale)
+    cover = np.maximum(edge(depth, 1.2 * scale), blur(clumps, 1.2 * scale))
+    amount = 0.54 * np.clip(1 - depth / (260 * scale), 0.55, 1) * (1 + 0.08 * wide_band(rng, height, width, 1 / (600 * scale), 1 / (80 * scale)))
+    amount += 0.12 * np.exp(-np.clip(depth, 0, None) / (4 * scale)) + 0.22 * blur(clumps, 2 * scale) * (depth < 4 * scale)
+    amount *= 1 + 0.05 * granulate(rng, height, width, scale)
+    colour = pencil(rng, pigment(paper, (0xa6, 0xb8, 0x92), np.clip(amount, 0, 1)), cover, (0x6e, 0x7c, 0x62), 0.25)
+    save_layer(colour, cover, out)
+
+
+def tree(draw, rng, x, ground, scale):
+    """A picture-book tree into `draw`'s layers: a short trunk, a crown of round puffs, and where light finds it, at its top left."""
+    tall = rng.uniform(46, 78) * scale
+    wide = tall * rng.uniform(0.55, 0.75)
+    trunk = 3.2 * scale
+    draw["trunk"].polygon([(x - trunk, ground), (x + trunk, ground), (x + trunk * 0.6, ground - tall * 0.55), (x - trunk * 0.6, ground - tall * 0.55)], fill=255)
+    middle = ground - tall * 0.62
+    for _ in range(int(rng.integers(6, 10))):
+        radius = wide * rng.uniform(0.32, 0.5)
+        cx, cy = x + rng.uniform(-0.45, 0.45) * wide, middle + rng.uniform(-0.55, 0.3) * tall * 0.5
+        draw["crown"].ellipse((cx - radius, cy - radius, cx + radius, cy + radius), fill=255)
+        draw["lit"].ellipse((cx - radius * 1.05, cy - radius * 1.1, cx + radius * 0.55, cy + radius * 0.45), fill=255)
+
+
+def fence(draw, x, ground, posts, scale):
+    """A run of posts and two rails, following the ground."""
+    gap = 26 * scale
+    for i in range(posts):
+        at = x + i * gap
+        g = ground(at)
+        draw.line([(at, g + 2 * scale), (at + 0.6 * scale, g - 17 * scale)], fill=255, width=max(1, round(2.2 * scale)))
+        if i:
+            for rail in (7, 13):
+                draw.line([(at - gap, ground(at - gap) - rail * scale), (at, g - rail * scale)], fill=255, width=max(1, round(1.3 * scale)))
+
+
+def meadow(rng, paper, out):
+    """The meadow nearest: a warm green line with trees in twos and threes and a fence, fading to bare paper at the bottom, as a
+    painter leaves the foreground."""
+    scale, (width, height) = LAND_SCALE["meadow"], LAND_SIZE["meadow"]
+    width, height = round(width * scale), round(height * scale)
+    ridge = line(rng, width, 2400 * scale, 700 * scale) * 9 * scale + line(rng, width, 300 * scale, 60 * scale) * 1.6 * scale
+    top = height - 118 * scale - ridge
+    rows = np.arange(height)[:, None]
+    depth = rows - top[None, :]
+    layers = {name: Image.new("L", (width, height), 0) for name in ("trunk", "crown", "lit", "fence")}
+    draw = {name: ImageDraw.Draw(layer) for name, layer in layers.items()}
+    ground = lambda at: float(top[int(round(at)) % width])
+    for group in np.sort(rng.uniform(0, width, 5)):
+        for at in group + np.cumsum(rng.uniform(30, 80, int(rng.integers(1, 4))) * scale):
+            for shift in (-width, 0, width):
+                tree(draw, np.random.default_rng(int(at * 7) % 100000), at + shift, ground(at) + 3 * scale, scale)
+    start = rng.uniform(0, width)
+    for shift in (-width, 0, width):
+        fence(draw["fence"], start + shift, lambda at: ground(at - shift) + 4 * scale, 14, scale)
+    trunk, crown, lit, rails = (np.asarray(layers[name], dtype=float) / 255 for name in ("trunk", "crown", "lit", "fence"))
+    crown = wobble(rng, blur(crown, 0.8 * scale), 2 * scale)
+    lit = blur(lit * crown, 3 * scale)
+    bottom = height - rows
+    brush = line(rng, width, 900 * scale, 160 * scale)[None, :] * 6 * scale
+    fade = np.clip((bottom - 6 * scale + brush) / (56 * scale), 0, 1) ** 1.5
+    ground_cover = edge(depth, 1.2 * scale) * fade
+    amount = 0.52 * (1 + 0.06 * wide_band(rng, height, width, 1 / (500 * scale), 1 / (60 * scale)))
+    amount += 0.16 * np.exp(-np.clip(depth, 0, None) / (4 * scale))
+    amount *= 1 + 0.06 * granulate(rng, height, width, scale)
+    colour = pigment(paper, (0xb7, 0xc0, 0x8a), np.clip(amount, 0, 1))
+    tree_amount = np.clip(0.62 - 0.25 * lit + 0.08 * granulate(rng, height, width, scale), 0, 1)
+    colour = colour * (1 - crown[..., None]) + pigment(paper, (0x93, 0xa8, 0x7a), tree_amount) * crown[..., None]
+    wood = np.clip(trunk * (1 - crown) + rails * 0.8, 0, 1)
+    colour = colour * (1 - wood[..., None]) + pigment(paper, (0x9a, 0x86, 0x6a), np.full(wood.shape, 0.9)) * wood[..., None]
+    colour = pencil(rng, colour, np.maximum(edge(depth, 1.2 * scale), crown), (0x6a, 0x76, 0x58), 0.26)
+    save_layer(colour, np.maximum(ground_cover, np.maximum(crown, wood)), out)
+
+
+def landscape_sky(rng, out):
+    """The sky over the landscape: blue at the top of the window, paling toward the hills, unevenly, as a brush leaves it. Drawn the
+    window's height, so small."""
+    width, height = 192, 192
+    down = np.arange(height)[:, None] / height
+    fade = np.interp(down, (0, 0.3, 0.6, 0.78, 1), (1, 0.8, 0.38, 0.16, 0.12))
+    uneven = np.clip(1 + wide_band(rng, height, width, 0.006, 0.03) * 0.08, 0, 2)
+    alpha = np.clip(fade * uneven * 0.3, 0, 1) * 255
+    layer = Image.merge("RGBA", (*(Image.new("L", (width, height), channel) for channel in (0x7f, 0xb6, 0xeb)), Image.fromarray(alpha.round().astype("uint8"))))
+    layer.save(out, quality=70, alpha_quality=80, method=6)
+
+
+def landscape(out):
+    """The landscape's three layers, painted on the cream sheet as it is in `out`."""
+    cream, flecks = Image.open(f"{out}/cream.webp").convert("RGBA"), Image.open(f"{out}/cream-flecks.webp").convert("RGBA")
+    for name, paint, seed in (("mountains", mountains, 9), ("hills", hills, 10), ("meadow", meadow, 11)):
+        (width, height), scale = LAND_SIZE[name], LAND_SCALE[name]
+        paper = paper_under(cream, flecks, round(height * scale), round(width * scale), scale)
+        paint(np.random.default_rng(seed), paper, f"{out}/landscape-{name}.webp")
+    landscape_sky(np.random.default_rng(12), f"{out}/landscape-sky.webp")
+
+
 def main():
     out = sys.argv[1] if len(sys.argv) > 1 else "."
     sheet(np.random.default_rng(1), (0xef, 0xe3, 0xcb), (1.0, 0.96, 0.84), 1.0, f"{out}/cream.webp")
@@ -211,6 +429,7 @@ def main():
     clouds(np.random.default_rng(6), (0xd8, 0xd2, 0xc4), 3, f"{out}/ink-clouds.webp")
     sky_wash(np.random.default_rng(7), f"{out}/sky-wash.webp")
     sky_clouds(np.random.default_rng(8), f"{out}/sky-clouds.webp")
+    landscape(out)
 
 
 if __name__ == "__main__":
