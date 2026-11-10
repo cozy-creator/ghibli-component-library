@@ -18,8 +18,11 @@ more of a layer and never its edge.
 """
 
 import sys
+from collections.abc import Callable, Sequence
+from typing import TypeAlias, TypedDict, Unpack
 
 import numpy as np
+import numpy.typing as npt
 from PIL import Image, ImageDraw, ImageFilter
 
 SHEET = 512
@@ -39,8 +42,17 @@ SCALE = 3
 LAND_SIZE = {"mountains": (6144, 280), "hills": (4096, 190), "meadow": (3072, 224)}
 LAND_SCALE = {"mountains": 1, "hills": 1.5, "meadow": 2}
 
+Field: TypeAlias = npt.NDArray[np.float64]
+Rgb: TypeAlias = tuple[int, int, int]
+Points: TypeAlias = list[tuple[float, float]]
 
-def band(rng, size, low, high):
+
+class Line(TypedDict):
+    fill: int
+    width: int
+
+
+def band(rng: np.random.Generator, size: int, low: float, high: float) -> Field:
     """Noise holding only wavelengths between 1/high and 1/low px, at unit deviation."""
     fy, fx = np.meshgrid(np.fft.fftfreq(size), np.fft.fftfreq(size), indexing="ij")
     radius = np.hypot(fx, fy)
@@ -48,8 +60,10 @@ def band(rng, size, low, high):
     return shaped / shaped.std()
 
 
-def stroke(rng, size, length):
+def stroke(rng: np.random.Generator, size: int, length: float) -> Points:
     """A wandering stroke, as tile pixels: a fibre never runs straight."""
+    x: float
+    y: float
     x, y = rng.uniform(0, size, 2)
     heading = rng.uniform(0, 2 * np.pi)
     bend = rng.uniform(-0.09, 0.09)
@@ -62,29 +76,29 @@ def stroke(rng, size, length):
     return points
 
 
-def wrapped(draw, points, size, **line):
+def wrapped(draw: ImageDraw.ImageDraw, points: Sequence[tuple[float, float]], size: int, **line: Unpack[Line]) -> None:
     for dx in (-size, 0, size):
         for dy in (-size, 0, size):
             draw.line([((x + dx) * SCALE, (y + dy) * SCALE) for x, y in points], **line)
 
 
-def fibres(rng, size, count, shortest, longest, blur=0.8):
+def fibres(rng: np.random.Generator, size: int, count: int, shortest: float, longest: float, blur: float = 0.8) -> Field:
     """Coverage of `count` fibres, 0 to 1, supersampled so a thin one is faint rather than jagged."""
     canvas = Image.new("L", (size * SCALE, size * SCALE), 0)
     draw = ImageDraw.Draw(canvas)
     for _ in range(count):
         wrapped(draw, stroke(rng, size, rng.uniform(shortest, longest)), size, fill=int(rng.uniform(120, 255)), width=int(rng.integers(2, 4)))
     soft = canvas.filter(ImageFilter.GaussianBlur(blur * SCALE / 2)).resize((size, size), Image.Resampling.BOX)
-    return np.asarray(soft, dtype=float) / 255
+    return np.asarray(soft, dtype=np.float64) / 255
 
 
-def fine(field, size, shortest=1 / 48):
+def fine(field: Field, size: int, shortest: float = 1 / 48) -> Field:
     """`field` with every wavelength over 48 px taken out: what a grid would be seen in, from far off."""
     fy, fx = np.meshgrid(np.fft.fftfreq(size), np.fft.fftfreq(size), indexing="ij")
     return np.real(np.fft.ifft2(np.fft.fft2(field) * (np.hypot(fx, fy) > shortest)))
 
 
-def tooth(rng, size):
+def tooth(rng: np.random.Generator, size: int) -> Field:
     """Cold-press tooth, as light from the top left finds it: bumps of a few px with a bright side and a shadowed one. It's what makes
     a sheet read as paper from across a room, where a 1 px fibre on a 4K screen is gone."""
     bumps = band(rng, size, 1 / 11, 1 / 3)
@@ -92,7 +106,7 @@ def tooth(rng, size):
     return lit / lit.std()
 
 
-def height(rng, size):
+def height(rng: np.random.Generator, size: int) -> Field:
     """How the sheet catches light: tooth and grain, and fibres lying on it."""
     return fine(
         4.4 * tooth(rng, size)
@@ -103,19 +117,21 @@ def height(rng, size):
     )
 
 
-def sheet(rng, base, tint, gain, out):
+def sheet(rng: np.random.Generator, base: Rgb, tint: tuple[float, float, float], gain: float, out: str) -> None:
     relief = height(rng, SHEET)
     relief -= relief.mean()
-    pixels = np.array(base, dtype=float) + relief[..., None] * np.array(tint) * gain
+    pixels = np.array(base, dtype=np.float64) + relief[..., None] * np.array(tint) * gain
     Image.fromarray(np.clip(pixels, 0, 255).round().astype("uint8")).save(out, quality=80, method=6)
 
 
-def flecks(rng, colour, strength, out):
+def flecks(rng: np.random.Generator, colour: Rgb, strength: float, out: str) -> None:
     """Small, sparse flecks, on nothing. `strength` scales their alpha, 0 to 1."""
     canvas = Image.new("L", (FLECKS * SCALE, FLECKS * SCALE), 0)
     draw = ImageDraw.Draw(canvas)
     for _ in range(150):
         wrapped(draw, stroke(rng, FLECKS, rng.uniform(4, 15)), FLECKS, fill=int(rng.uniform(70, 170)), width=int(rng.integers(1, 3)))
+    x: float
+    y: float
     for _ in range(320):
         x, y = rng.uniform(0, FLECKS, 2)
         wrapped(draw, [(x, y), (x + rng.uniform(0.4, 1.6), y + rng.uniform(-0.8, 0.8))], FLECKS, fill=int(rng.uniform(110, 230)), width=int(rng.integers(2, 5)))
@@ -123,18 +139,18 @@ def flecks(rng, colour, strength, out):
     tile(colour, alpha.point(lambda value: int(value * strength) & 0xf0), out)
 
 
-def clouds(rng, colour, strength, out):
+def clouds(rng: np.random.Generator, colour: Rgb, strength: float, out: str) -> None:
     """Soft clouds of formation, on nothing. `strength` is alpha, 0 to 255."""
     alpha = np.clip(band(rng, CLOUDS, 0.02, 0.16) * 0.5 + 1.0, 0, 2) * strength
     tile(colour, Image.fromarray(alpha.round().astype("uint8")), out)
 
 
-def tile(colour, alpha, out):
+def tile(colour: Rgb, alpha: Image.Image, out: str) -> None:
     layer = Image.merge("RGBA", (*(Image.new("L", alpha.size, channel) for channel in colour), alpha))
     layer.save(out, lossless=True, quality=100, method=6, exact=False)
 
 
-def wide_band(rng, height, width, low, high):
+def wide_band(rng: np.random.Generator, height: int, width: int, low: float, high: float) -> Field:
     """`band`, wrapping across a tile that isn't square."""
     fy, fx = np.meshgrid(np.fft.fftfreq(height), np.fft.fftfreq(width), indexing="ij")
     radius = np.hypot(fx, fy)
@@ -142,12 +158,12 @@ def wide_band(rng, height, width, low, high):
     return shaped / shaped.std()
 
 
-def blur(field, radius):
+def blur(field: Field, radius: float) -> Field:
     """`field`, from 0 to 1, softened."""
-    return np.asarray(Image.fromarray((field * 255).round().astype("uint8")).filter(ImageFilter.GaussianBlur(radius)), dtype=float) / 255
+    return np.asarray(Image.fromarray((field * 255).round().astype("uint8")).filter(ImageFilter.GaussianBlur(radius)), dtype=np.float64) / 255
 
 
-def puffs(rng):
+def puffs(rng: np.random.Generator) -> Field:
     """Where the clouds are, as coverage: each a row of round puffs on a flat base, drawn at every wrapped position so the tile joins."""
     width, height = SKY_WIDTH * 2, SKY_HEIGHT * 2
     canvas = Image.new("L", (width, height), 0)
@@ -155,6 +171,7 @@ def puffs(rng):
     for x, base, wide in SKY_CLOUDS:
         x, base, wide = x * 2, base * 2, wide * 2
         count = max(5, wide // 84)
+        t: float
         for shift in (-width, 0, width):
             for t in np.linspace(0, 1, count):
                 rise = np.sin(np.pi * t) ** 0.6
@@ -163,11 +180,13 @@ def puffs(rng):
                 cy = base - radius * 0.72
                 draw.ellipse((cx - radius, cy - radius, cx + radius, cy + radius), fill=255)
             draw.ellipse((x + shift - wide * 0.5, base - wide * 0.09, x + shift + wide * 0.5, base + wide * 0.02), fill=255)
-    return np.asarray(canvas, dtype=float) / 255
+    return np.asarray(canvas, dtype=np.float64) / 255
 
 
-def wobble(rng, field, reach=12):
+def wobble(rng: np.random.Generator, field: Field, reach: float = 12) -> Field:
     """Moves each pixel up to about `reach` px, so an edge is drawn and not compass-true."""
+    height: int
+    width: int
     height, width = field.shape
     dy = (wide_band(rng, height, width, 0.0012, 0.008) * reach).round().astype(int)
     dx = (wide_band(rng, height, width, 0.0012, 0.008) * reach).round().astype(int)
@@ -175,15 +194,15 @@ def wobble(rng, field, reach=12):
     return field[np.clip(rows + dy, 0, height - 1), (columns + dx) % width]
 
 
-def sky_clouds(rng, out):
+def sky_clouds(rng: np.random.Generator, out: str) -> None:
     """Picture-book clouds, on nothing: a thin wash of white, shade pooled under each, and a broken pencil line round it."""
     shape = wobble(rng, puffs(rng))
     soft = blur(blur(shape, 3), 2)
     under = np.clip(soft - blur(np.roll(shape, -70, axis=0), 26), 0, 1)
-    line = np.clip(soft * (1 - soft) * 4, 0, 1) * np.clip(wide_band(rng, *soft.shape, 0.004, 0.03) * 0.5 + 0.75, 0, 1)
-    wash = np.array([255, 253, 244], dtype=float)
-    shade = np.array([186, 207, 226], dtype=float)
-    pencil = np.array([96, 124, 152], dtype=float)
+    line = np.clip(soft * (1 - soft) * 4, 0, 1) * np.clip(wide_band(rng, *soft.shape, 0.004, 0.03) * 0.5 + 0.75, 0, 1)  # type: ignore[call-arg, operator]  # shape: height, width; operator: mypy echoes call-arg through numpy's overloaded *
+    wash = np.array([255, 253, 244], dtype=np.float64)
+    shade = np.array([186, 207, 226], dtype=np.float64)
+    pencil = np.array([96, 124, 152], dtype=np.float64)
     mix = (under * 0.5)[..., None]
     colour = wash * (1 - mix) + shade * mix
     amount = (line * 0.7)[..., None]
@@ -193,14 +212,14 @@ def sky_clouds(rng, out):
     small = Image.fromarray(np.clip(premultiplied, 0, 255).round().astype("uint8"), "RGBa").resize((SKY_WIDTH, SKY_HEIGHT), Image.Resampling.LANCZOS)
     tile = Image.new("RGBa", (PERIOD, PERIOD), (0, 0, 0, 0))
     tile.paste(small, (0, SKY_TOP))
-    near = np.asarray(tile, dtype=float)
+    near = np.asarray(tile, dtype=np.float64)
     # A fainter set behind, in the same tile: a second drifting layer of its own costs more to composite than it's worth.
     far = np.roll(near, (SKY_FAR_DOWN, SKY_FAR_ACROSS), axis=(0, 1)) * SKY_FAR_FAINT
     both = near + far * (1 - near[..., 3:] / 255)
     Image.fromarray(np.clip(both, 0, 255).round().astype("uint8"), "RGBa").convert("RGBA").save(out, quality=60, alpha_quality=62, method=6)
 
 
-def sky_wash(rng, out):
+def sky_wash(rng: np.random.Generator, out: str) -> None:
     """The blue, coming and going down the sheet and strongest behind the clouds, a little uneven as a brush leaves it. Soft, so it's small."""
     width, height = 192, 192
     down = np.arange(height)[:, None] / height
@@ -211,22 +230,23 @@ def sky_wash(rng, out):
     layer.save(out, quality=70, alpha_quality=80, method=6)
 
 
-def line(rng, width, longest, shortest):
+def line(rng: np.random.Generator, width: int, longest: float, shortest: float) -> Field:
     """Noise along a line that wraps, holding only wavelengths between `shortest` and `longest` px, at unit deviation."""
     frequency = np.fft.rfftfreq(width)
     shaped = np.fft.irfft(np.fft.rfft(rng.standard_normal(width)) * ((frequency > 1 / longest) & (frequency < 1 / shortest)), width)
     return shaped / shaped.std()
 
 
-def across(x, at, width):
+def across(x: npt.NDArray[np.int_], at: np.float64, width: int) -> Field:
     """How far each of `x` is from `at`, the short way round a tile `width` wide."""
     return (x - at + width / 2) % width - width / 2
 
 
-def peaks(rng, width, count, low, high, broad):
+def peaks(rng: np.random.Generator, width: int, count: int, low: float, high: float, broad: tuple[float, float]) -> Field:
     """A range of mountains: pointed, a little rounded at the top, slopes that fall away concave, the tallest wins where two meet."""
     x = np.arange(width)
     ridge = np.zeros(width)
+    at: np.float64
     for at in np.sort(rng.uniform(0, width, count)):
         tall, wide = rng.uniform(low, high), rng.uniform(*broad)
         reach = np.sqrt(across(x, at, width) ** 2 + 30**2) - 30
@@ -234,24 +254,24 @@ def peaks(rng, width, count, low, high, broad):
     return ridge
 
 
-def edge(depth, soft):
+def edge(depth: Field, soft: float) -> Field:
     """Coverage of a wash whose edge is `depth` px away, below it positive: softened over `soft` px, as wet paint stops."""
     return np.clip(0.5 + depth / (2 * soft), 0, 1)
 
 
-def pigment(paper, colour, amount):
+def pigment(paper: Field, colour: Rgb, amount: Field) -> Field:
     """`paper` (rows, columns, rgb) with a wash of `colour` at `amount` (rows, columns), 0 to 1, laid over it: the paper's tooth shows
     through, as the colour scales it rather than covering it."""
-    flat = np.array([0xef, 0xe3, 0xcb], dtype=float)
-    return paper * (1 + amount[..., None] * (np.array(colour, dtype=float) / flat - 1))
+    flat = np.array([0xef, 0xe3, 0xcb], dtype=np.float64)
+    return paper * (1 + amount[..., None] * (np.array(colour, dtype=np.float64) / flat - 1))
 
 
-def granulate(rng, height, width, scale):
+def granulate(rng: np.random.Generator, height: int, width: int, scale: float) -> Field:
     """Pigment settling in the paper's hollows: fine, uneven, at unit deviation."""
     return wide_band(rng, height, width, 1 / (5 * scale), 1 / (1.6 * scale))
 
 
-def paper_under(cream, flecks, height, width, scale):
+def paper_under(cream: Image.Image, flecks: Image.Image, height: int, width: int, scale: float) -> Field:
     """The cream sheet, flecks and all, at `scale` tile px to its px: what each landscape layer is painted on, so where it hides the
     sheet it shows the same paper."""
     wide, down = int(np.ceil(width / scale / FLECKS)) + 1, int(np.ceil(height / scale / FLECKS)) + 1
@@ -263,31 +283,33 @@ def paper_under(cream, flecks, height, width, scale):
         for j in range(down):
             tiled.alpha_composite(flecks, (i * FLECKS, j * FLECKS))
     tiled = tiled.resize((round(tiled.width * scale), round(tiled.height * scale)), Image.Resampling.BICUBIC)
-    return np.asarray(tiled.convert("RGB"), dtype=float)[:height, :width]
+    return np.asarray(tiled.convert("RGB"), dtype=np.float64)[:height, :width]
 
 
-def pencil(rng, colour, shape, ink, strength):
+def pencil(rng: np.random.Generator, colour: Field, shape: Field, ink: Rgb, strength: float) -> Field:
     """`colour` with a broken pencil line round `shape`, a coverage softened at its edge, as the sky's clouds have."""
+    height: int
+    width: int
     height, width = shape.shape
     stroke = np.clip(shape * (1 - shape) * 4, 0, 1) * np.clip(wide_band(rng, height, width, 0.002, 0.02) * 0.6 + 0.6, 0, 1) * strength
-    return colour * (1 - stroke[..., None]) + np.array(ink, dtype=float) * stroke[..., None]
+    return colour * (1 - stroke[..., None]) + np.array(ink, dtype=np.float64) * stroke[..., None]
 
 
-def save_layer(colour, alpha, out, paper, scale):
+def save_layer(colour: Field, alpha: Field, out: str, paper: Field, scale: float) -> None:
     """The layer, its foot eased over its last 40 px to one tone on the sheet, and that tone below it as `<out>-fill`: a tile a pan up
     shows beneath the layer, so the layer goes on down with no edge."""
-    height = colour.shape[0]
+    height: int = colour.shape[0]
     tone = colour[-round(6 * scale):].reshape(-1, 3).mean(axis=0)
     toward = np.clip((np.arange(height) - (height - 40 * scale)) / (40 * scale), 0, 1)[:, None, None] ** 2
     colour = colour * (1 - toward) + paper * (tone / paper.reshape(-1, 3).mean(axis=0)) * toward
     rgba = np.dstack((np.clip(colour, 0, 255), np.clip(alpha, 0, 1) * 255)).round().astype("uint8")
     Image.fromarray(rgba, "RGBA").save(f"{out}.webp", quality=82, alpha_quality=90, method=6)
-    sheet = np.asarray(Image.open(out.rsplit("/", 1)[0] + "/cream.webp").convert("RGB"), dtype=float)
+    sheet = np.asarray(Image.open(out.rsplit("/", 1)[0] + "/cream.webp").convert("RGB"), dtype=np.float64)
     below = sheet * (tone / sheet.reshape(-1, 3).mean(axis=0))
     Image.fromarray(np.clip(below, 0, 255).round().astype("uint8")).save(f"{out}-fill.webp", quality=82, method=6)
 
 
-def mountains(rng, paper, out):
+def mountains(rng: np.random.Generator, paper: Field, out: str) -> None:
     """Far mountains in blue-grey, a paler range behind a nearer one: a lit face to the upper left and a shaded one, a little snow on
     the tallest, and haze toward their feet."""
     scale, (width, height) = LAND_SCALE["mountains"], LAND_SIZE["mountains"]
@@ -311,23 +333,25 @@ def mountains(rng, paper, out):
     save_layer(colour, cover, out, paper, scale)
 
 
-def bushes(rng, width, height, scale, count, low, high, size, ground):
+def bushes(rng: np.random.Generator, width: int, height: int, scale: float, count: int, low: float, high: float, size: float,
+           ground: Field) -> Field:
     """Round bushes and trees of a few puffs each along `ground` (a row per column), as coverage, drawn at every wrapped position."""
     canvas = Image.new("L", (width, height), 0)
     draw = ImageDraw.Draw(canvas)
+    at: float
     for at in rng.uniform(0, width, count):
         crown = rng.uniform(low, high) * scale
-        base = ground[int(at) % width]
+        base: float = ground[int(at) % width]
         for _ in range(int(rng.integers(3, 6))):
             radius = crown * rng.uniform(0.45, 0.7)
             cx = at + rng.uniform(-0.5, 0.5) * crown
             cy = base - crown * rng.uniform(0.35, 0.9) * size
             for shift in (-width, 0, width):
                 draw.ellipse((cx + shift - radius, cy - radius, cx + shift + radius, cy + radius), fill=255)
-    return np.asarray(canvas, dtype=float) / 255
+    return np.asarray(canvas, dtype=np.float64) / 255
 
 
-def hills(rng, paper, out):
+def hills(rng: np.random.Generator, paper: Field, out: str) -> None:
     """Rolling sage hills, darker where the wash stopped at their crest, a few bushes on them, and lighter as they near the meadow."""
     scale, (width, height) = LAND_SCALE["hills"], LAND_SIZE["hills"]
     width, height = round(width * scale), round(height * scale)
@@ -344,7 +368,7 @@ def hills(rng, paper, out):
     save_layer(colour, cover, out, paper, scale)
 
 
-def tree(draw, rng, x, ground, scale):
+def tree(draw: dict[str, ImageDraw.ImageDraw], rng: np.random.Generator, x: float, ground: float, scale: float) -> None:
     """A picture-book tree into `draw`'s layers: a short trunk, a crown of round puffs, and where light finds it, at its top left."""
     tall = rng.uniform(46, 78) * scale
     wide = tall * rng.uniform(0.55, 0.75)
@@ -358,7 +382,7 @@ def tree(draw, rng, x, ground, scale):
         draw["lit"].ellipse((cx - radius * 1.05, cy - radius * 1.1, cx + radius * 0.55, cy + radius * 0.45), fill=255)
 
 
-def fence(draw, x, ground, posts, scale):
+def fence(draw: ImageDraw.ImageDraw, x: float, ground: Callable[[float], float], posts: int, scale: float) -> None:
     """A run of posts and two rails, following the ground."""
     gap = 26 * scale
     for i in range(posts):
@@ -370,7 +394,7 @@ def fence(draw, x, ground, posts, scale):
                 draw.line([(at - gap, ground(at - gap) - rail * scale), (at, g - rail * scale)], fill=255, width=max(1, round(1.3 * scale)))
 
 
-def meadow(rng, paper, out):
+def meadow(rng: np.random.Generator, paper: Field, out: str) -> None:
     """The meadow nearest: a warm green line with trees in twos and threes and a fence."""
     scale, (width, height) = LAND_SCALE["meadow"], LAND_SIZE["meadow"]
     width, height = round(width * scale), round(height * scale)
@@ -380,7 +404,9 @@ def meadow(rng, paper, out):
     depth = rows - top[None, :]
     layers = {name: Image.new("L", (width, height), 0) for name in ("trunk", "crown", "lit", "fence")}
     draw = {name: ImageDraw.Draw(layer) for name, layer in layers.items()}
-    ground = lambda at: float(top[int(round(at)) % width])
+    ground: Callable[[float], float] = lambda at: float(top[int(round(at)) % width])
+    group: float
+    at: float
     for group in np.sort(rng.uniform(0, width, 5)):
         for at in group + np.cumsum(rng.uniform(30, 80, int(rng.integers(1, 4))) * scale):
             for shift in (-width, 0, width):
@@ -388,7 +414,7 @@ def meadow(rng, paper, out):
     start = rng.uniform(0, width)
     for shift in (-width, 0, width):
         fence(draw["fence"], start + shift, lambda at: ground(at - shift) + 4 * scale, 14, scale)
-    trunk, crown, lit, rails = (np.asarray(layers[name], dtype=float) / 255 for name in ("trunk", "crown", "lit", "fence"))
+    trunk, crown, lit, rails = (np.asarray(layers[name], dtype=np.float64) / 255 for name in ("trunk", "crown", "lit", "fence"))
     crown = wobble(rng, blur(crown, 0.8 * scale), 2 * scale)
     lit = blur(lit * crown, 3 * scale)
     ground_cover = edge(depth, 1.2 * scale)
@@ -404,7 +430,7 @@ def meadow(rng, paper, out):
     save_layer(colour, np.maximum(ground_cover, np.maximum(crown, wood)), out, paper, scale)
 
 
-def landscape_sky(rng, out):
+def landscape_sky(rng: np.random.Generator, out: str) -> None:
     """The sky over the landscape: blue at the top of the window, paling toward the hills, unevenly, as a brush leaves it. Drawn the
     window's height, so small."""
     width, height = 192, 192
@@ -416,7 +442,7 @@ def landscape_sky(rng, out):
     layer.save(out, quality=70, alpha_quality=80, method=6)
 
 
-def landscape(out):
+def landscape(out: str) -> None:
     """The landscape's three layers, painted on the cream sheet as it is in `out`."""
     cream, flecks = Image.open(f"{out}/cream.webp").convert("RGBA"), Image.open(f"{out}/cream-flecks.webp").convert("RGBA")
     for name, paint, seed in (("mountains", mountains, 9), ("hills", hills, 10), ("meadow", meadow, 11)):
@@ -426,7 +452,7 @@ def landscape(out):
     landscape_sky(np.random.default_rng(12), f"{out}/landscape-sky.webp")
 
 
-def main():
+def main() -> None:
     out = sys.argv[1] if len(sys.argv) > 1 else "."
     sheet(np.random.default_rng(1), (0xef, 0xe3, 0xcb), (1.0, 0.96, 0.84), 1.0, f"{out}/cream.webp")
     flecks(np.random.default_rng(2), (0x5a, 0x3e, 0x22), 0.5, f"{out}/cream-flecks.webp")
