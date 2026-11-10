@@ -1,0 +1,15 @@
+name: typecheck
+# mypy --strict over the repo's Python (mypy.ini), on ready PRs only: never on a draft or a push to master.
+on:
+  pull_request:
+    types: [opened, reopened, synchronize, ready_for_review]
+  merge_group:
+
+jobs:
+  mypy:
+    if: github.event_name == 'merge_group' || !github.event.pull_request.draft
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: astral-sh/setup-uv@v7
+      - run: uvx --python 3.12 --with numpy==2.5.4 --with pillow==13.0.0 mypy@2.4.1
